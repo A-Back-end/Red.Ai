@@ -29,6 +29,7 @@ study-assistant-lab/
 ```
 
 Step 1: Bootstrap your assistant
+```plaintext
 assistant = client.assistants.create(
     name="Study Q&A Assistant",
     instructions=(
@@ -38,17 +39,20 @@ assistant = client.assistants.create(
     model="gpt-4o-mini",
     tools=[{"type": "file_search"}]
 )
+```
 
 Step 2: Upload your PDFs for knowledge retrieval
+```
 file_id = client.files.create(
     purpose="knowledge_retrieval",
     file=open("data/calculus_basics.pdf", "rb")
 ).id
-
 client.assistants.update(
     assistant.id,
     tool_resources={"file_search": {"vector_store_files": [file_id]}}
 )
+
+```
 
 Step 3: Interact with your assistant via threads
 Try asking:
@@ -64,6 +68,7 @@ Goal
 Craft exactly ten bite-sized, exam-ready notes in JSON format with strict validation — a symphony of concise wisdom.
 
 1. Define your schema with Pydantic
+```
 from pydantic import BaseModel, Field
 
 class Note(BaseModel):
@@ -71,7 +76,10 @@ class Note(BaseModel):
     heading: str = Field(..., example="Mean Value Theorem")
     summary: str = Field(..., max_length=150)
     page_ref: int | None = Field(None, description="Page number in source PDF")
+```
+
 2. Generate notes using a JSON-mode prompt (02_generate_notes.py)
+```
 import json
 
 system = (
@@ -88,10 +96,13 @@ response = client.chat.completions.create(
 
 data = json.loads(response.choices[0].message.content)
 notes = [Note(**item) for item in data["notes"]]  # Validate schema
+```
+
 3. Save or print your notes beautifully
+```
 with open("exam_notes.json", "w") as f:
     json.dump([note.dict() for note in notes], f, indent=2)
 
 for note in notes:
     print(f"{note.id}. {note.heading}\n  {note.summary}\n  (Source: page {note.page_ref})\n")
-
+```

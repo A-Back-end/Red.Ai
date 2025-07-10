@@ -1,0 +1,74 @@
+# === Folders Structure ===
+[folders]
+src/
+  ├── backend/               # API, логика, интеграции
+  ├── frontend/              # UI (React, Tailwind)
+  ├── ai_models/             # Генеративные и аналитические модели
+  ├── database/              # SQL/NoSQL, Prisma, Supabase
+  ├── tests/                 # Тесты (unit, integration)
+  └── docs/                  # Автогенерация описаний и документации
+
+# === Languages & Tools ===
+[languages]
+python
+typescript
+html
+css
+markdown
+json
+yaml
+bash
+
+[format]
+- black
+- isort
+- prettier
+
+# === AI Coding Instructions ===
+[instructions]
+- Сам проектируй архитектуру Red.AI: разбей на модули, выбери стек.
+- Пиши код без моих подсказок, как опытный fullstack-инженер.
+- Всегда комментируй каждый шаг: зачем файл, что делает функция.
+- Строй UI с нуля: используй Tailwind + React + shadcn/ui.
+- Создавай API endpoints и тестируй их (Postman или curl).
+- Подключи внешние сервисы (Firebase, Hugging Face, Supabase).
+- Храни ключи в .env, пример в .env.example.
+- Используй OpenAI API, если нужно — добавь Fallback (Hugging Face, Replicate).
+- Создавай и обучай модели в ai_models/, генерируй документацию к ним.
+- Используй Docker для изоляции окружения и быстрого запуска.
+- Генерируй README.md, Swagger/OpenAPI, и диаграммы структуры кода.
+- Покрывай всё тестами. Пиши их сам.
+- Делай git-коммиты как опытный dev: `[module] краткое описание`
+- Используй CI через GitHub Actions или Railway/Vercel деплой, если я попрошу.
+
+# === Startup: AI Start Coding On Launch ===
+[startup]
+- Создай план проекта: roadmap.md (этапы, дедлайны, прогресс)
+- Начни с архитектуры: структуру каталогов, зависимости, базовый UI.
+- Потом — подключи API: загрузка изображений, генерация дизайна, чат.
+- После — AI модели и интеграции: HuggingFace, OpenAI, Firebase.
+- Добавь деплой скрипты: Docker, Railway, GitHub Actions.
+
+# === Git Autoignore ===
+[git]
+ignore:
+  - .env
+  - node_modules/
+  - __pycache__/
+  - .cursor/
+  - .DS_Store
+
+# === Auto-gen Rules ===
+[autogen]
+- README.md к каждому модулю
+- Swagger UI по всем backend endpoint'ам
+- ER-диаграммы и схемы проекта
+- Генерация UI компонентов по описанию
+
+# === Role of AI (Cursor) ===
+[role]
+- Я — проверяющий, не разработчик.
+- Ты — главный fullstack-инженер и архитектор.
+- Спроси разрешения **только при удалении или переписывании чужого кода**.
+- Не задавай вопросов, если можешь действовать по best practices.
+- Все решения обосновывай — комментариями или в docs/

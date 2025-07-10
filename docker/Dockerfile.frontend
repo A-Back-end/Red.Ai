@@ -1,0 +1,59 @@
+# Red.AI Frontend Dockerfile
+FROM node:18-alpine
+
+# Установка зависимостей для сборки
+RUN apk add --no-cache libc6-compat curl
+
+# Установка рабочей директории
+WORKDIR /app
+
+# Копирование package файлов
+COPY package*.json ./
+COPY tsconfig.json ./
+COPY next.config.js ./
+COPY tailwind.config.js ./
+COPY postcss.config.js ./
+COPY components.json ./
+
+# Установка зависимостей
+RUN npm ci
+
+# Копирование исходного кода
+COPY app/ ./app/
+COPY components/ ./components/
+COPY lib/ ./lib/
+COPY public/ ./public/
+COPY utils/ ./utils/
+COPY services/ ./services/
+COPY pages/ ./pages/
+
+# Создание пользователя для безопасности
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
+
+# Accept build arguments for API keys (needed during build time)
+ARG OPENAI_API_KEY=placeholder_for_build
+ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_YOUR_CLERK_PUBLISHABLE_KEY_HERE
+ENV OPENAI_API_KEY=$OPENAI_API_KEY
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+
+# Сборка приложения
+RUN npm run build
+
+# Настройка владельца файлов
+RUN chown -R nextjs:nodejs /app
+
+# Переключение на пользователя nextjs
+USER nextjs
+
+# Открытие порта
+EXPOSE 3000
+
+ENV NODE_ENV=production
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=5 \
+    CMD curl -f http://localhost:3000/ || exit 1
+
+# Команда запуска
+CMD ["npm", "start"] 

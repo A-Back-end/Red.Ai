@@ -5,66 +5,31 @@
 
 'use client'
 
-import React, { useState } from 'react'
-import { useSignIn } from '@clerk/nextjs'
-import { useRouter } from 'next/navigation'
+import React from 'react'
 
 interface ClerkGoogleSignInButtonProps {
-  theme: 'light' | 'dark'
-  language: 'en' | 'ru'
-  onSuccess?: (userData: any) => void
-  onError?: (error: string) => void
-  className?: string
+  theme: 'light' | 'dark';
+  language: 'en' | 'ru';
+  onClick: () => void;
+  disabled: boolean;
+  className?: string;
 }
 
 export const ClerkGoogleSignInButton: React.FC<ClerkGoogleSignInButtonProps> = ({ 
   theme, 
   language, 
-  onSuccess,
-  onError,
+  onClick,
+  disabled,
   className = ""
 }) => {
-  const [isLoading, setIsLoading] = useState(false)
-  const { signIn } = useSignIn()
-  const router = useRouter()
-
-  const handleGoogleSignIn = async () => {
-    if (!signIn) return
-    
-    setIsLoading(true)
-    
-    try {
-      // Start the Google OAuth flow
-      await signIn.authenticateWithRedirect({
-        strategy: 'oauth_google',
-        redirectUrl: '/sso-callback',
-        redirectUrlComplete: '/dashboard',
-      })
-      
-      // Note: The actual success handling happens in the sso-callback page
-      // This is just for immediate UI feedback
-      onSuccess?.({ provider: 'google' })
-      
-    } catch (error: any) {
-      console.error('Clerk Google Sign-In failed:', error)
-      
-      const errorMessage = language === 'en' 
-        ? 'Google Sign-In failed. Please try again.'
-        : 'Не удалось войти через Google. Попробуйте еще раз.'
-      
-      onError?.(errorMessage)
-      setIsLoading(false)
-    }
-  }
-
   return (
     <button
-      onClick={handleGoogleSignIn}
-      disabled={isLoading}
+      onClick={onClick}
+      disabled={disabled}
       className={`
         w-full group relative overflow-hidden rounded-xl p-4 border-2 border-dashed
         transition-all duration-300 
-        ${isLoading ? 'cursor-not-allowed opacity-50' : 'hover:scale-[1.02] hover:shadow-xl'}
+        ${disabled ? 'cursor-not-allowed opacity-50' : 'hover:scale-[1.02] hover:shadow-xl'}
         ${theme === 'dark' 
           ? 'border-gray-600 bg-gray-800/50 hover:border-blue-500 hover:bg-gray-700/70' 
           : 'border-gray-300 bg-white/50 hover:border-blue-500 hover:bg-blue-50/70'
@@ -84,7 +49,7 @@ export const ClerkGoogleSignInButton: React.FC<ClerkGoogleSignInButtonProps> = (
       <div className="relative flex items-center justify-center gap-3">
         {/* Google Icon */}
         <div className="flex-shrink-0">
-          {isLoading ? (
+          {disabled ? (
             <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
           ) : (
             <svg 
@@ -117,7 +82,7 @@ export const ClerkGoogleSignInButton: React.FC<ClerkGoogleSignInButtonProps> = (
           ${theme === 'dark' ? 'text-gray-200' : 'text-gray-700'}
           group-hover:text-blue-600 transition-colors duration-300
         `}>
-          {isLoading 
+          {disabled 
             ? (language === 'en' ? 'Signing in...' : 'Вход...')
             : (language === 'en' ? 'Continue with Google' : 'Войти через Google')
           }

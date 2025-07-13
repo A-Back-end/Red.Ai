@@ -1,12 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import Stepper from './Stepper';
 import Step1Upload from './Step1Upload';
 import Step2Elements from './Step2Elements';
 import Step3Settings from './Step3Settings';
-import Stepper from './Stepper';
+import { Loader2, Sparkles, Image as ImageIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import BeforeAfterSlider from './BeforeAfterSlider';
+import { useTranslation } from '@/lib/useTranslation';
 
-interface DesignSettings {
+export interface DesignSettings {
   prompt: string;
   inspirationWeight: string;
   design: string;
@@ -15,142 +19,233 @@ interface DesignSettings {
   budget: number;
 }
 
-interface GeneratedResult {
-  imageUrl: string;
-  metadata?: any;
-}
+type GenerationStatus = 'idle' | 'loading' | 'polling' | 'completed' | 'failed';
 
 export default function DesignStudio() {
-  const [step, setStep] = useState(1);
+  const { t } = useTranslation();
+  const [currentStep, setCurrentStep] = useState(1);
   const [mainImage, setMainImage] = useState<File | null>(null);
-  const [elements, setElements] = useState<File[]>([]);
+  const [elementFiles, setElementFiles] = useState<File[]>([]);
   const [settings, setSettings] = useState<DesignSettings>({
     prompt: '',
     inspirationWeight: 'Medium',
-    design: 'none',
+    design: 'professional',
     apartmentStyle: 'modern',
     roomType: 'living-room',
-    budget: 5000
+    budget: 15000,
   });
-  const [generatedResult, setGeneratedResult] = useState<GeneratedResult | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  
-  const nextStep = () => setStep((prev) => prev + 1);
-  const prevStep = () => setStep((prev) => prev - 1);
 
-  const handleGenerate = async (finalSettings: DesignSettings) => {
-    setIsGenerating(true);
+  const nextStep = () => setCurrentStep((prev) => prev + 1);
+  const prevStep = () => setCurrentStep((prev) => prev - 1);
+
+  // Helper to convert File to base64
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve((reader.result as string).split(',')[1]);
+      reader.onerror = error => reject(error);
+    });
+  };
+
+  // --- START: NEW ROBUST LOGIC ---
+
+  const [generationStatus, setGenerationStatus] = useState<GenerationStatus>('idle');
+  const [finalImageUrl, setFinalImageUrl] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const stopPolling = useCallback(() => {
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+      console.log('%c[Polling] Polling stopped.', 'color: red;');
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      stopPolling();
+    };
+  }, [stopPolling]);
+
+  const handleGenerate = useCallback(async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+
+    if (!mainImage) {
+      setErrorMessage('Main image is required.');
+      setGenerationStatus('failed');
+      return;
+    }
+
+    console.log('%c[handleGenerate] Process started.', 'color: orange; font-weight: bold;');
+    setGenerationStatus('loading');
+    setErrorMessage(null);
+    setFinalImageUrl(null);
+    stopPolling();
+
     try {
-      // Convert main image to base64
-      const mainImageBase64 = mainImage 
-        ? await new Promise<string>(resolve => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
-            reader.readAsDataURL(mainImage);
-          }) 
-        : '';
-
-      // Convert element images to base64
-      const elementsBase64 = await Promise.all(
-        elements.map(file => new Promise<string>(resolve => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.readAsDataURL(file);
-        }))
-      );
+      const imageBase64 = await fileToBase64(mainImage);
+      const prompt = settings.prompt;
 
       const response = await fetch('/api/generate-design', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          prompt: finalSettings.prompt,
-          apartmentStyle: finalSettings.apartmentStyle,
-          roomType: finalSettings.roomType,
-          budgetLevel: finalSettings.budget > 20000 ? 'high' : finalSettings.budget > 10000 ? 'medium' : 'low',
-          budget: finalSettings.budget,
-          quality: 'hd',
-          size: '1024x1024',
-          num_inference_steps: 40,
-          guidance_scale: 7.5,
-          mainImage: mainImageBase64,
-          elements: elementsBase64
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, imageBase64 }),
       });
 
-      const result = await response.json();
-      
-      if (result.success && result.imageUrl) {
-        setGeneratedResult({
-          imageUrl: result.imageUrl,
-          metadata: result.metadata
-        });
-      } else {
-        console.error('Generation failed:', result.error);
-        alert('Failed to generate image: ' + (result.error || 'Unknown error'));
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to start generation.');
       }
-    } catch (error) {
-      console.error('Error generating image:', error);
-      alert('Failed to generate image. Please try again.');
-    } finally {
-      setIsGenerating(false);
+
+      if (!data.polling_url) {
+        throw new Error('Server did not return a polling URL.');
+      }
+
+      console.log('%c[handleGenerate] Polling URL received. Starting polling process...', 'color: blue; font-weight: bold;');
+      setGenerationStatus('polling');
+
+      // Immediate first check
+      const checkStatus = async () => {
+        console.log('[Polling] Checking status...');
+        try {
+          const statusResponse = await fetch(`/api/check-status?url=${encodeURIComponent(data.polling_url)}`);
+          const statusData = await statusResponse.json();
+
+          console.log('[Polling] Status:', statusData);
+
+          if (statusData.status === 'Ready') { // <-- FIX: Check for 'Ready'
+            stopPolling();
+            // FIX: Get image URL from correct path `result.sample`
+            if (statusData.result && statusData.result.sample) {
+              setFinalImageUrl(statusData.result.sample);
+              setGenerationStatus('completed');
+              console.log('%c[Polling] Success! Image generated.', 'color: green;');
+            } else {
+              throw new Error('Generation succeeded but the result URL is missing.');
+            }
+          } else if (statusData.status === 'Failed') { // <-- FIX: Check for 'Failed'
+            stopPolling();
+            setErrorMessage(statusData.details || 'Generation failed on the server.');
+            setGenerationStatus('failed');
+            console.error('[Polling] Generation failed:', statusData);
+          }
+          // Other statuses like 'Queued', 'Processing' will just continue polling
+        } catch (pollingError: any) {
+          stopPolling();
+          setErrorMessage(pollingError.message || 'Failed to check status.');
+          setGenerationStatus('failed');
+          console.error('[Polling] Critical error during status check:', pollingError);
+        }
+      };
+
+      // Check immediately first
+      await checkStatus();
+
+      // Then start polling every 1.5 seconds
+      pollingIntervalRef.current = setInterval(async () => {
+        // We need to check the status inside the interval as well
+        if (generationStatus === 'completed' || generationStatus === 'failed') {
+            stopPolling();
+            return;
+        }
+        await checkStatus();
+      }, 1500);
+
+    } catch (error: any) {
+      console.error('[handleGenerate] A critical error occurred.', 'color: red; font-weight: bold;', error);
+      setErrorMessage(error.message);
+      setGenerationStatus('failed');
+    }
+  }, [mainImage, settings.prompt, stopPolling]);
+
+  // --- END: NEW ROBUST LOGIC ---
+  
+  const handleStartOver = () => {
+    setCurrentStep(1);
+    setMainImage(null);
+    setElementFiles([]);
+    setFinalImageUrl(null);
+    setErrorMessage(null);
+    setGenerationStatus('idle');
+  };
+
+  const renderContent = () => {
+    if (generationStatus === 'completed' && finalImageUrl) {
+      return (
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white light:text-gray-900 mb-4">{t('project_created')}</h2>
+          <div className="relative w-full aspect-square max-w-2xl mx-auto rounded-lg overflow-hidden border-2 border-purple-500 shadow-lg">
+            <img src={finalImageUrl} alt="Generated Design" className="w-full h-full object-contain" />
+          </div>
+          <Button onClick={handleStartOver} className="mt-8">
+            <Sparkles className="mr-2 h-4 w-4" />
+            {t('generate_design')}
+          </Button>
+        </div>
+      );
+    }
+    
+    if (generationStatus === 'failed') {
+        return (
+            <div className="text-center text-gray-900 dark:text-white light:text-gray-900">
+                <h2 className="text-2xl font-bold text-red-500 dark:text-red-400 light:text-red-600 mb-4">{t('error_occurred')}</h2>
+                <p className="text-gray-600 dark:text-gray-400 light:text-gray-700 mt-2">{errorMessage}</p>
+                <Button onClick={handleStartOver} className="mt-8">
+                    {t('try_again')}
+                </Button>
+            </div>
+        );
+    }
+    
+    if (generationStatus === 'loading' || generationStatus === 'polling') {
+        const loadingTexts = {
+          loading: 'Preparing your design request...',
+          polling: 'Generating your masterpiece...'
+        };
+        return (
+            <div className="flex flex-col items-center justify-center h-96 text-gray-900 dark:text-white light:text-gray-900">
+              <Loader2 className="w-16 h-16 animate-spin mb-4 text-purple-500 dark:text-purple-400 light:text-purple-600" />
+              <h2 className="text-2xl font-bold">{t('generating')}</h2>
+              <p className="text-gray-600 dark:text-gray-400 light:text-gray-700 mt-2">{t('loading')}</p>
+            </div>
+        );
+    }
+
+    switch (currentStep) {
+      case 1:
+        return <Step1Upload setMainImage={setMainImage} nextStep={nextStep} />;
+      case 2:
+        return <Step2Elements setElements={setElementFiles} nextStep={nextStep} prevStep={prevStep} />;
+      case 3:
+        return (
+          <Step3Settings
+            settings={settings}
+            setSettings={setSettings}
+            onGenerate={handleGenerate}
+            generationStatus={generationStatus}
+            prevStep={prevStep}
+            errorMessage={errorMessage}
+          />
+        );
+      default:
+        return null;
     }
   };
 
   return (
-    <div className="bg-slate-800 dark:bg-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-2xl font-sans">
-      <Stepper currentStep={step} />
-      <div className="mt-8">
-        {step === 1 && <Step1Upload setMainImage={setMainImage} nextStep={nextStep} />}
-        {step === 2 && <Step2Elements setElements={setElements} nextStep={nextStep} prevStep={prevStep} />}
-        {step === 3 && (
-          <Step3Settings 
-            prevStep={prevStep} 
-            settings={settings}
-            setSettings={setSettings}
-            onGenerate={handleGenerate}
-            isGenerating={isGenerating}
-          />
-        )}
+    <div className="w-full max-w-4xl mx-auto p-4 md:p-8 bg-white/90 dark:bg-gray-900/50 light:bg-gray-50/90 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700/50 light:border-gray-300 backdrop-blur-xl">
+      <div className="mb-8">
+        <Stepper currentStep={currentStep} />
       </div>
-      
-      {/* Generated Result */}
-      {generatedResult && (
-        <div className="mt-8 border-t border-gray-600 pt-8">
-          <h3 className="text-xl font-bold text-white mb-4 text-center">✨ Generated Design</h3>
-          <div className="bg-gray-700/50 rounded-xl p-4">
-            <img 
-              src={generatedResult.imageUrl} 
-              alt="Generated interior design" 
-              className="w-full rounded-lg shadow-lg"
-            />
-            <div className="mt-4 text-center">
-              <p className="text-sm text-gray-400">
-                Generated with Azure DALL-E 3 • Style: {settings.apartmentStyle} • Room: {settings.roomType}
-              </p>
-              <div className="flex justify-center space-x-2 mt-3">
-                <button 
-                  onClick={() => window.open(generatedResult.imageUrl, '_blank')}
-                  className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm transition-colors"
-                >
-                  View Full Size
-                </button>
-                <button 
-                  onClick={() => {
-                    const link = document.createElement('a');
-                    link.href = generatedResult.imageUrl;
-                    link.download = `design-${Date.now()}.png`;
-                    link.click();
-                  }}
-                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm transition-colors"
-                >
-                  Download
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+      {renderContent()}
+      {/* Пример: показываем слайдер сравнения, если есть обе картинки */}
+      {/* Заменить beforeImage/afterImage на реальные пути после интеграции */}
+      {finalImageUrl && (
+        <BeforeAfterSlider beforeImage={'/img/img-1.jpg'} afterImage={finalImageUrl} />
       )}
     </div>
   );

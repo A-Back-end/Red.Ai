@@ -24,9 +24,20 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Field 'messages' is required and must be an array." }, { status: 400 });
         }
 
-        const client = useAzure && azureClient ? azureClient : openaiClient;
-        const model = useAzure && azureClient ? azureDeploymentName : openaiModel;
-        const provider = useAzure && azureClient ? 'Azure' : 'OpenAI';
+        // Try Azure first, fallback to OpenAI
+        let client = null;
+        let model = '';
+        let provider = '';
+        
+        if (useAzure && azureClient) {
+            client = azureClient;
+            model = azureDeploymentName;
+            provider = 'Azure';
+        } else if (openaiClient) {
+            client = openaiClient;
+            model = openaiModel;
+            provider = 'OpenAI';
+        }
 
         if (!client) {
             return NextResponse.json({ error: "No AI provider is configured. Please set either AZURE_OPENAI_API_KEY or OPENAI_API_KEY." }, { status: 500 });
@@ -42,28 +53,63 @@ export async function POST(req: NextRequest) {
 - Your knowledge base includes information up to early 2024.`
         };
 
-        const response = await client.chat.completions.create({
-            model: model,
-            messages: [systemMessage, ...messages.slice(-10)], // Use system prompt + last 10 messages
-            max_tokens: data?.maxTokens || 1800,
-            temperature: data?.temperature || 0.7,
-            top_p: 1,
-            frequency_penalty: 0,
-            presence_penalty: 0,
-            stream: false,
-        });
+        try {
+            const response = await client.chat.completions.create({
+                model: model,
+                messages: [systemMessage, ...messages.slice(-10)], // Use system prompt + last 10 messages
+                max_tokens: data?.maxTokens || 1800,
+                temperature: data?.temperature || 0.7,
+                top_p: 1,
+                frequency_penalty: 0,
+                presence_penalty: 0,
+                stream: false,
+            });
 
-        const choice = response.choices[0];
-        if (!choice || !choice.message?.content) {
-            return NextResponse.json({ error: "Failed to get a valid response from the AI model." }, { status: 500 });
+            const choice = response.choices[0];
+            if (!choice || !choice.message?.content) {
+                throw new Error("Failed to get a valid response from the AI model.");
+            }
+
+            return NextResponse.json({
+                message: choice.message.content,
+                usage: response.usage,
+                provider: provider,
+                model: model,
+            });
+        } catch (apiError: any) {
+            console.error(`[${provider}] API Error:`, apiError);
+            
+            // If Azure fails and we haven't tried OpenAI yet, try OpenAI as fallback
+            if (provider === 'Azure' && openaiClient) {
+                console.log('Azure failed, trying OpenAI fallback...');
+                try {
+                    const fallbackResponse = await openaiClient.chat.completions.create({
+                        model: openaiModel,
+                        messages: [systemMessage, ...messages.slice(-10)],
+                        max_tokens: data?.maxTokens || 1800,
+                        temperature: data?.temperature || 0.7,
+                        top_p: 1,
+                        frequency_penalty: 0,
+                        presence_penalty: 0,
+                        stream: false,
+                    });
+
+                    const fallbackChoice = fallbackResponse.choices[0];
+                    if (fallbackChoice && fallbackChoice.message?.content) {
+                        return NextResponse.json({
+                            message: fallbackChoice.message.content,
+                            usage: fallbackResponse.usage,
+                            provider: 'OpenAI (Fallback)',
+                            model: openaiModel,
+                        });
+                    }
+                } catch (fallbackError: any) {
+                    console.error('OpenAI fallback also failed:', fallbackError);
+                }
+            }
+            
+            throw apiError; // Re-throw original error if fallback fails
         }
-
-        return NextResponse.json({
-            message: choice.message.content,
-            usage: response.usage,
-            provider: provider,
-            model: model,
-        });
 
     } catch (error: any) {
         console.error(`[${new Date().toISOString()}] Error in azure-ai-chat:`, error);

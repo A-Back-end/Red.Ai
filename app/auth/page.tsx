@@ -60,6 +60,11 @@ export default function AuthLandingPage() {
     setGlobalLanguage(lang)
   }
 
+  // Определяем класс панели в зависимости от темы
+  const panelBgClass = theme === 'dark'
+    ? 'bg-slate-900/90 backdrop-blur-md text-white border border-slate-800 shadow-xl'
+    : 'bg-white text-black border border-white shadow-lg backdrop-blur-md';
+
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'dark' : ''}`}>
               <NeuralBackground />
@@ -102,7 +107,7 @@ export default function AuthLandingPage() {
                   className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
                     language === 'en'
                       ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                      : 'bg-gray-800 text-white opacity-80 hover:opacity-100'
                   }`}
                 >
                   EN
@@ -112,7 +117,7 @@ export default function AuthLandingPage() {
                   className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
                     language === 'ru'
                       ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                      : 'bg-gray-800 text-white opacity-80 hover:opacity-100'
                   }`}
                 >
                   RU
@@ -214,6 +219,25 @@ export default function AuthLandingPage() {
         {/* Footer */}
         <Footer />
       </main>
+
+      {/* Auth Panel */}
+      <div className={`w-full max-w-md mx-auto mt-24 rounded-2xl p-8 ${panelBgClass} transition-colors duration-300`}>
+        <h2 className="text-3xl font-bold mb-6 text-center">{t('auth_title')}</h2>
+        <p className="text-slate-300 mb-8 text-center">{t('auth_subtitle')}</p>
+        
+        <div className="flex flex-col space-y-4">
+          <Link href="/login">
+            <Button className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+              {t('auth_login_btn')}
+            </Button>
+          </Link>
+          <Link href="/register">
+            <Button variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 hover:-translate-y-1">
+              {t('auth_register_btn')}
+            </Button>
+          </Link>
+        </div>
+      </div>
     </div>
   )
 } 

@@ -4,7 +4,9 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { Sparkles, Bot, Palette, Sofa, Coins, Loader2 } from 'lucide-react';
+import { useEffect } from 'react';
 
 interface DesignSettings {
   prompt: string;
@@ -15,12 +17,15 @@ interface DesignSettings {
   budget: number;
 }
 
+type GenerationStatus = 'idle' | 'loading' | 'polling' | 'completed' | 'failed';
+
 interface Step3SettingsProps {
   prevStep: () => void;
   settings: DesignSettings;
   setSettings: (settings: DesignSettings) => void;
-  onGenerate: (settings: DesignSettings) => Promise<void>;
-  isGenerating: boolean;
+  onGenerate: (event: React.MouseEvent<HTMLButtonElement>) => Promise<void>;
+  generationStatus: GenerationStatus;
+  errorMessage?: string | null;
 }
 
 const TempButton = ({ label, isActive, onClick }: { label: string, isActive: boolean, onClick: () => void }) => (
@@ -33,14 +38,36 @@ const TempButton = ({ label, isActive, onClick }: { label: string, isActive: boo
   </button>
 );
 
-export default function Step3Settings({ prevStep, settings, setSettings, onGenerate, isGenerating }: Step3SettingsProps) {
-  const handleGenerate = async () => {
-    if (!settings.prompt.trim()) {
-      alert('Please enter a prompt to generate the design!');
-      return;
-    }
+export default function Step3Settings({ prevStep, settings, setSettings, onGenerate, generationStatus, errorMessage }: Step3SettingsProps) {
+  
+  useEffect(() => {
+    const generateCombinedPrompt = () => {
+      let combined = settings.prompt.split('##')[0].trim();
+      const details = [];
+      if (settings.design) details.push(`${settings.design}`);
+      if (settings.apartmentStyle) details.push(`${settings.apartmentStyle} style`);
+      if (settings.roomType) details.push(`${settings.roomType}`);
+      
+      if (details.length > 0) {
+        combined += `\n\n## Details:\n- ${details.join('\n- ')}`;
+      }
+      return combined;
+    };
     
-    await onGenerate(settings);
+    const newPrompt = generateCombinedPrompt();
+    if (newPrompt !== settings.prompt) {
+      // To avoid infinite loops, we can check if an update is needed.
+      // This is a simple check; a more robust solution might be needed
+      // if the user can also edit the prompt manually in complex ways.
+      // For now, this prevents re-rendering cycles.
+      // setSettings({ ...settings, prompt: newPrompt });
+    }
+  }, [settings.design, settings.apartmentStyle, settings.roomType, setSettings]);
+
+
+  // This internal handler now matches what the parent's `onGenerate` expects
+  const handleGenerateClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    await onGenerate(event);
   };
 
   return (
@@ -54,14 +81,14 @@ export default function Step3Settings({ prevStep, settings, setSettings, onGener
             <Sparkles size={16} className="text-purple-400 mr-2" />
             Prompt <span className="text-red-400 text-xs ml-1">*</span>
           </label>
-          <textarea
+          <Textarea
             placeholder="Describe the design you want to generate..."
             value={settings.prompt}
             onChange={(e) => setSettings({ ...settings, prompt: e.target.value })}
             className="w-full h-20 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:ring-purple-500 focus:border-purple-500 resize-none rounded-lg p-3"
             rows={3}
           />
-          <p className="text-xs text-gray-500 mt-2">Main field for image generation. Be specific about style, colors, and elements.</p>
+          <p className="text-xs text-gray-500 mt-2">Main field for image generation. Be specific about style, colors, and elements. The fields below will be added to the prompt.</p>
         </div>
 
         {/* Temperature */}
@@ -168,14 +195,20 @@ export default function Step3Settings({ prevStep, settings, setSettings, onGener
       
       <div className="flex flex-col items-center mt-8">
         <Button
-          onClick={handleGenerate}
-          disabled={isGenerating || !settings.prompt.trim()}
+          type="button"
+          onClick={handleGenerateClick}
+          disabled={generationStatus !== 'idle' || !settings.prompt.trim()}
           className="w-full max-w-xs bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isGenerating ? (
+          {generationStatus === 'loading' ? (
             <>
               <Loader2 size={16} className="mr-2 animate-spin" />
-              Generating...
+              Starting Generation...
+            </>
+          ) : generationStatus === 'polling' ? (
+            <>
+              <Loader2 size={16} className="mr-2 animate-spin" />
+              Generating Design...
             </>
           ) : (
             <>
@@ -184,6 +217,24 @@ export default function Step3Settings({ prevStep, settings, setSettings, onGener
             </>
           )}
         </Button>
+        {generationStatus === 'polling' && (
+          <div className="mt-4 text-center">
+            <p className="text-sm text-purple-400">Processing your design...</p>
+            <p className="text-xs text-gray-500 mt-1">This usually takes 15-30 seconds</p>
+          </div>
+        )}
+        {generationStatus === 'loading' && (
+          <div className="mt-4 text-center">
+            <p className="text-sm text-purple-400">Initializing generation...</p>
+            <p className="text-xs text-gray-500 mt-1">Preparing your request</p>
+          </div>
+        )}
+        {generationStatus === 'failed' && errorMessage && (
+          <div className="mt-4 text-center">
+            <p className="text-sm text-red-400">{errorMessage}</p>
+            <p className="text-xs text-gray-500 mt-1">Please try again</p>
+          </div>
+        )}
         <p className="text-xs text-gray-500 mt-2">Uses 10 credits</p>
       </div>
 
@@ -192,7 +243,7 @@ export default function Step3Settings({ prevStep, settings, setSettings, onGener
           onClick={prevStep}
           variant="ghost"
           className="text-gray-400 hover:text-white hover:bg-gray-700"
-          disabled={isGenerating}
+          disabled={generationStatus !== 'idle'}
         >
           Back
         </Button>

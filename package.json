@@ -34,6 +34,7 @@
     "node-fetch": "^2.7.0",
     "openai": "^4.63.0",
     "postcss": "^8",
+    "puppeteer": "^24.12.1",
     "react": "^18",
     "react-dom": "^18",
     "react-dropzone": "^14.3.8",

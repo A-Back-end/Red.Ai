@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Upload, Camera, Wand2, Sparkles, Image as ImageIcon, Loader2, X, Plus, Settings, Check, ChevronRight, ChevronLeft } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Card, CardContent } from '../ui/card'
@@ -492,10 +492,87 @@ export default function FluxDesigner({ onAnalyze, onGenerate, onDesign }: FluxDe
     changes: ''
   })
   const [generatedResult, setGeneratedResult] = useState<any>(null)
-  const [isGenerating, setIsGenerating] = useState(false)
+  type GenerationStatus = 'idle' | 'loading' | 'polling' | 'completed' | 'failed';
+  const [generationStatus, setGenerationStatus] = useState<GenerationStatus>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const pollingRef = useRef<NodeJS.Timeout | null>(null);
+  const [pollingUrl, setPollingUrl] = useState<string | null>(null);
+
+  // Use a ref to hold the latest state and props to avoid stale closures in the polling interval.
+  const latestStateRef = useRef({ settings, mainImage, elements, onDesign });
+  useEffect(() => {
+    latestStateRef.current = { settings, mainImage, elements, onDesign };
+  });
+
+  const stopPolling = () => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  };
+
+  // This effect handles the polling lifecycle
+  useEffect(() => {
+    // Only run when in polling state and we have a URL
+    if (generationStatus === 'polling' && pollingUrl) {
+      const checkStatus = async () => {
+        try {
+          // Use mock data for status response (for limited tokens/testing)
+            const statusResp = await fetch(`/api/check-status?url=${encodeURIComponent(pollingUrl)}`);
+          if (!statusResp.ok) throw new Error('Network response was not ok during polling.');
+          
+          const statusData = await statusResp.json();
+
+          if (statusData.status === 'Ready') {
+            stopPolling();
+            // Access the latest state via the ref to prevent stale data.
+            const { settings, mainImage, elements, onDesign } = latestStateRef.current;
+            setGeneratedResult({
+              imageUrl: statusData.result.sample,
+              metadata: {
+                style: settings.style,
+                roomType: settings.roomType,
+                budget: settings.budget,
+              },
+            });
+            setGenerationStatus('completed');
+            onDesign?.({ mainImage, elements, settings, generatedImage: statusData.result.sample });
+          } else if (statusData.status === 'Failed') {
+            stopPolling();
+            setErrorMessage(statusData.details || 'Generation failed on server.');
+            setGenerationStatus('failed');
+          }
+          // If status is still 'Processing', 'Queued', etc., do nothing and let the interval run again.
+        } catch (err: any) {
+          console.error("Polling error:", err);
+          stopPolling();
+          setErrorMessage(err.message || 'An error occurred while checking the design status.');
+          setGenerationStatus('failed');
+        }
+      };
+
+      // Check immediately and then start the interval
+      checkStatus();
+      pollingRef.current = setInterval(checkStatus, 4000);
+    }
+
+    // Cleanup function for the effect
+    return () => {
+      stopPolling();
+    };
+  }, [generationStatus, pollingUrl]); // Stable dependencies prevent unnecessary re-runs.
 
   const nextStep = () => setStep(prev => prev + 1)
   const prevStep = () => setStep(prev => prev - 1)
+
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve((reader.result as string).split(',')[1]);
+      reader.onerror = reject;
+    });
+  };
 
   const handleFinish = async (finalSettings: any) => {
     if (!finalSettings.changes.trim()) {
@@ -503,50 +580,56 @@ export default function FluxDesigner({ onAnalyze, onGenerate, onDesign }: FluxDe
       return;
     }
 
-    setIsGenerating(true);
+    setSettings(finalSettings); // Important: Update settings before starting
+    setGenerationStatus('loading');
+    setErrorMessage(null);
+    setGeneratedResult(null);
+    setPollingUrl(null);
+    stopPolling();
+
     try {
-             const response = await fetch('/api/generate-design', {
+      let imageBase64: string | null = null;
+      if (mainImage) {
+        imageBase64 = await fileToBase64(mainImage);
+      }
+
+      const response = await fetch('/api/generate-design', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           prompt: finalSettings.changes,
-          style: finalSettings.style,
-          roomType: finalSettings.roomType,
-          budgetLevel: finalSettings.budget > 20000 ? 'high' : finalSettings.budget > 10000 ? 'medium' : 'low',
-          quality: 'hd',
-          size: '1024x1024',
-          dalleStyle: 'natural'
+          imageBase64,
         }),
       });
 
-      const result = await response.json();
-      
-      if (result.success && result.imageUrl) {
-        setGeneratedResult({
-          imageUrl: result.imageUrl,
-          metadata: result.metadata
-        });
-        
-        const data = {
-          mainImage,
-          elements,
-          settings: finalSettings,
-          generatedImage: result.imageUrl
-        }
-        onDesign?.(data);
-      } else {
-        console.error('Generation failed:', result.error);
-        alert('Failed to generate image: ' + (result.error || 'Unknown error'));
+      const data = await response.json();
+
+      if (!response.ok || !data.polling_url) {
+        throw new Error(data.message || 'Failed to start generation.');
       }
-    } catch (error) {
-      console.error('Error generating image:', error);
-      alert('Failed to generate image. Please try again.');
-    } finally {
-      setIsGenerating(false);
+
+      // Set the URL and status to trigger the useEffect for polling
+      setPollingUrl(data.polling_url);
+      setGenerationStatus('polling');
+
+    } catch (err: any) {
+      setErrorMessage(err.message);
+      setGenerationStatus('failed');
     }
-  }
+  };
+
+  const handleStartOver = () => {
+    setStep(1);
+    setMainImage(null);
+    setElements([]);
+    setGeneratedResult(null);
+    setGenerationStatus('idle');
+    setErrorMessage(null);
+    setPollingUrl(null);
+    stopPolling();
+  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 p-6">
@@ -590,53 +673,79 @@ export default function FluxDesigner({ onAnalyze, onGenerate, onDesign }: FluxDe
                 setSettings={setSettings} 
                 prevStep={prevStep} 
                 onFinish={handleFinish}
-                isGenerating={isGenerating}
+                isGenerating={generationStatus === 'loading' || generationStatus === 'polling'}
               />
             )}
           </div>
         </div>
         
-        {/* Generated Result */}
-        {generatedResult && (
+        {/* Generation Status & Result Panel */}
+        {generationStatus !== 'idle' && (
           <div className="mt-8 bg-slate-800 border border-slate-700 rounded-3xl p-8 shadow-2xl">
-            <h3 className="text-2xl font-bold text-white mb-6 text-center">✨ Generated Design</h3>
-            <div className="bg-gray-700/50 rounded-xl p-6">
-              <img 
-                src={generatedResult.imageUrl} 
-                alt="Generated interior design" 
-                className="w-full max-w-2xl mx-auto rounded-lg shadow-lg"
-              />
-              <div className="mt-6 text-center">
-                <p className="text-sm text-gray-400 mb-4">
-                  Generated with Azure DALL-E 3 • Style: {settings.style} • Room: {settings.roomType}
-                </p>
-                <div className="flex justify-center space-x-3">
-                  <button 
-                    onClick={() => window.open(generatedResult.imageUrl, '_blank')}
-                    className="px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-xl text-sm font-medium transition-colors shadow-lg"
-                  >
-                    View Full Size
-                  </button>
-                  <button 
-                    onClick={() => {
-                      const link = document.createElement('a');
-                      link.href = generatedResult.imageUrl;
-                      link.download = `design-${Date.now()}.png`;
-                      link.click();
-                    }}
-                    className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-medium transition-colors shadow-lg"
-                  >
-                    Download
-                  </button>
-                  <button 
-                    onClick={() => setGeneratedResult(null)}
-                    className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-xl text-sm font-medium transition-colors"
-                  >
-                    Generate New
-                  </button>
-                </div>
+            {generationStatus === 'loading' && (
+              <div className="flex flex-col items-center space-y-4 text-white text-center">
+                <Loader2 className="h-10 w-10 animate-spin text-purple-400" />
+                <p className="text-lg font-medium">Preparing your request...</p>
               </div>
-            </div>
+            )}
+            {generationStatus === 'polling' && (
+              <div className="flex flex-col items-center space-y-4 text-white text-center">
+                <Loader2 className="h-10 w-10 animate-spin text-purple-400" />
+                <p className="text-lg font-medium">AI is working on your design...</p>
+                <p className="text-sm text-gray-400">This may take up to a minute.</p>
+              </div>
+            )}
+            {generationStatus === 'failed' && (
+              <div className="text-center text-red-400">
+                <h3 className="text-xl font-bold mb-2">Generation Failed</h3>
+                <p className="text-sm mb-4">{errorMessage}</p>
+                <Button onClick={() => { setGenerationStatus('idle'); setGeneratedResult(null); stopPolling(); }}>
+                  Try Again
+                </Button>
+              </div>
+            )}
+            {generationStatus === 'completed' && generatedResult && (
+              <>
+                <h3 className="text-2xl font-bold text-white mb-6 text-center">✨ Generated Design</h3>
+                <div className="bg-gray-700/50 rounded-xl p-6">
+                  <img 
+                    src={generatedResult.imageUrl} 
+                    alt="Generated interior design" 
+                    className="w-full max-w-2xl mx-auto rounded-lg shadow-lg"
+                  />
+                  <div className="mt-6 text-center text-gray-300 text-sm space-y-2">
+                    <p><strong>Style:</strong> {generatedResult.metadata?.style}</p>
+                    <p><strong>Room:</strong> {generatedResult.metadata?.roomType}</p>
+                    <p><strong>Budget:</strong> ${generatedResult.metadata?.budget}</p>
+                  </div>
+                  <div className="mt-6 flex justify-center space-x-3">
+                    <button 
+                      onClick={() => window.open(generatedResult.imageUrl, '_blank')}
+                      className="px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-xl text-sm font-medium transition-colors shadow-lg"
+                    >
+                      View Full Size
+                    </button>
+                    <button 
+                      onClick={() => {
+                        const link = document.createElement('a');
+                        link.href = generatedResult.imageUrl;
+                        link.download = `design-${Date.now()}.png`;
+                        link.click();
+                      }}
+                      className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-medium transition-colors shadow-lg"
+                    >
+                      Download
+                    </button>
+                    <button 
+                      onClick={handleStartOver}
+                      className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-xl text-sm font-medium transition-colors"
+                    >
+                      Generate New
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>

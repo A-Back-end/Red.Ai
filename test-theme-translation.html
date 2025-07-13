@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme & Translation Test</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        /* Light theme */
+        body.light {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #1e293b;
+        }
+        
+        /* Dark theme */
+        body.dark {
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
+            color: #ffffff;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .light .container {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: inherit;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .light .btn-secondary {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .light .btn-secondary:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .dark .status {
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .light .status {
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .test-links {
+            margin-top: 30px;
+        }
+        
+        .test-links a {
+            display: inline-block;
+            margin: 10px;
+        }
+        
+        h1, h2 {
+            margin-top: 0;
+        }
+        
+        .translation-demo {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .light .translation-demo {
+            background: rgba(0, 0, 0, 0.02);
+        }
+    </style>
+</head>
+<body class="dark">
+    <div class="container">
+        <h1>🎨 Theme & Translation System Test</h1>
+        
+        <div class="status">
+            <strong>Current Status:</strong>
+            <div id="status-info">
+                Theme: <span id="current-theme">dark</span> | 
+                Language: <span id="current-language">en</span>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" onclick="toggleTheme()">
+                <span id="theme-icon">☀️</span>
+                Toggle Theme
+            </button>
+            
+            <button class="btn btn-secondary" onclick="toggleLanguage()">
+                <span id="language-flag">🇷🇺</span>
+                Switch Language
+            </button>
+            
+            <button class="btn btn-secondary" onclick="testLocalStorage()">
+                🔍 Test Storage
+            </button>
+        </div>
+        
+        <div class="translation-demo">
+            <h2 data-translate="demo_title">Translation Demo</h2>
+            <p data-translate="demo_description">This text should change when you switch languages.</p>
+            
+            <div style="margin-top: 15px;">
+                <strong data-translate="demo_features">Key Features:</strong>
+                <ul>
+                    <li data-translate="demo_feature_1">Automatic theme persistence</li>
+                    <li data-translate="demo_feature_2">Language synchronization</li>
+                    <li data-translate="demo_feature_3">URL parameter support</li>
+                    <li data-translate="demo_feature_4">Cross-page consistency</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="test-links">
+            <h2>🔗 Test Links</h2>
+            <a href="http://localhost:3000/login?theme=dark&lang=en" class="btn btn-primary" onclick="updateDashboardLink(this)">
+                🚀 Login (Dark/EN)
+            </a>
+            <a href="http://localhost:3000/dashboard?theme=light&lang=ru" class="btn btn-secondary">
+                📊 Dashboard (Light/RU)
+            </a>
+            <a href="http://localhost:3000/design-studio" class="btn btn-secondary" onclick="updateDashboardLink(this)">
+                🎨 Design Studio
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Translation data
+        const translations = {
+            en: {
+                demo_title: "Translation Demo",
+                demo_description: "This text should change when you switch languages.",
+                demo_features: "Key Features:",
+                demo_feature_1: "Automatic theme persistence",
+                demo_feature_2: "Language synchronization", 
+                demo_feature_3: "URL parameter support",
+                demo_feature_4: "Cross-page consistency"
+            },
+            ru: {
+                demo_title: "Демонстрация переводов",
+                demo_description: "Этот текст должен изменяться при переключении языков.",
+                demo_features: "Ключевые особенности:",
+                demo_feature_1: "Автоматическое сохранение темы",
+                demo_feature_2: "Синхронизация языка",
+                demo_feature_3: "Поддержка URL параметров", 
+                demo_feature_4: "Согласованность между страницами"
+            }
+        };
+
+        // Current state
+        let currentTheme = localStorage.getItem('redai-theme') || 'dark';
+        let currentLanguage = localStorage.getItem('redai-language') || 'en';
+
+        // Apply theme
+        function applyTheme(theme) {
+            document.body.classList.remove('light', 'dark');
+            document.body.classList.add(theme);
+            document.body.setAttribute('data-theme', theme);
+            
+            const themeIcon = document.getElementById('theme-icon');
+            themeIcon.textContent = theme === 'light' ? '🌙' : '☀️';
+            
+            localStorage.setItem('redai-theme', theme);
+            currentTheme = theme;
+            updateStatus();
+            
+            console.log(`🎨 Theme changed to: ${theme}`);
+        }
+
+        // Apply language
+        function applyLanguage(language) {
+            const elements = document.querySelectorAll('[data-translate]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[language] && translations[language][key]) {
+                    element.textContent = translations[language][key];
+                }
+            });
+            
+            const languageFlag = document.getElementById('language-flag');
+            languageFlag.textContent = language === 'en' ? '🇷🇺' : '🇺🇸';
+            
+            localStorage.setItem('redai-language', language);
+            currentLanguage = language;
+            updateStatus();
+            
+            console.log(`🌍 Language changed to: ${language}`);
+        }
+
+        // Toggle functions
+        function toggleTheme() {
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            applyTheme(newTheme);
+        }
+
+        function toggleLanguage() {
+            const newLanguage = currentLanguage === 'en' ? 'ru' : 'en';
+            applyLanguage(newLanguage);
+        }
+
+        // Update status display
+        function updateStatus() {
+            document.getElementById('current-theme').textContent = currentTheme;
+            document.getElementById('current-language').textContent = currentLanguage;
+        }
+
+        // Test localStorage
+        function testLocalStorage() {
+            const themeStored = localStorage.getItem('redai-theme');
+            const languageStored = localStorage.getItem('redai-language');
+            
+            alert(`Storage Test:\nTheme: ${themeStored}\nLanguage: ${languageStored}`);
+            console.log('📦 LocalStorage:', { theme: themeStored, language: languageStored });
+        }
+
+        // Update dashboard link with current theme and language
+        function updateDashboardLink(element) {
+            const currentHref = element.getAttribute('href');
+            const url = new URL(currentHref, window.location.origin);
+            
+            url.searchParams.set('theme', currentTheme);
+            url.searchParams.set('lang', currentLanguage);
+            
+            element.setAttribute('href', url.toString());
+            console.log(`🔗 Link updated: ${url.toString()}`);
+        }
+
+        // Initialize
+        function init() {
+            // Check URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlTheme = urlParams.get('theme');
+            const urlLanguage = urlParams.get('lang');
+            
+            if (urlTheme && ['light', 'dark'].includes(urlTheme)) {
+                currentTheme = urlTheme;
+            }
+            
+            if (urlLanguage && ['en', 'ru'].includes(urlLanguage)) {
+                currentLanguage = urlLanguage;
+            }
+            
+            applyTheme(currentTheme);
+            applyLanguage(currentLanguage);
+            
+            console.log('🚀 Theme & Translation system initialized');
+        }
+
+        // Initialize on load
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html> 

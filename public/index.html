@@ -1576,7 +1576,7 @@
                     </button>
                 </li>
             </ul>
-                                    <a href="http://localhost:3000/login" class="nav-cta" data-translate="nav_get_started">Get Started</a>
+                                    <a href="http://localhost:3000/login" class="nav-cta" data-translate="nav_get_started" onclick="updateDashboardLink(this)">Get Started</a>
         </nav>
     </header>
 
@@ -1598,7 +1598,7 @@
             </p>
             
             <div class="hero-buttons animate__animated animate__fadeInUp animate__delay-1s">
-                                    <a href="http://localhost:3000/login" class="btn btn-primary">
+                                    <a href="http://localhost:3000/login" class="btn btn-primary" onclick="updateDashboardLink(this)">
                     <i class="fas fa-rocket"></i>
                     <span data-translate="hero_btn_primary">Get Started Free</span>
                 </a>
@@ -1891,7 +1891,7 @@
                         <li><i class="fas fa-check check"></i> <span data-translate="starter_feature_3">Cost estimates</span></li>
                         <li><i class="fas fa-check check"></i> <span data-translate="starter_feature_4">Email support</span></li>
                     </ul>
-                                                <a href="http://localhost:3000/login" class="btn btn-secondary" style="width: 100%;" data-translate="pricing_get_started">Get Started</a>
+                                                <a href="http://localhost:3000/login" class="btn btn-secondary" style="width: 100%;" data-translate="pricing_get_started" onclick="updateDashboardLink(this)">Get Started</a>
                 </div>
                 
                 <div class="pricing-card featured animate-on-scroll">
@@ -1906,7 +1906,7 @@
                         <li><i class="fas fa-check check"></i> <span data-translate="pro_feature_4">Market analytics</span></li>
                         <li><i class="fas fa-check check"></i> <span data-translate="pro_feature_5">Priority support</span></li>
                     </ul>
-                                                <a href="http://localhost:3000/login" class="btn btn-primary" style="width: 100%;" data-translate="pricing_get_started">Get Started</a>
+                                                <a href="http://localhost:3000/login" class="btn btn-primary" style="width: 100%;" data-translate="pricing_get_started" onclick="updateDashboardLink(this)">Get Started</a>
                 </div>
                 
                 <div class="pricing-card animate-on-scroll">
@@ -2668,6 +2668,22 @@
             if (links.length > 0) {
                 console.log(`✅ Обновлено ${links.length} ссылок для порта ${currentPort}`);
             }
+        }
+
+        // Update dashboard link with current theme and language
+        function updateDashboardLink(element) {
+            const savedTheme = localStorage.getItem('redai-theme') || 'dark';
+            const savedLanguage = localStorage.getItem('redai-language') || 'en';
+            
+            const currentHref = element.getAttribute('href');
+            const url = new URL(currentHref, window.location.origin);
+            
+            // Add theme and language parameters
+            url.searchParams.set('theme', savedTheme);
+            url.searchParams.set('lang', savedLanguage);
+            
+            element.setAttribute('href', url.toString());
+            console.log(`🎨 Dashboard link updated with theme: ${savedTheme}, language: ${savedLanguage}`);
         }
     </script>
 </body>

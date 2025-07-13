@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
-import { UploadCloud, Paperclip, X } from 'lucide-react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { UploadCloud, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useDropzone } from 'react-dropzone';
 
 interface Step2ElementsProps {
   setElements: (files: File[]) => void;
@@ -10,80 +11,89 @@ interface Step2ElementsProps {
   prevStep: () => void;
 }
 
+const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
+const ACCEPTED_FORMATS = {
+  'image/jpeg': ['.jpg', '.jpeg'],
+  'image/png': ['.png'],
+  'image/webp': ['.webp'],
+};
+
 export default function Step2Elements({ setElements, nextStep, prevStep }: Step2ElementsProps) {
   const [files, setFiles] = useState<File[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
-      const updatedFiles = [...files, ...newFiles];
-      setFiles(updatedFiles);
-      setElements(updatedFiles);
+  useEffect(() => {
+    setElements(files);
+  }, [files, setElements]);
+
+  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
+    setError(null);
+
+    if (rejectedFiles.length > 0) {
+      const firstError = rejectedFiles[0].errors[0];
+      if (firstError.code === 'file-too-large') {
+        setError(`One or more files are too large. Max size is ${MAX_SIZE / 1024 / 1024}MB.`);
+      } else if (firstError.code === 'file-invalid-type') {
+        setError('Invalid file type. Please upload JPG, PNG, or WEBP images.');
+      } else {
+        setError(firstError.message);
+      }
+      return;
     }
-  };
+
+    if (acceptedFiles.length > 0) {
+      setFiles(currentFiles => [...currentFiles, ...acceptedFiles]);
+    }
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: ACCEPTED_FORMATS,
+    maxSize: MAX_SIZE,
+  });
 
   const removeFile = (index: number) => {
-    const updatedFiles = files.filter((_, i) => i !== index);
-    setFiles(updatedFiles);
-    setElements(updatedFiles);
-  };
-  
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    if (e.dataTransfer.files) {
-      const newFiles = Array.from(e.dataTransfer.files);
-      const updatedFiles = [...files, ...newFiles];
-      setFiles(updatedFiles);
-      setElements(updatedFiles);
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
+    setFiles(currentFiles => currentFiles.filter((_, i) => i !== index));
   };
 
   return (
     <div className="flex flex-col items-center text-center">
-      <h2 className="text-2xl font-bold text-white mb-2">Add 2D Elements</h2>
-      <p className="text-gray-400 mb-6">Upload additional 2D images like furniture or plants.</p>
+      <h2 className="text-2xl font-bold text-white mb-2">Add 2D Elements (Optional)</h2>
+      <p className="text-gray-400 mb-6">Upload additional 2D images like furniture or decorations.</p>
 
       <div
-        className="w-full min-h-[16rem] border-2 border-dashed border-gray-600 rounded-xl flex flex-col items-center justify-center p-4 cursor-pointer hover:border-purple-400 transition-all duration-300 bg-gray-800/20"
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onClick={() => fileInputRef.current?.click()}
+        {...getRootProps()}
+        className={`w-full min-h-[16rem] border-2 border-dashed rounded-xl flex flex-col items-center justify-center p-4 cursor-pointer transition-all duration-300 bg-gray-800/20
+        ${isDragActive ? 'border-purple-500' : 'border-gray-600'}
+        ${error ? 'border-red-500' : 'hover:border-purple-400'}`}
       >
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          className="hidden"
-          accept="image/*"
-          multiple
-        />
+        <input {...getInputProps()} />
         {files.length === 0 ? (
           <div className="flex flex-col items-center">
             <UploadCloud className="w-16 h-16 text-gray-500 mb-4" />
             <p className="text-gray-400">Drag & drop files here or <span className="text-purple-400 font-semibold">browse</span></p>
+            <p className="text-xs text-gray-500 mt-2">JPG, PNG, WEBP up to 10MB each</p>
           </div>
         ) : (
           <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {files.map((file, index) => (
-              <div key={index} className="relative group">
+              <div key={index} className="relative group bg-gray-700/50 p-1 rounded-md">
                 <img src={URL.createObjectURL(file)} alt={file.name} className="w-full h-24 object-cover rounded-md" />
                 <button 
                   onClick={(e) => { e.stopPropagation(); removeFile(index); }} 
                   className="absolute top-1 right-1 bg-red-500/80 hover:bg-red-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  aria-label="Remove file"
                 >
                   <X size={14} className="text-white" />
                 </button>
-                <p className="text-xs text-gray-300 mt-1 truncate">{file.name}</p>
+                <p className="text-xs text-gray-300 mt-1 truncate px-1">{file.name}</p>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
 
       <div className="flex w-full justify-between mt-8 max-w-xs mx-auto">
         <Button

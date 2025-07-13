@@ -1,12 +1,7 @@
-import DesignStudio from '@/components/design-studio/DesignStudio';
+import DesignStudioPage from '@/components/design-studio/page';
 import React from 'react';
 
-const DesignStudioPage = () => {
-  return (
-    <div className="bg-gray-900 min-h-screen flex items-center justify-center text-white">
-      <DesignStudio />
-    </div>
-  );
-};
-
-export default DesignStudioPage; 
+// This is the main route entry file for `/design-studio`
+export default function Page() {
+  return <DesignStudioPage />;
+} 

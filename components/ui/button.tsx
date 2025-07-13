@@ -5,23 +5,19 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center rounded-lg text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-r from-purple-500 to-blue-600 text-white hover:from-purple-600 hover:to-blue-700 shadow-lg hover:shadow-xl",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 dark:bg-blue-600 dark:hover:bg-blue-700 light:bg-blue-500 light:hover:bg-blue-600",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-lg hover:shadow-xl",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 dark:bg-red-600 dark:hover:bg-red-700 light:bg-red-500 light:hover:bg-red-600",
         outline:
-          "border border-slate-700/50 bg-slate-800/50 text-white hover:bg-slate-700/50 hover:text-white backdrop-blur-sm",
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700 light:border-gray-300 light:bg-white light:hover:bg-gray-50",
         secondary:
-          "bg-slate-700 text-white hover:bg-slate-600 shadow-lg hover:shadow-xl",
-        ghost: "hover:bg-slate-800/50 hover:text-white text-slate-400",
-        link: "text-purple-400 underline-offset-4 hover:underline hover:text-purple-300",
-        success: "bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg hover:shadow-xl",
-        warning: "bg-amber-500 text-white hover:bg-amber-600 shadow-lg hover:shadow-xl",
-        info: "bg-blue-500 text-white hover:bg-blue-600 shadow-lg hover:shadow-xl",
-        gradient: "bg-gradient-to-r from-purple-500 to-blue-600 text-white hover:from-purple-600 hover:to-blue-700 shadow-lg hover:shadow-xl"
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 dark:bg-gray-700 dark:hover:bg-gray-600 light:bg-gray-100 light:hover:bg-gray-200",
+        ghost: "hover:bg-accent hover:text-accent-foreground dark:hover:bg-gray-800 light:hover:bg-gray-100",
+        link: "text-primary underline-offset-4 hover:underline dark:text-blue-400 light:text-blue-600",
       },
       size: {
         default: "h-10 px-4 py-2",

@@ -4,15 +4,17 @@ import React, { useState, useRef } from 'react'
 import { Settings, Sun, Moon, User, Globe, BarChart, Camera, Check, X, Upload, Trash2, MapPin, Link, FileText, Palette, BarChart3, Zap } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { useTranslations } from '@/lib/translations'
+import { useTranslation } from '@/lib/useTranslation'
 import { useTheme } from '@/lib/theme-context'
 import { useUserProfile } from '@/lib/user-profile'
 import toast from 'react-hot-toast'
+import { Input } from '../ui/input' // Import the Input component
+import { Label } from '../ui/label' // Import the Label component
 
 export default function SettingsPanel() {
-  const { t, language, setLanguage } = useTranslations()
-  const { theme, toggleTheme } = useTheme()
-  const { profile, isLoaded, getInitials, getDisplayName } = useUserProfile()
+  const { t, language } = useTranslation()
+  const { theme, toggleTheme, toggleLanguage } = useTheme()
+  const { profile, isLoaded, getInitials, getDisplayName, updateUserProfile } = useUserProfile() // Destructure updateUserProfile
   
   const [apiKey, setApiKey] = useState('')
   const [localSettings, setLocalSettings] = useState({
@@ -20,6 +22,15 @@ export default function SettingsPanel() {
     autoSave: true,
     highQuality: false
   })
+  const [displayName, setDisplayName] = useState('')
+  const [isSavingName, setIsSavingName] = useState(false)
+
+  // Initialize displayName when profile loads
+  React.useEffect(() => {
+    if (profile) {
+      setDisplayName(profile.fullName || '')
+    }
+  }, [profile])
 
   // Сохранение API ключа
   const handleSaveApiKey = () => {
@@ -27,10 +38,24 @@ export default function SettingsPanel() {
     toast.success(t('apiKeySaved'))
   }
 
-  // Переключение языка
-  const toggleLanguage = () => {
-    setLanguage(language === 'en' ? 'ru' : 'en')
+  // Переключение языка с уведомлением
+  const handleToggleLanguage = () => {
+    toggleLanguage()
     toast.success(t('languageChanged'))
+  }
+
+  // Сохранение имени пользователя
+  const handleSaveDisplayName = async () => {
+    if (!profile) return
+    setIsSavingName(true)
+    try {
+      await updateUserProfile(displayName) // Use the new updateUserProfile function
+      toast.success(t('displayNameSaved'))
+    } catch (error) {
+      toast.error(t('displayNameSaveError'))
+    } finally {
+      setIsSavingName(false)
+    }
   }
 
   if (!isLoaded) {
@@ -73,11 +98,26 @@ export default function SettingsPanel() {
               )}
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-semibold">
-                {getDisplayName()}
-              </h3>
-              <p className="text-slate-600 dark:text-slate-400 text-sm">
-                {profile?.email || 'user@example.com'}
+              <Label htmlFor="displayName" className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+                {t('displayName')}
+              </Label>
+              <div className="flex items-center space-x-2">
+                <Input
+                  id="displayName"
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  className="flex-1 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 
+                             bg-white dark:bg-slate-700 text-slate-900 dark:text-white
+                             focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder={t('yourName')}
+                />
+                <Button onClick={handleSaveDisplayName} size="sm" disabled={isSavingName || displayName === profile?.fullName}>
+                  {isSavingName ? t('saving') : t('save')}
+                </Button>
+              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                {t('displayNameDescription')}
               </p>
             </div>
           </div>
@@ -125,7 +165,7 @@ export default function SettingsPanel() {
               </div>
             </div>
             <Button
-              onClick={toggleLanguage}
+              onClick={handleToggleLanguage}
               variant="outline"
               size="sm"
               className="border-slate-300 dark:border-slate-600"

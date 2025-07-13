@@ -25,13 +25,14 @@ import {
   Palette,
   Home,
   Users,
-  TrendingUp
+  TrendingUp,
+  Loader2
 } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Badge } from '../ui/badge'
 import { useTheme } from '@/lib/theme-context'
-import { useTranslations } from '@/lib/translations'
+import { useTranslation } from '@/lib/useTranslation'
 import { useUserProfile } from '@/lib/user-profile'
 
 // Import dashboard components
@@ -42,21 +43,24 @@ import SimpleAIAssistant from './SimpleAIAssistant'
 import SettingsPanel from './SettingsPanel'
 import ProjectManager from './ProjectManager'
 import SavedDesigns from './SavedDesigns'
+import { Project } from '@/lib/types'; 
 
 type ViewType = 'flux-designer' | 'ai-assistant' | 'my-projects' | 'saved-designs' | 'settings' | 'dashboard'
 
-export function AuthenticatedDashboard() {
+export function AuthenticatedDashboard() { 
   const router = useRouter()
   const { user, isLoaded } = useUser()
-  const { signOut } = useClerk()
-  const { t, language, setLanguage } = useTranslations()
-  const { theme, toggleTheme } = useTheme()
+  const { signOut, openUserProfile } = useClerk()
+  const { t, language } = useTranslation()
+  const { theme, toggleTheme, toggleLanguage } = useTheme()
   const { profile, getDisplayName, getInitials } = useUserProfile()
   
   const [currentView, setCurrentView] = useState<ViewType>('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [projectSaveMessage, setProjectSaveMessage] = useState<string | null>(null)
   const [refreshProjects, setRefreshProjects] = useState(0)
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
 
   useEffect(() => {
     // Check if Clerk is loaded and user is authenticated
@@ -67,7 +71,31 @@ export function AuthenticatedDashboard() {
     
     // The theme will be automatically applied by the store's setTheme function
     // No need for manual theme initialization here since it's handled by the store
-  }, [isLoaded, user, router])
+  }, [isLoaded, user, router]);
+
+  useEffect(() => {
+    async function fetchProjects() {
+      if (currentView === 'my-projects' && user) {
+        setIsLoadingProjects(true);
+        try {
+          const response = await fetch(`/api/projects?userId=${user.id}`);
+          if (response.ok) {
+            const data = await response.json();
+            setProjects(data.projects);
+          } else {
+            console.error('Failed to fetch projects');
+            setProjects([]);
+          }
+        } catch (error) {
+          console.error('Error fetching projects:', error);
+          setProjects([]);
+        } finally {
+          setIsLoadingProjects(false);
+        }
+      }
+    }
+    fetchProjects();
+  }, [currentView, user, refreshProjects]);
 
   const handleLogout = async () => {
     try {
@@ -139,7 +167,7 @@ export function AuthenticatedDashboard() {
               <div className="flex flex-col items-center space-y-2">
                 <div 
                   className="relative cursor-pointer"
-                  title={`${user.firstName || user.username || 'User'} ${user.lastName || ''} - ${user.primaryEmailAddress?.emailAddress || 'user@example.com'}`}
+                  title={`${getDisplayName()} - ${user.primaryEmailAddress?.emailAddress || 'user@example.com'}`}
                 >
                   <div className="w-10 h-10 rounded-xl overflow-hidden hover:ring-2 hover:ring-purple-500/50 transition-all duration-200">
                     {user.imageUrl ? (
@@ -149,8 +177,8 @@ export function AuthenticatedDashboard() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm">
-                        {user.firstName?.[0] || user.username?.[0] || 'U'}{user.lastName?.[0] || ''}
+                      <div className="w-full h-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                        {getInitials()}
                       </div>
                     )}
                   </div>
@@ -172,7 +200,7 @@ export function AuthenticatedDashboard() {
                           />
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-white font-bold">
-                            {user.firstName?.[0] || user.username?.[0] || 'U'}{user.lastName?.[0] || ''}
+                            {getInitials()}
                           </div>
                         )}
                       </div>
@@ -180,10 +208,7 @@ export function AuthenticatedDashboard() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-slate-900 dark:text-white text-sm truncate">
-                        {user.firstName && user.lastName 
-                          ? `${user.firstName} ${user.lastName}`
-                          : user.username || 'User'
-                        }
+                        {getDisplayName()}
                       </h3>
                       <p className="text-xs text-slate-600 dark:text-slate-400 truncate">
                         {user.primaryEmailAddress?.emailAddress || 'user@example.com'}
@@ -259,7 +284,7 @@ export function AuthenticatedDashboard() {
           
           <div className="flex items-center space-x-4">
             <Button
-                                onClick={() => setLanguage(language === 'en' ? 'ru' : 'en')}
+                                onClick={toggleLanguage}
               variant="outline"
               size="sm"
               className="border-slate-200 dark:border-slate-700/50 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/50 px-3"
@@ -290,6 +315,24 @@ export function AuthenticatedDashboard() {
           </div>
         </div>
       </div>
+
+      {user && user.emailAddresses[0] && user.emailAddresses[0].verification.status !== 'verified' && (
+            <div className="bg-yellow-100 dark:bg-yellow-900/50 border-b border-yellow-200 dark:border-yellow-800">
+                <div className="max-w-7xl mx-auto flex items-center justify-between p-4">
+                    <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                        Please verify your email to get full access.
+                    </p>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => openUserProfile()}
+                        className="bg-yellow-200/50 dark:bg-yellow-800/50 border-yellow-300 dark:border-yellow-700 hover:bg-yellow-200 dark:hover:bg-yellow-800"
+                    >
+                        Manage Account
+                    </Button>
+                </div>
+            </div>
+        )}
 
       {/* Main Content */}
       <div className={`transition-all duration-300 ${sidebarCollapsed ? 'ml-20' : 'ml-72'} pt-20`}>
@@ -461,15 +504,11 @@ export function AuthenticatedDashboard() {
         )}
         
         {currentView === 'ai-assistant' && (
-          <div className="p-6">
-            <div className="max-w-5xl mx-auto">
-              <Card className="h-[calc(100vh-8rem)] overflow-hidden">
-                <DomovenokAIAssistant 
-                  userId={user?.id || 'user'} 
-                  onClose={() => setCurrentView('dashboard')}
-                />
-              </Card>
-            </div>
+          <div className="h-[calc(100vh-5rem)]">
+            <DomovenokAIAssistant 
+              userId={user?.id || 'user'} 
+              onClose={() => setCurrentView('dashboard')}
+            />
           </div>
         )}
         
@@ -489,60 +528,55 @@ export function AuthenticatedDashboard() {
               console.log('Complex design:', data)
               setProjectSaveMessage('✅ Complex design is being created!')
               setTimeout(() => setProjectSaveMessage(null), 3000)
+
+              // --- SAVE PROJECT ---
+              if (user && data.generatedImage) {
+                const newProject = {
+                  userId: user.id,
+                  name: data.settings.changes.substring(0, 50) || 'New AI Design',
+                  description: data.settings.changes,
+                  imageUrl: data.generatedImage,
+                  // The backend will create the ID, createdAt, and updatedAt
+                  status: 'completed',
+                  generatedImages: [data.generatedImage],
+                  preferredStyles: [data.settings.style],
+                  budget: { min: data.settings.budget, max: data.settings.budget * 1.5, currency: 'RUB' },
+                  // ... you can add more fields from 'data' if needed
+                };
+
+                fetch('/api/projects', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(newProject),
+                })
+                .then(res => res.json())
+                .then(savedProject => {
+                  if (savedProject.success) {
+                    setProjectSaveMessage('✅ Project saved successfully!');
+                    setRefreshProjects(p => p + 1); // Refresh project list
+                  } else {
+                    setProjectSaveMessage('❌ Failed to save project.');
+                  }
+                   setTimeout(() => setProjectSaveMessage(null), 3000)
+                })
+                .catch(err => {
+                  console.error('Failed to save project', err);
+                  setProjectSaveMessage('❌ Error saving project.');
+                   setTimeout(() => setProjectSaveMessage(null), 3000)
+                });
+              }
             }}
           />
         )}
         
         {currentView === 'my-projects' && (
-          <div className="p-6">
-            <div className="max-w-6xl mx-auto">
-              <div className="flex justify-between items-center mb-6">
-                <div>
-                  <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center space-x-4">
-                    <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <FolderOpen className="h-5 w-5 text-white" />
-                    </div>
-                    <span>My Projects</span>
-                  </h1>
-                  <p className="text-slate-600 dark:text-slate-400 mt-2">Manage and organize your design projects</p>
-                </div>
-                <Button 
-                  onClick={() => setCurrentView('flux-designer')}
-                  className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  New Project
-                </Button>
-              </div>
-              
-              <div className="text-center py-20">
-                <div className="w-24 h-24 bg-slate-100 dark:bg-slate-800/50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <FolderOpen className="h-12 w-12 text-slate-500 dark:text-slate-400" />
-                </div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">No projects yet</h2>
-                <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-md mx-auto">
-                  Get started by creating your first project. Use our AI tools to generate stunning designs and manage your renovation projects.
-                </p>
-                <div className="flex justify-center space-x-4">
-                  <Button 
-                    onClick={() => setCurrentView('flux-designer')}
-                    className="bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white"
-                  >
-                    <Wand2 className="h-4 w-4 mr-2" />
-                    Start Creating
-                  </Button>
-                  <Button 
-                    onClick={() => setCurrentView('ai-assistant')}
-                    variant="outline"
-                    className="border-slate-200 dark:border-slate-700/50 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/50"
-                  >
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    Get Ideas
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <ProjectManager 
+            userId={user.id}
+            projects={projects}
+            isLoading={isLoadingProjects}
+            onNewProject={() => setCurrentView('flux-designer')}
+            onRefreshProjects={() => setRefreshProjects(p => p + 1)}
+          />
         )}
         
         {currentView === 'saved-designs' && (

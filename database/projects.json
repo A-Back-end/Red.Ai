@@ -1,0 +1,29 @@
+[
+  {
+    "id": "project_1752360214499_q87zrasns",
+    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
+    "name": "Transform this room into a modern minimalist bedro",
+    "description": "Transform this room into a modern minimalist bedroom design for a cozy apartment, following 2025 interior trends. Keep the current room layout and existing furniture exactly as is. Apply warm neutral tones, soft natural lighting, light wood flooring, white and beige walls. Use sustainable materials like bamboo and recycled stone. Add cozy textures, clean lines, and Scandinavian-Japanese fusion aesthetics. Include subtle indoor plants, bookshelves, and minimal framed artwork to add personality. Emphasize calm atmosphere, aesthetic harmony, and smart home feel. Render in ultra-photorealistic style, 4K resolution",
+    "imageUrl": "https://delivery-eu1.bfl.ai/results/3f/21666410f95645/10f9564564534fbf8bc7dc25bd7ce2e9/sample.png?se=2025-07-12T22%3A53%3A37Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=2e95fImro8A8WMpH4Bl5DM4Wf2OFuEEtDnkAHXaPFGI%3D",
+    "createdAt": "2025-07-12T22:43:34.499Z",
+    "updatedAt": "2025-07-12T22:43:34.499Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-eu1.bfl.ai/results/3f/21666410f95645/10f9564564534fbf8bc7dc25bd7ce2e9/sample.png?se=2025-07-12T22%3A53%3A37Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=2e95fImro8A8WMpH4Bl5DM4Wf2OFuEEtDnkAHXaPFGI%3D"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  }
+]

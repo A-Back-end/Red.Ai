@@ -257,3 +257,5 @@ node_modules
 *.backup
 .env.local.backup
 .env*.backup
+
+.example

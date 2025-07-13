@@ -1,12 +1,41 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { Project } from '@/lib/types'
+import { NextRequest, NextResponse } from 'next/server';
+import { Project } from '@/lib/types';
+import fs from 'fs/promises';
+import path from 'path';
 
-// В продакшене это была бы база данных (PostgreSQL, MongoDB, etc.)
-let PROJECTS_DB: Project[] = []
+// Path to the JSON database file
+const dbPath = path.join(process.cwd(), 'database', 'projects.json');
+
+// Helper function to read projects from the database
+async function readProjects(): Promise<Project[]> {
+  try {
+    const data = await fs.readFile(dbPath, 'utf-8');
+    const projects = JSON.parse(data);
+    // It's important to parse dates back into Date objects
+    return projects.map((p: any) => ({
+      ...p,
+      createdAt: new Date(p.createdAt),
+      updatedAt: new Date(p.updatedAt),
+    }));
+  } catch (error: any) {
+    // If the file doesn't exist, return an empty array
+    if (error.code === 'ENOENT') {
+      return [];
+    }
+    throw error;
+  }
+}
+
+// Helper function to write projects to the database
+async function writeProjects(projects: Project[]): Promise<void> {
+  await fs.writeFile(dbPath, JSON.stringify(projects, null, 2), 'utf-8');
+}
+
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    const PROJECTS_DB = await readProjects();
+    const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId')
     const projectId = searchParams.get('projectId')
     
@@ -38,6 +67,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const PROJECTS_DB = await readProjects();
     const projectData = await request.json()
     
     const newProject: Project = {
@@ -45,6 +75,7 @@ export async function POST(request: NextRequest) {
       userId: projectData.userId || 'anonymous',
       name: projectData.name || 'Новый проект',
       description: projectData.description || '',
+      imageUrl: projectData.imageUrl,
       createdAt: new Date(),
       updatedAt: new Date(),
       status: projectData.status || 'draft',
@@ -68,6 +99,7 @@ export async function POST(request: NextRequest) {
     }
     
     PROJECTS_DB.push(newProject)
+    await writeProjects(PROJECTS_DB);
     
     console.log('Created new project:', newProject.id, {
       hasRoomAnalysis: !!newProject.roomAnalysis,
@@ -88,6 +120,7 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    const PROJECTS_DB = await readProjects();
     const { projectId, ...updateData } = await request.json()
     
     if (!projectId) {
@@ -106,6 +139,8 @@ export async function PUT(request: NextRequest) {
       updatedAt: new Date()
     }
     
+    await writeProjects(PROJECTS_DB);
+
     console.log('Updated project:', projectId, {
       hasRoomAnalysis: !!PROJECTS_DB[projectIndex].roomAnalysis,
       hasDesignRecommendation: !!PROJECTS_DB[projectIndex].designRecommendation,
@@ -125,6 +160,7 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    const PROJECTS_DB = await readProjects();
     const { searchParams } = new URL(request.url)
     const projectId = searchParams.get('projectId')
     
@@ -140,6 +176,7 @@ export async function DELETE(request: NextRequest) {
     // Remove project
     const deletedProject = PROJECTS_DB[projectIndex]
     PROJECTS_DB.splice(projectIndex, 1)
+    await writeProjects(PROJECTS_DB);
     
     console.log('Deleted project:', projectId)
     

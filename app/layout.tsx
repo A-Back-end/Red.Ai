@@ -25,12 +25,12 @@ export default function RootLayout({
   return (
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-      afterSignInUrl="/dashboard"
-      afterSignUpUrl="/dashboard"
+      signInFallbackRedirectUrl="/dashboard"
+      signUpFallbackRedirectUrl="/dashboard"
       signInUrl="/login"
       signUpUrl="/login"
     >
-    <html lang="en" className="scroll-smooth dark">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <body className="antialiased transition-colors duration-300">
         <ThemeProvider>
           <TranslationsProvider>
@@ -51,19 +51,27 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                // Initialize theme sync system
-                const theme = localStorage.getItem('theme') || 'dark';
-                const language = localStorage.getItem('language') || 'en';
-                
-                // Apply theme
-                document.documentElement.classList.remove('dark', 'light');
-                document.documentElement.classList.add(theme);
-                document.body.setAttribute('data-theme', theme);
-                
-                // Apply language
-                document.documentElement.lang = language;
-                
-                console.log('🎨 Root layout theme sync initialized:', { theme, language });
+                try {
+                  // Initialize theme sync system
+                  const theme = localStorage.getItem('theme');
+                  const language = localStorage.getItem('language') || 'en';
+                  
+                  // Apply theme to documentElement only if it exists in localStorage
+                  if (theme && (theme === 'light' || theme === 'dark')) {
+                    document.documentElement.classList.remove('dark', 'light');
+                    document.documentElement.classList.add(theme);
+                    document.documentElement.setAttribute('data-theme', theme);
+                    document.body.classList.remove('dark', 'light');
+                    document.body.classList.add(theme);
+                  }
+                  
+                  // Apply language
+                  document.documentElement.lang = language;
+                  
+                  console.log('🎨 Root layout theme sync initialized:', { theme, language });
+                } catch (e) {
+                  console.warn('Theme initialization failed:', e);
+                }
               })();
             `,
           }}

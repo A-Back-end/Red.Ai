@@ -1,72 +1,92 @@
 'use client';
 
-import { useTranslation } from '@/lib/useTranslation';
+import React, { useState, useRef, useCallback } from 'react';
 import { UploadCloud } from 'lucide-react';
-import React from 'react';
+import { Button } from '@/components/ui/button';
+import { useDropzone } from 'react-dropzone';
+import { useTranslation } from '@/lib/useTranslation';
 
 interface Step1UploadProps {
   setMainImage: (file: File | null) => void;
   nextStep: () => void;
 }
 
+const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
+const ACCEPTED_FORMATS = {
+  'image/jpeg': ['.jpg', '.jpeg'],
+  'image/png': ['.png'],
+  'image/webp': ['.webp'],
+};
+
 export default function Step1Upload({ setMainImage, nextStep }: Step1UploadProps) {
+  const [preview, setPreview] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const { t } = useTranslation();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setMainImage(e.target.files[0]);
-      nextStep();
-    }
-  };
+  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
+    setError(null);
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      setMainImage(e.dataTransfer.files[0]);
-      nextStep();
+    if (rejectedFiles.length > 0) {
+      const firstError = rejectedFiles[0].errors[0];
+      if (firstError.code === 'file-too-large') {
+        setError(`File is too large. Max size is ${MAX_SIZE / 1024 / 1024}MB.`);
+      } else if (firstError.code === 'file-invalid-type') {
+        setError('Invalid file type. Please upload a JPG, PNG, or WEBP image.');
+      } else {
+        setError(firstError.message);
+      }
+      return;
     }
-  };
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
+    if (acceptedFiles.length > 0) {
+      const file = acceptedFiles[0];
+      setMainImage(file);
+      setImageFile(file);
+      setPreview(URL.createObjectURL(file));
+    }
+  }, [setMainImage]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: ACCEPTED_FORMATS,
+    maxSize: MAX_SIZE,
+    multiple: false,
+  });
 
   return (
-    <div className="text-center">
-      <div className="flex justify-center items-center mb-4">
-        <div className="w-16 h-16 rounded-full bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center">
-          <UploadCloud className="w-8 h-8 text-blue-500" />
-        </div>
-      </div>
-      <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-        {t('upload_main_image')}
-      </h2>
-      <p className="text-slate-600 dark:text-slate-400 mb-6">
-        {t('start_by_uploading')}
-      </p>
+    <div className="flex flex-col items-center text-center">
+      <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{t('upload_main_image')}</h2>
+      <p className="text-slate-600 dark:text-slate-400 mb-6">{t('start_by_uploading')}</p>
+
       <div
-        className="relative border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 cursor-pointer
-                   bg-slate-50/50 hover:bg-slate-100/50 dark:bg-slate-800/20 dark:hover:bg-slate-800/40 transition-colors"
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onClick={() => document.getElementById('file-upload')?.click()}
+        {...getRootProps()}
+        className={`w-full h-64 border-2 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all duration-300 
+        bg-slate-100 dark:bg-gray-800/20 
+        ${isDragActive ? 'border-purple-500' : 'border-slate-300 dark:border-gray-600'}
+        ${error ? 'border-red-500' : 'hover:border-purple-400'}`}
       >
-        <div className="flex flex-col items-center text-slate-500 dark:text-slate-400">
-          <UploadCloud className="w-10 h-10 mb-4" />
-          <p className="font-semibold">
-            {t('drag_drop_files')}{' '}
-            <span className="text-blue-500 hover:underline">{t('or_browse_files')}</span>
-          </p>
-          <p className="text-xs mt-2">{t('supports_formats')}</p>
-        </div>
-        <input
-          id="file-upload"
-          type="file"
-          className="hidden"
-          accept="image/png, image/jpeg, image/webp"
-          onChange={handleFileChange}
-        />
+        <input {...getInputProps()} />
+        {preview ? (
+          <img src={preview} alt="Preview" className="h-full w-full object-cover rounded-xl" />
+        ) : (
+          <div className="flex flex-col items-center">
+            <UploadCloud className="w-16 h-16 text-slate-500 dark:text-gray-500 mb-4" />
+            <p className="text-slate-600 dark:text-gray-400">{t('drag_drop_files')} <span className="text-purple-500 dark:text-purple-400 font-semibold">{t('or_browse_files')}</span></p>
+            <p className="text-xs text-slate-500 dark:text-gray-500 mt-2">{t('supports_formats')}</p>
+          </div>
+        )}
       </div>
+
+      {error && <p className="mt-2 text-sm text-red-500 dark:text-red-400">{error}</p>}
+
+      <Button
+        onClick={nextStep}
+        disabled={!imageFile}
+        className="mt-8 w-full max-w-xs"
+      >
+        {t('next_step')}
+      </Button>
     </div>
   );
 } 

@@ -4,7 +4,7 @@ import React from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { FolderOpen, Plus, Search, Filter, MoreVertical, Trash2, RefreshCw, Loader2, Image as ImageIcon } from 'lucide-react'
 import { Button } from '../ui/button'
-import { useTranslations } from '../../lib/translations'
+import { useTranslation } from '../../lib/useTranslation'
 import { Project } from '@/lib/types'
 import { Badge } from '../ui/badge'
 import Link from 'next/link'
@@ -18,7 +18,7 @@ interface ProjectManagerProps {
 }
 
 export default function ProjectManager({ userId, projects, isLoading, onNewProject, onRefreshProjects }: ProjectManagerProps) {
-  const { t } = useTranslations()
+  const { t } = useTranslation()
 
   const handleDelete = async (projectId: string) => {
     if (confirm('Are you sure you want to delete this project?')) {
@@ -45,19 +45,19 @@ export default function ProjectManager({ userId, projects, isLoading, onNewProje
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center space-x-4">
               <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0">
                 <FolderOpen className="h-5 w-5 text-white" />
-              </div>
+           </div>
               <span>My Projects</span>
             </h1>
             <p className="text-slate-600 dark:text-slate-400 mt-2">Manage and organize your design projects</p>
-          </div>
+         </div>
           <Button 
             onClick={onNewProject}
             className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white"
           >
-            <Plus className="h-4 w-4 mr-2" />
+           <Plus className="h-4 w-4 mr-2" />
             New Project
-          </Button>
-        </div>
+         </Button>
+      </div>
 
         {isLoading ? (
           <div className="text-center py-20">
@@ -69,7 +69,7 @@ export default function ProjectManager({ userId, projects, isLoading, onNewProje
           <div className="text-center py-20">
             <div className="w-24 h-24 bg-slate-100 dark:bg-slate-800/50 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <FolderOpen className="h-12 w-12 text-slate-500 dark:text-slate-400" />
-            </div>
+        </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">No projects yet</h2>
             <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-md mx-auto">
               Get started by creating your first project. Use our AI tools to generate stunning designs and manage your renovation projects.
@@ -77,8 +77,8 @@ export default function ProjectManager({ userId, projects, isLoading, onNewProje
             <Button onClick={onNewProject} className="bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white">
               <Plus className="h-4 w-4 mr-2" />
               Start Creating
-            </Button>
-          </div>
+        </Button>
+      </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects.map((project) => (
@@ -96,9 +96,9 @@ export default function ProjectManager({ userId, projects, isLoading, onNewProje
                     </CardHeader>
                     <CardContent className="p-4 flex-grow">
                       <CardTitle className="text-lg font-semibold text-slate-900 dark:text-white mb-2 truncate">{project.name}</CardTitle>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-2 h-10 overflow-hidden">{project.description}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {project.preferredStyles?.map(style => <Badge key={style} variant="outline">{style}</Badge>)}
+                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-2 h-10 overflow-hidden line-clamp-2">{project.description}</p>
+                      <div className="flex flex-wrap gap-2 mb-2">
+                        {project.preferredStyles?.map(style => <Badge key={style} variant="outline" className="text-xs">{style}</Badge>)}
                       </div>
                     </CardContent>
                   </a>
@@ -106,7 +106,11 @@ export default function ProjectManager({ userId, projects, isLoading, onNewProje
                 <CardFooter className="p-4 bg-slate-50 dark:bg-slate-800/20 mt-auto">
                   <div className="flex justify-between items-center w-full">
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                      Updated {new Date(project.updatedAt).toLocaleDateString()}
+                      Updated {new Date(project.updatedAt).toLocaleDateString('en-GB', { 
+                        day: '2-digit', 
+                        month: '2-digit', 
+                        year: 'numeric' 
+                      })}
                     </p>
                     <div className="flex items-center space-x-2">
                       <Button variant="ghost" size="sm" onClick={() => console.log('Re-generating project...')}>
@@ -114,7 +118,7 @@ export default function ProjectManager({ userId, projects, isLoading, onNewProje
                       </Button>
                       <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600" onClick={() => handleDelete(project.id)}>
                         <Trash2 className="h-4 w-4" />
-                      </Button>
+        </Button>
                     </div>
                   </div>
                 </CardFooter>

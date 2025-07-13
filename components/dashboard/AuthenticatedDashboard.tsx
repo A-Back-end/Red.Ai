@@ -62,11 +62,35 @@ export function AuthenticatedDashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoadingProjects, setIsLoadingProjects] = useState(true);
 
+  // Function to update URL when view changes
+  const updateURL = (view: ViewType) => {
+    const url = new URL(window.location.href);
+    if (view === 'dashboard') {
+      url.searchParams.delete('view');
+    } else {
+      url.searchParams.set('view', view);
+    }
+    window.history.replaceState({}, '', url);
+  };
+
+  // Enhanced setCurrentView that also updates URL
+  const changeView = (view: ViewType) => {
+    setCurrentView(view);
+    updateURL(view);
+  };
+
   useEffect(() => {
     // Check if Clerk is loaded and user is authenticated
     if (isLoaded && !user) {
       router.push('/login')
       return
+    }
+    
+    // Check URL parameters for initial view
+    const urlParams = new URLSearchParams(window.location.search)
+    const view = urlParams.get('view')
+    if (view && ['flux-designer', 'ai-assistant', 'my-projects', 'saved-designs', 'settings', 'dashboard'].includes(view)) {
+      setCurrentView(view as ViewType) // Don't use changeView here to avoid URL update loop
     }
     
     // The theme will be automatically applied by the store's setTheme function
@@ -75,7 +99,7 @@ export function AuthenticatedDashboard() {
 
   useEffect(() => {
     async function fetchProjects() {
-      if (currentView === 'my-projects' && user) {
+      if (user) {
         setIsLoadingProjects(true);
         try {
           const response = await fetch(`/api/projects?userId=${user.id}`);
@@ -95,7 +119,7 @@ export function AuthenticatedDashboard() {
       }
     }
     fetchProjects();
-  }, [currentView, user, refreshProjects]);
+  }, [user, refreshProjects]);
 
   const handleLogout = async () => {
     try {
@@ -231,7 +255,7 @@ export function AuthenticatedDashboard() {
               return (
                 <button
                   key={item.id}
-                  onClick={() => setCurrentView(item.id as ViewType)}
+                  onClick={() => changeView(item.id as ViewType)}
                   className={`w-full flex items-center ${sidebarCollapsed ? 'justify-center pl-4' : 'space-x-3'} 
                     px-3 py-2.5 rounded-xl transition-all duration-200 group relative
                     ${isActive 
@@ -362,7 +386,7 @@ export function AuthenticatedDashboard() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-slate-600 dark:text-slate-400 text-sm">Total Projects</p>
-                        <p className="text-2xl font-bold text-slate-900 dark:text-white">12</p>
+                        <p className="text-2xl font-bold text-slate-900 dark:text-white">{projects.length}</p>
                       </div>
                       <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center">
                         <FolderOpen className="h-6 w-6 text-blue-400" />
@@ -376,7 +400,7 @@ export function AuthenticatedDashboard() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-slate-600 dark:text-slate-400 text-sm">AI Generations</p>
-                        <p className="text-2xl font-bold text-slate-900 dark:text-white">147</p>
+                        <p className="text-2xl font-bold text-slate-900 dark:text-white">{projects.filter(p => p.status === 'completed').length}</p>
                       </div>
                       <div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center">
                         <Sparkles className="h-6 w-6 text-purple-400" />
@@ -390,7 +414,7 @@ export function AuthenticatedDashboard() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-slate-600 dark:text-slate-400 text-sm">Saved Designs</p>
-                        <p className="text-2xl font-bold text-slate-900 dark:text-white">38</p>
+                        <p className="text-2xl font-bold text-slate-900 dark:text-white">{projects.filter(p => p.generatedImages && p.generatedImages.length > 0).length}</p>
                       </div>
                       <div className="w-12 h-12 bg-rose-500/10 rounded-xl flex items-center justify-center">
                         <Heart className="h-6 w-6 text-rose-400" />
@@ -403,8 +427,8 @@ export function AuthenticatedDashboard() {
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm">This Month</p>
-                        <p className="text-2xl font-bold text-slate-900 dark:text-white">+23%</p>
+                        <p className="text-slate-600 dark:text-slate-400 text-sm">Active Projects</p>
+                        <p className="text-2xl font-bold text-slate-900 dark:text-white">{projects.filter(p => p.status === 'in_progress' || p.status === 'draft').length}</p>
                       </div>
                       <div className="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center">
                         <TrendingUp className="h-6 w-6 text-emerald-400" />
@@ -417,7 +441,7 @@ export function AuthenticatedDashboard() {
               {/* Quick Actions */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <Card className="bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-800/70 transition-all cursor-pointer"
-                  onClick={() => setCurrentView('ai-assistant')}>
+                  onClick={() => changeView('ai-assistant')}>
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-5">
                       <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -432,7 +456,7 @@ export function AuthenticatedDashboard() {
                 </Card>
 
                 <Card className="bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-800/70 transition-all cursor-pointer"
-                  onClick={() => setCurrentView('flux-designer')}>
+                  onClick={() => changeView('flux-designer')}>
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-5">
                       <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -447,7 +471,7 @@ export function AuthenticatedDashboard() {
                 </Card>
 
                 <Card className="bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-800/70 transition-all cursor-pointer"
-                  onClick={() => setCurrentView('my-projects')}>
+                  onClick={() => changeView('my-projects')}>
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-5">
                       <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -507,7 +531,7 @@ export function AuthenticatedDashboard() {
           <div className="h-[calc(100vh-5rem)]">
             <DomovenokAIAssistant 
               userId={user?.id || 'user'} 
-              onClose={() => setCurrentView('dashboard')}
+              onClose={() => changeView('dashboard')}
             />
           </div>
         )}
@@ -574,7 +598,7 @@ export function AuthenticatedDashboard() {
             userId={user.id}
             projects={projects}
             isLoading={isLoadingProjects}
-            onNewProject={() => setCurrentView('flux-designer')}
+            onNewProject={() => changeView('flux-designer')}
             onRefreshProjects={() => setRefreshProjects(p => p + 1)}
           />
         )}
@@ -603,7 +627,7 @@ export function AuthenticatedDashboard() {
                   Save your favorite AI-generated designs to access them quickly. Create some designs first to build your collection.
                 </p>
                 <Button 
-                  onClick={() => setCurrentView('flux-designer')}
+                  onClick={() => changeView('flux-designer')}
                   className="bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white"
                 >
                   <Sparkles className="h-4 w-4 mr-2" />

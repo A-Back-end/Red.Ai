@@ -10,13 +10,13 @@ import { Label } from '@/components/ui/label';
 import { useTheme } from '@/lib/theme-context';
 
 const LanguageSwitcher = ({ language, setLanguage }: { language: 'en' | 'ru', setLanguage: (lang: 'en' | 'ru') => void }) => (
-  <div className="flex bg-slate-800 dark:bg-gray-200 rounded-full p-1">
+  <div className="flex bg-gray-200 dark:bg-slate-800 rounded-full p-1">
     <button
       onClick={() => setLanguage('en')}
       className={`px-3 py-1 text-sm font-medium rounded-full transition-colors ${
         language === 'en'
-          ? 'bg-slate-600 dark:bg-white text-white dark:text-black'
-          : 'text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-black'
+          ? 'bg-white dark:bg-slate-600 text-black dark:text-white'
+          : 'text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white'
       }`}
     >
       EN
@@ -25,8 +25,8 @@ const LanguageSwitcher = ({ language, setLanguage }: { language: 'en' | 'ru', se
       onClick={() => setLanguage('ru')}
       className={`px-3 py-1 text-sm font-medium rounded-full transition-colors ${
         language === 'ru'
-          ? 'bg-slate-600 dark:bg-white text-white dark:text-black'
-          : 'text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-black'
+          ? 'bg-white dark:bg-slate-600 text-black dark:text-white'
+          : 'text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white'
       }`}
     >
       РУ
@@ -49,8 +49,7 @@ export const AuthForm = () => {
   const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  const { theme, toggleTheme } = useTheme();
-  const [language, setLanguage] = useState<'en' | 'ru'>('en');
+  const { theme, language, toggleTheme, setLanguage } = useTheme();
 
   const { signIn, setActive, isLoaded: signInLoaded } = useSignIn();
   const { signUp, isLoaded: signUpLoaded } = useSignUp();
@@ -73,11 +72,6 @@ export const AuthForm = () => {
         validatePassword(newPassword);
     }
   };
-
-  useEffect(() => {
-    // Apply theme on mount
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-  }, [theme]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();

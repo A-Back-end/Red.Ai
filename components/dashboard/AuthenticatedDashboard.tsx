@@ -80,8 +80,6 @@ export function AuthenticatedDashboard() {
   const changeView = (view: ViewType) => {
     setCurrentView(view);
     updateURL(view);
-    // Reset credits when switching panels
-    resetCredits();
   };
 
   useEffect(() => {

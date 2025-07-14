@@ -1,5 +1,17 @@
 // File: app/api/generate-design/route.ts
 import { NextResponse } from 'next/server';
+import { generateOptimizedPrompt } from '@/utils/promptGenerator';
+
+// Интерфейс для входных параметров
+interface GenerationRequest {
+  prompt: string;
+  imageBase64?: string;
+  style?: string;
+  roomType?: string;
+  temperature?: string; // Тип дизайна (3D, SketchUp, Rooming)
+  budget?: number;
+  link?: string;
+}
 
 // Helper to optimize image base64 if needed
 const optimizeImageBase64 = async (base64: string): Promise<string> => {
@@ -11,7 +23,7 @@ const optimizeImageBase64 = async (base64: string): Promise<string> => {
 export async function POST(request: Request) {
   console.log('[Generate API] Received new generation request.');
   try {
-    const body = await request.json();
+    const body: GenerationRequest = await request.json();
     const { prompt, imageBase64 } = body;
 
     if (!prompt) {
@@ -25,12 +37,25 @@ export async function POST(request: Request) {
       throw new Error("BFL_API_KEY is not configured on the server.");
     }
 
+    // Генерируем оптимизированный промпт с учетом всех параметров
+    const designParams = {
+      prompt: body.prompt,
+      style: body.style || 'modern',
+      roomType: body.roomType || 'living-room',
+      temperature: body.temperature || 'SketchUp',
+      budget: body.budget || 5000,
+      link: body.link
+    };
+    const optimizedPrompt = generateOptimizedPrompt(designParams);
+    
+    console.log('[Generate API] Generated optimized prompt:', optimizedPrompt);
+
     // Optimize the image if needed
-    const optimizedImage = await optimizeImageBase64(imageBase64);
+    const optimizedImage = imageBase64 ? await optimizeImageBase64(imageBase64) : undefined;
 
     // Prepare optimized payload
     const payload = {
-      prompt: prompt.trim(),
+      prompt: optimizedPrompt,
       input_image: optimizedImage,
       // Add optional parameters for faster generation
       priority: "high",

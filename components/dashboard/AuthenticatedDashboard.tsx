@@ -34,6 +34,8 @@ import { Badge } from '../ui/badge'
 import { useTheme } from '@/lib/theme-context'
 import { useTranslation } from '@/lib/useTranslation'
 import { useUserProfile } from '@/lib/user-profile'
+import { useCredits } from '@/lib/useCredits'
+import { CreditsDisplay } from '../ui/credits-display'
 
 // Import dashboard components
 import FluxDesigner from './FluxDesigner'
@@ -54,6 +56,7 @@ export function AuthenticatedDashboard() {
   const { t, language } = useTranslation()
   const { theme, toggleTheme, toggleLanguage } = useTheme()
   const { profile, getDisplayName, getInitials } = useUserProfile()
+  const { credits, canGenerate, spendCredits, setGenerating, resetCredits } = useCredits()
   
   const [currentView, setCurrentView] = useState<ViewType>('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -77,6 +80,8 @@ export function AuthenticatedDashboard() {
   const changeView = (view: ViewType) => {
     setCurrentView(view);
     updateURL(view);
+    // Reset credits when switching panels
+    resetCredits();
   };
 
   useEffect(() => {
@@ -328,6 +333,9 @@ export function AuthenticatedDashboard() {
                 <Moon className="h-4 w-4 text-blue-400" />
               )}
             </Button>
+
+            {/* Credits Display */}
+            <CreditsDisplay credits={credits} variant="compact" />
             
             <Button
               variant="outline"
@@ -590,6 +598,10 @@ export function AuthenticatedDashboard() {
                 });
               }
             }}
+            credits={credits}
+            canGenerate={canGenerate}
+            onSpendCredits={spendCredits}
+            onSetGenerating={setGenerating}
           />
         )}
         

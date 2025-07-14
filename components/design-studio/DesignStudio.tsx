@@ -86,13 +86,78 @@ export default function DesignStudio() {
     setProjectSaveStatus('saving');
     
     try {
+      // Сохраняем оригинальное изображение локально, если оно есть
+      let originalImageUrl = null;
+      
+      if (mainImage) {
+        console.log('📸 Saving original image for Before/After comparison...');
+        
+        try {
+          // Конвертируем файл в FormData для загрузки
+          const formData = new FormData();
+          formData.append('image', mainImage);
+          
+          const uploadResponse = await fetch('/api/upload-image', {
+            method: 'POST',
+            body: formData
+          });
+          
+          const uploadResult = await uploadResponse.json();
+          
+          if (uploadResult.success) {
+            originalImageUrl = uploadResult.url;
+            console.log('✅ Original image saved:', originalImageUrl);
+          } else {
+            console.warn('⚠️ Failed to save original image');
+          }
+        } catch (uploadError) {
+          console.error('❌ Error saving original image:', uploadError);
+        }
+      }
+      
+      // Сохраняем сгенерированное изображение локально, если это временный URL
+      let finalImageUrl = imageUrl;
+      
+      // Проверяем, является ли URL временным
+      const isTemporary = imageUrl.includes('delivery-eu1.bfl.ai') || 
+                         imageUrl.includes('oaidalleapiprodscus.blob.core.windows.net') ||
+                         imageUrl.includes('?se=') || 
+                         imageUrl.includes('?expires=');
+      
+      if (isTemporary) {
+        console.log('⚠️ Detected temporary URL, saving image locally...');
+        
+        try {
+          const saveResponse = await fetch('/api/save-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              imageUrl: imageUrl,
+              filename: `project-${Date.now()}-${Math.random().toString(36).substring(2, 9)}.png`
+            })
+          });
+          
+          const saveResult = await saveResponse.json();
+          
+          if (saveResult.success) {
+            finalImageUrl = saveResult.localUrl;
+            console.log('✅ Generated image saved locally:', finalImageUrl);
+          } else {
+            console.warn('⚠️ Failed to save generated image locally, using original URL');
+          }
+        } catch (saveError) {
+          console.error('❌ Error saving generated image locally:', saveError);
+        }
+      }
+
       const newProject = {
         userId: user.id,
         name: settings.prompt?.substring(0, 50) || 'Design Studio Project',
         description: settings.prompt || `${settings.apartmentStyle} ${settings.roomType} design`,
-        imageUrl: imageUrl,
+        imageUrl: finalImageUrl,
+        originalImageUrl: originalImageUrl, // Исходное изображение для Before/After
         status: 'completed',
-        generatedImages: [imageUrl],
+        generatedImages: [finalImageUrl],
         preferredStyles: [settings.apartmentStyle],
         budget: { 
           min: settings.budget, 
@@ -123,6 +188,7 @@ export default function DesignStudio() {
         setSavedProjectId(result.project.id);
         setProjectSaveStatus('saved');
         console.log('✅ Project saved successfully:', result.project.id);
+        console.log('📂 Image URL:', finalImageUrl);
       } else {
         setProjectSaveStatus('error');
         console.error('❌ Failed to save project:', result.error);

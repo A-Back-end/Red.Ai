@@ -13,6 +13,10 @@ interface FluxDesignerProps {
   onAnalyze?: (data: any) => void
   onGenerate?: (data: any) => void
   onDesign?: (data: any) => void
+  credits?: number
+  canGenerate?: boolean
+  onSpendCredits?: (amount?: number) => void
+  onSetGenerating?: (generating: boolean) => void
 }
 
 // Stepper Component
@@ -279,7 +283,7 @@ const Step2Elements = ({ elements, setElements, nextStep, prevStep }: any) => {
 }
 
 // Step 3: Generation Settings
-const Step3Settings = ({ settings, setSettings, prevStep, onFinish, isGenerating }: any) => {
+const Step3Settings = ({ settings, setSettings, prevStep, onFinish, isGenerating, canGenerate = true, credits = 10 }: any) => {
   const { t } = useTranslations()
 
   const TemperatureButton = ({ label, isActive, onClick }: { label: string, isActive: boolean, onClick: () => void }) => (
@@ -446,13 +450,22 @@ const Step3Settings = ({ settings, setSettings, prevStep, onFinish, isGenerating
       <div className="flex flex-col items-center space-y-4">
             <Button
           onClick={handleFinish}
-              disabled={isGenerating}
-          className="w-full max-w-md bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg"
+              disabled={isGenerating || !canGenerate}
+          className={`w-full max-w-md font-bold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg ${
+            canGenerate && !isGenerating
+              ? 'bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white'
+              : 'bg-gray-500 text-gray-300 cursor-not-allowed'
+          }`}
             >
               {isGenerating ? (
                 <>
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                   Generating...
+                </>
+              ) : !canGenerate ? (
+                <>
+              <X className="mr-2 h-5 w-5" />
+              Insufficient Credits
                 </>
               ) : (
                 <>
@@ -461,7 +474,9 @@ const Step3Settings = ({ settings, setSettings, prevStep, onFinish, isGenerating
                 </>
               )}
             </Button>
-        <p className="text-xs text-gray-500">Uses 10 credits</p>
+        <p className={`text-xs ${canGenerate ? 'text-gray-500' : 'text-red-500'}`}>
+          {canGenerate ? `Uses 10 credits (${credits} available)` : 'Need 10 credits to generate'}
+        </p>
           </div>
 
       <div className="flex justify-center">
@@ -477,7 +492,7 @@ const Step3Settings = ({ settings, setSettings, prevStep, onFinish, isGenerating
   )
 }
 
-export default function FluxDesigner({ onAnalyze, onGenerate, onDesign }: FluxDesignerProps) {
+export default function FluxDesigner({ onAnalyze, onGenerate, onDesign, credits = 10, canGenerate = true, onSpendCredits, onSetGenerating }: FluxDesignerProps) {
   const { t } = useTranslations()
   const [step, setStep] = useState(1)
   const [mainImage, setMainImage] = useState<File | null>(null)
@@ -525,6 +540,7 @@ export default function FluxDesigner({ onAnalyze, onGenerate, onDesign }: FluxDe
 
           if (statusData.status === 'Ready') {
             stopPolling();
+            onSetGenerating?.(false);
             // Access the latest state via the ref to prevent stale data.
             const { settings, mainImage, elements, onDesign } = latestStateRef.current;
             setGeneratedResult({
@@ -539,6 +555,7 @@ export default function FluxDesigner({ onAnalyze, onGenerate, onDesign }: FluxDe
             onDesign?.({ mainImage, elements, settings, generatedImage: statusData.result.sample });
           } else if (statusData.status === 'Failed') {
             stopPolling();
+            onSetGenerating?.(false);
             setErrorMessage(statusData.details || 'Generation failed on server.');
             setGenerationStatus('failed');
           }
@@ -546,6 +563,7 @@ export default function FluxDesigner({ onAnalyze, onGenerate, onDesign }: FluxDe
         } catch (err: any) {
           console.error("Polling error:", err);
           stopPolling();
+          onSetGenerating?.(false);
           setErrorMessage(err.message || 'An error occurred while checking the design status.');
           setGenerationStatus('failed');
         }
@@ -579,6 +597,16 @@ export default function FluxDesigner({ onAnalyze, onGenerate, onDesign }: FluxDe
       alert('Please enter a prompt to generate the design!');
       return;
     }
+
+    // Check if user has enough credits
+    if (!canGenerate) {
+      alert('You don\'t have enough credits to generate a design. Need 10 credits.');
+      return;
+    }
+
+    // Spend credits immediately when generation starts
+    onSpendCredits?.(10);
+    onSetGenerating?.(true);
 
     setSettings(finalSettings); // Important: Update settings before starting
     setGenerationStatus('loading');
@@ -625,6 +653,7 @@ export default function FluxDesigner({ onAnalyze, onGenerate, onDesign }: FluxDe
       setGenerationStatus('polling');
 
     } catch (err: any) {
+      onSetGenerating?.(false);
       setErrorMessage(err.message);
       setGenerationStatus('failed');
     }
@@ -684,6 +713,8 @@ export default function FluxDesigner({ onAnalyze, onGenerate, onDesign }: FluxDe
                 prevStep={prevStep} 
                 onFinish={handleFinish}
                 isGenerating={generationStatus === 'loading' || generationStatus === 'polling'}
+                canGenerate={canGenerate}
+                credits={credits}
               />
             )}
           </div>

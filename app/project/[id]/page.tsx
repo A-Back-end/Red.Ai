@@ -7,7 +7,18 @@ import { Loader2, Download, ArrowLeft, Image as ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { BeforeAfterSlider } from '@/components/ui/before-after-slider'
 import Link from 'next/link'
+import { CardDescription } from '@/components/ui/card'
+
+// REMOVED fakeIkeaSuggestions
+
+const fakeContractors = [
+    { id: 'comp1', name: 'Строй-Мастер', specialty: 'Комплексный ремонт', rating: 4.8 },
+    { id: 'comp2', name: 'Уют-Дом', specialty: 'Отделочные работы', rating: 4.9 },
+    { id: 'comp3', name: 'Профи-Ремонт', specialty: 'Дизайнерский ремонт', rating: 4.7 },
+];
+
 
 export default function ProjectDetailPage() {
   const params = useParams()
@@ -19,6 +30,14 @@ export default function ProjectDetailPage() {
   const [project, setProject] = useState<Project | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isDownloading, setIsDownloading] = useState(false);
+  
+  // AI Furniture state
+  const [ikeaSuggestions, setIkeaSuggestions] = useState<any[]>([]);
+  const [isAiLoading, setIsAiLoading] = useState(true);
+  const [aiError, setAiError] = useState<string | null>(null);
+
+  const [contractors, setContractors] = useState(fakeContractors);
+
 
   useEffect(() => {
     if (projectId) {
@@ -29,6 +48,13 @@ export default function ProjectDetailPage() {
           if (response.ok) {
             const data = await response.json()
             setProject(data.project)
+            // Once project is fetched, trigger AI furniture finder
+            if (data.project.imageUrl) {
+              fetchAiSuggestions(data.project.imageUrl);
+            } else {
+              setIsAiLoading(false);
+              setAiError("No image available for AI analysis.");
+            }
           } else {
             setProject(null)
           }
@@ -42,6 +68,29 @@ export default function ProjectDetailPage() {
       fetchProject()
     }
   }, [projectId])
+
+  const fetchAiSuggestions = async (imageUrl: string) => {
+    setIsAiLoading(true);
+    setAiError(null);
+    try {
+      const response = await fetch('/api/ai-furniture-finder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setIkeaSuggestions(data.furniture);
+      } else {
+        const errorData = await response.json();
+        setAiError(errorData.details || 'Failed to fetch AI suggestions.');
+      }
+    } catch (error) {
+      setAiError('An unexpected error occurred.');
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
 
   const handleDownloadPdf = async () => {
     if (!project) return;
@@ -118,13 +167,24 @@ export default function ProjectDetailPage() {
           <div className="lg:col-span-2">
             <Card className="bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 overflow-hidden">
               <CardHeader>
-                <div className="aspect-[16/9] bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
-                    {project.imageUrl ? (
-                        <img src={project.imageUrl} alt={project.name} className="w-full h-full object-cover" />
-                    ) : (
-                        <ImageIcon className="w-24 h-24 text-slate-400 dark:text-slate-500" />
-                    )}
-                </div>
+                {/* Before/After Comparison или обычное изображение */}
+                {project.originalImageUrl && project.imageUrl ? (
+                  <BeforeAfterSlider
+                    beforeImage={project.originalImageUrl}
+                    afterImage={project.imageUrl}
+                    beforeLabel="Original"
+                    afterLabel="AI Design"
+                    className="aspect-[16/9]"
+                  />
+                ) : project.imageUrl ? (
+                  <div className="aspect-[16/9] bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                    <img src={project.imageUrl} alt={project.name} className="w-full h-full object-cover rounded-lg" />
+                  </div>
+                ) : (
+                  <div className="aspect-[16/9] bg-slate-100 dark:bg-slate-700 flex items-center justify-center rounded-lg">
+                    <ImageIcon className="w-24 h-24 text-slate-400 dark:text-slate-500" />
+                  </div>
+                )}
               </CardHeader>
             </Card>
           </div>
@@ -170,6 +230,73 @@ export default function ProjectDetailPage() {
                 </CardContent>
             </Card>
           </div>
+        </div>
+
+        {/* Next Steps Section */}
+        <div className="mt-8">
+          <Card className="bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold">Следующие шаги</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold mb-3">Подбор мебели от ИКЕА (AI)</h3>
+                {isAiLoading && (
+                  <div className="flex items-center justify-center h-40">
+                    <Loader2 className="h-8 w-8 text-slate-500 animate-spin" />
+                    <p className="ml-2 text-slate-500">AI анализирует ваш дизайн...</p>
+                  </div>
+                )}
+                {aiError && (
+                   <div className="text-red-500 text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                    <p>Ошибка: {aiError}</p>
+                   </div>
+                )}
+                {!isAiLoading && !aiError && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {ikeaSuggestions.map(item => (
+                      <a key={item.id} href={item.productUrl} target="_blank" rel="noopener noreferrer" className="block">
+                        <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                          <img src={item.imageUrl} alt={item.name} className="w-full h-40 object-cover" />
+                          <CardContent className="p-3">
+                            <h4 className="font-semibold text-sm capitalize truncate">{item.name}</h4>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{item.price}</p>
+                          </CardContent>
+                        </Card>
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mb-3">Компании для реализации проекта</h3>
+                 <div className="space-y-3">
+                  {contractors.map(comp => (
+                    <Card key={comp.id} className="p-3 flex justify-between items-center">
+                      <div>
+                        <p className="font-semibold">{comp.name}</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">{comp.specialty}</p>
+                      </div>
+                      <Badge variant="secondary">★ {comp.rating}</Badge>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mb-3">Как это сделать?</h3>
+                 <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-lg prose prose-sm dark:prose-invert">
+                  <p>Мы готовим для вас детальное руководство, которое поможет вам воплотить этот дизайн в жизнь. Оно будет включать:</p>
+                  <ul>
+                    <li>Выбор цветовой палитры и материалов.</li>
+                    <li>Советы по расстановке мебели.</li>
+                    <li>Рекомендации по освещению.</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

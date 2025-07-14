@@ -22,10 +22,14 @@ export default function ContributionHeatmap({
   showTooltips = true
 }: ContributionHeatmapProps) {
   
-  // Generate sample data if none provided
+  // Use provided data or generate sample data
   const contributionData = useMemo(() => {
-    if (data.length > 0) return data
+    // If real data is provided, use it
+    if (data.length > 0) {
+      return data
+    }
     
+    // Otherwise generate sample data for demonstration
     const sampleData: ContributionDay[] = []
     const startDate = new Date(year, 0, 1)
     const endDate = new Date(year, 11, 31)
@@ -109,24 +113,25 @@ export default function ContributionHeatmap({
   }
 
   const getActivityText = (count: number): string => {
-    if (count === 0) return 'Нет активности'
-    if (count === 1) return '1 действие'
-    if (count < 5) return `${count} действия`
-    return `${count} действий`
+    if (count === 0) return 'Нет заходов'
+    if (count === 1) return '1 заход'
+    if (count < 5) return `${count} захода`
+    return `${count} заходов`
   }
 
   const totalContributions = contributionData.reduce((sum, day) => sum + day.count, 0)
   const activeWeeks = weekData.filter(week => week.some(day => day.level > 0)).length
+  const isRealData = data.length > 0
 
   return (
     <div className={`w-full ${className}`}>
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300">
-            Активность за {year} год
+            {isRealData ? `Заходы на dashboard за ${year} год` : `Активность за ${year} год`}
           </h3>
           <div className="text-xs text-slate-500 dark:text-slate-400">
-            {totalContributions} действий за {activeWeeks} недель
+            {isRealData ? `${totalContributions} заходов` : `${totalContributions} действий`} за {activeWeeks} недель
           </div>
         </div>
         

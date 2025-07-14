@@ -264,21 +264,9 @@ export default function DesignStudio() {
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white light:text-gray-900 mb-4">
             {t('project_created')}
           </h2>
-          <div className="relative w-full aspect-square max-w-2xl mx-auto rounded-lg overflow-hidden border-2 border-purple-500 shadow-lg mb-8">
+          <div className="relative w-full aspect-square max-w-2xl mx-auto rounded-lg overflow-hidden border-2 border-purple-500 shadow-lg">
             <img src={finalImageUrl} alt="Generated Design" className="w-full h-full object-contain" />
           </div>
-
-          {/* Слайдер сравнения "до и после" */}
-          {mainImage && (
-            <div className="mb-8">
-              <BeforeAfterSlider 
-                beforeImage={URL.createObjectURL(mainImage)} 
-                afterImage={finalImageUrl} 
-                beforeLabel="Оригинал"
-                afterLabel="С AI" 
-              />
-            </div>
-          )}
           
           {/* Project Save Status */}
           <div className="mt-6 space-y-4">
@@ -379,11 +367,16 @@ export default function DesignStudio() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 md:p-8 bg-white/90 dark:bg-gray-900/50 light:bg-gray-50/90 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700/50 light:border-gray-300 backdrop-blur-xl max-h-[90vh] overflow-y-auto">
+    <div className="w-full max-w-4xl mx-auto p-4 md:p-8 bg-white/90 dark:bg-gray-900/50 light:bg-gray-50/90 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700/50 light:border-gray-300 backdrop-blur-xl">
       <div className="mb-8">
         <Stepper currentStep={currentStep} />
       </div>
       {renderContent()}
+      {/* Пример: показываем слайдер сравнения, если есть обе картинки */}
+      {/* Заменить beforeImage/afterImage на реальные пути после интеграции */}
+      {finalImageUrl && (
+        <BeforeAfterSlider beforeImage={'/img/img-1.jpg'} afterImage={finalImageUrl} />
+      )}
     </div>
   );
 } 

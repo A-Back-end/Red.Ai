@@ -140,7 +140,7 @@ export async function PUT(request: NextRequest) {
     }
     
     await writeProjects(PROJECTS_DB);
-
+    
     console.log('Updated project:', projectId, {
       hasRoomAnalysis: !!PROJECTS_DB[projectIndex].roomAnalysis,
       hasDesignRecommendation: !!PROJECTS_DB[projectIndex].designRecommendation,

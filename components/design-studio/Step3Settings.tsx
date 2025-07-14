@@ -26,19 +26,20 @@ interface Step3SettingsProps {
   onGenerate: (event: React.MouseEvent<HTMLButtonElement>) => Promise<void>;
   generationStatus: GenerationStatus;
   errorMessage?: string | null;
+  isAuthenticated?: boolean;
 }
 
 const TempButton = ({ label, isActive, onClick }: { label: string, isActive: boolean, onClick: () => void }) => (
   <button
     onClick={onClick}
     className={`px-6 py-2 rounded-lg transition-all duration-300 font-semibold text-sm
-      ${isActive ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/20' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+      ${isActive ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/20' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'}`}
   >
     {label}
   </button>
 );
 
-export default function Step3Settings({ prevStep, settings, setSettings, onGenerate, generationStatus, errorMessage }: Step3SettingsProps) {
+export default function Step3Settings({ prevStep, settings, setSettings, onGenerate, generationStatus, errorMessage, isAuthenticated = true }: Step3SettingsProps) {
   
   useEffect(() => {
     const generateCombinedPrompt = () => {
@@ -71,30 +72,30 @@ export default function Step3Settings({ prevStep, settings, setSettings, onGener
   };
 
   return (
-    <div className="flex flex-col text-white">
-      <h2 className="text-2xl font-bold text-center mb-8">Generation Settings</h2>
+    <div className="flex flex-col text-slate-900 dark:text-white">
+      <h2 className="text-2xl font-bold text-center mb-8 text-slate-900 dark:text-white">Generation Settings</h2>
       
       <div className="space-y-6">
         {/* Prompt */}
-        <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
-          <label className="text-sm font-medium text-gray-300 flex items-center mb-3">
-            <Sparkles size={16} className="text-purple-400 mr-2" />
-            Prompt <span className="text-red-400 text-xs ml-1">*</span>
+        <div className="p-4 bg-slate-100 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700/50">
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center mb-3">
+            <Sparkles size={16} className="text-purple-500 dark:text-purple-400 mr-2" />
+            Prompt <span className="text-red-500 dark:text-red-400 text-xs ml-1">*</span>
           </label>
           <Textarea
             placeholder="Describe the design you want to generate..."
             value={settings.prompt}
             onChange={(e) => setSettings({ ...settings, prompt: e.target.value })}
-            className="w-full h-20 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:ring-purple-500 focus:border-purple-500 resize-none rounded-lg p-3"
+            className="w-full h-20 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-purple-500 focus:border-purple-500 resize-none rounded-lg p-3"
             rows={3}
           />
-          <p className="text-xs text-gray-500 mt-2">Main field for image generation. Be specific about style, colors, and elements. The fields below will be added to the prompt.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-500 mt-2">Main field for image generation. Be specific about style, colors, and elements. The fields below will be added to the prompt.</p>
         </div>
 
         {/* Temperature */}
-        <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
-          <label className="text-sm font-medium text-gray-300 flex items-center mb-3">
-            <Sparkles size={16} className="text-purple-400 mr-2" />
+        <div className="p-4 bg-slate-100 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700/50">
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center mb-3">
+            <Sparkles size={16} className="text-purple-500 dark:text-purple-400 mr-2" />
             Inspiration Weight
           </label>
           <div className="flex space-x-2">
@@ -117,79 +118,86 @@ export default function Step3Settings({ prevStep, settings, setSettings, onGener
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Design */}
-            <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
-                <label htmlFor="design" className="text-sm font-medium text-gray-300 flex items-center mb-2">
-                    <Bot size={16} className="text-purple-400 mr-2" />
-                    Design
-                </label>
-                <Select value={settings.design} onValueChange={(value) => setSettings({ ...settings, design: value })}>
-                    <SelectTrigger id="design" className="bg-gray-700 border-gray-600 text-white">
-                        <SelectValue placeholder="Select Design" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700 text-white">
-                        <SelectItem value="professional">Professional Design</SelectItem>
-                        <SelectItem value="friendly">Modern Design</SelectItem>
-                        <SelectItem value="minimalist">Minimalist Design</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-            {/* Apartment Style */}
-            <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
-                <label htmlFor="style" className="text-sm font-medium text-gray-300 flex items-center mb-2">
-                    <Palette size={16} className="text-purple-400 mr-2" />
-                    Apartment Style
-                </label>
-                <Select value={settings.apartmentStyle} onValueChange={(value) => setSettings({ ...settings, apartmentStyle: value })}>
-                    <SelectTrigger id="style" className="bg-gray-700 border-gray-600 text-white">
-                        <SelectValue placeholder="Select Style" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-700 text-white">
-                        <SelectItem value="modern">Modern</SelectItem>
-                        <SelectItem value="minimalist">Minimalist</SelectItem>
-                        <SelectItem value="classic">Classic</SelectItem>
-                        <SelectItem value="loft">Loft</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-        </div>
+          {/* Design Type */}
+          <div className="p-4 bg-slate-100 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700/50">
+            <label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center mb-3">
+              <Bot size={16} className="text-purple-500 dark:text-purple-400 mr-2" />
+              Design Type
+            </label>
+            <Select value={settings.design} onValueChange={(value) => setSettings({ ...settings, design: value })}>
+              <SelectTrigger className="w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white">
+                <SelectValue placeholder="Select design type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="professional">Professional</SelectItem>
+                <SelectItem value="creative">Creative</SelectItem>
+                <SelectItem value="minimalist">Minimalist</SelectItem>
+                <SelectItem value="luxurious">Luxurious</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        {/* Room Type */}
-        <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
-            <label htmlFor="room" className="text-sm font-medium text-gray-300 flex items-center mb-2">
-                <Sofa size={16} className="text-purple-400 mr-2" />
-                Room Type
+          {/* Apartment Style */}
+          <div className="p-4 bg-slate-100 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700/50">
+            <label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center mb-3">
+              <Palette size={16} className="text-purple-500 dark:text-purple-400 mr-2" />
+              Apartment Style
+            </label>
+            <Select value={settings.apartmentStyle} onValueChange={(value) => setSettings({ ...settings, apartmentStyle: value })}>
+              <SelectTrigger className="w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white">
+                <SelectValue placeholder="Select apartment style" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="modern">Modern</SelectItem>
+                <SelectItem value="classic">Classic</SelectItem>
+                <SelectItem value="scandinavian">Scandinavian</SelectItem>
+                <SelectItem value="industrial">Industrial</SelectItem>
+                <SelectItem value="bohemian">Bohemian</SelectItem>
+                <SelectItem value="minimalist">Minimalist</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Room Type */}
+          <div className="p-4 bg-slate-100 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700/50">
+            <label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center mb-3">
+              <Sofa size={16} className="text-purple-500 dark:text-purple-400 mr-2" />
+              Room Type
             </label>
             <Select value={settings.roomType} onValueChange={(value) => setSettings({ ...settings, roomType: value })}>
-                <SelectTrigger id="room" className="bg-gray-700 border-gray-600 text-white">
-                    <SelectValue placeholder="Select Room Type" />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700 text-white">
-                    <SelectItem value="living-room">Living Room</SelectItem>
-                    <SelectItem value="bedroom">Bedroom</SelectItem>
-                    <SelectItem value="kitchen">Kitchen</SelectItem>
-                    <SelectItem value="bathroom">Bathroom</SelectItem>
-                </SelectContent>
+              <SelectTrigger className="w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white">
+                <SelectValue placeholder="Select room type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="living-room">Living Room</SelectItem>
+                <SelectItem value="bedroom">Bedroom</SelectItem>
+                <SelectItem value="kitchen">Kitchen</SelectItem>
+                <SelectItem value="bathroom">Bathroom</SelectItem>
+                <SelectItem value="office">Office</SelectItem>
+                <SelectItem value="dining-room">Dining Room</SelectItem>
+              </SelectContent>
             </Select>
-        </div>
-        
-        {/* Budget */}
-        <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
-            <label className="text-sm font-medium text-gray-300 flex items-center mb-4">
-                <Coins size={16} className="text-purple-400 mr-2" />
-                Budget
+          </div>
+
+          {/* Budget */}
+          <div className="p-4 bg-slate-100 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700/50">
+            <label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center mb-3">
+              <Coins size={16} className="text-purple-500 dark:text-purple-400 mr-2" />
+              Budget: ${settings.budget.toLocaleString()}
             </label>
-            <div className="flex items-center space-x-4">
-                <Slider
-                    min={500}
-                    max={50000}
-                    step={100}
-                    value={[settings.budget]}
-                    onValueChange={([value]) => setSettings({ ...settings, budget: value })}
-                    className="[&>span:first-child]:h-1 [&>span:first-child>span]:bg-purple-400 [&>a]:bg-white [&>a]:border-2 [&>a]:border-purple-400"
-                />
-                <span className="text-purple-300 font-semibold w-24 text-right">${settings.budget.toLocaleString()}</span>
+            <Slider
+              value={[settings.budget]}
+              onValueChange={(value) => setSettings({ ...settings, budget: value[0] })}
+              max={50000}
+              min={1000}
+              step={1000}
+              className="w-full"
+            />
+            <div className="flex justify-between text-xs text-slate-500 dark:text-slate-500 mt-2">
+              <span>$1,000</span>
+              <span>$50,000</span>
             </div>
+          </div>
         </div>
       </div>
       
@@ -197,7 +205,7 @@ export default function Step3Settings({ prevStep, settings, setSettings, onGener
         <Button
           type="button"
           onClick={handleGenerateClick}
-          disabled={generationStatus !== 'idle' || !settings.prompt.trim()}
+          disabled={generationStatus !== 'idle' || !settings.prompt.trim() || !isAuthenticated}
           className="w-full max-w-xs bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {generationStatus === 'loading' ? (
@@ -219,30 +227,36 @@ export default function Step3Settings({ prevStep, settings, setSettings, onGener
         </Button>
         {generationStatus === 'polling' && (
           <div className="mt-4 text-center">
-            <p className="text-sm text-purple-400">Processing your design...</p>
-            <p className="text-xs text-gray-500 mt-1">This usually takes 15-30 seconds</p>
+            <p className="text-sm text-purple-500 dark:text-purple-400">Processing your design...</p>
+            <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">This usually takes 15-30 seconds</p>
           </div>
         )}
         {generationStatus === 'loading' && (
           <div className="mt-4 text-center">
-            <p className="text-sm text-purple-400">Initializing generation...</p>
-            <p className="text-xs text-gray-500 mt-1">Preparing your request</p>
+            <p className="text-sm text-purple-500 dark:text-purple-400">Initializing generation...</p>
+            <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">Preparing your request</p>
           </div>
         )}
         {generationStatus === 'failed' && errorMessage && (
           <div className="mt-4 text-center">
-            <p className="text-sm text-red-400">{errorMessage}</p>
-            <p className="text-xs text-gray-500 mt-1">Please try again</p>
+            <p className="text-sm text-red-500 dark:text-red-400">{errorMessage}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">Please try again</p>
           </div>
         )}
-        <p className="text-xs text-gray-500 mt-2">Uses 10 credits</p>
+        {!isAuthenticated && (
+          <div className="mt-4 text-center">
+            <p className="text-sm text-yellow-500 dark:text-yellow-400">Please log in to generate designs</p>
+            <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">Authentication required</p>
+          </div>
+        )}
+        <p className="text-xs text-slate-500 dark:text-slate-500 mt-2">Uses 10 credits</p>
       </div>
 
       <div className="mt-4 text-center">
         <Button
           onClick={prevStep}
           variant="ghost"
-          className="text-gray-400 hover:text-white hover:bg-gray-700"
+          className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700"
           disabled={generationStatus !== 'idle'}
         >
           Back

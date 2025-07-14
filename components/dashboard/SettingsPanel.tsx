@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useRef } from 'react'
-import { Settings, Sun, Moon, User, Globe, BarChart, Camera, Check, X, Upload, Trash2, MapPin, Link, FileText, Palette, BarChart3, Zap } from 'lucide-react'
+import { Settings, Sun, Moon, User, Globe, BarChart, Camera, Check, X, Upload, Trash2, MapPin, Link, FileText, Palette, BarChart3, Zap, Activity } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { useTranslation } from '@/lib/useTranslation'
@@ -10,6 +10,7 @@ import { useUserProfile } from '@/lib/user-profile'
 import toast from 'react-hot-toast'
 import { Input } from '../ui/input' // Import the Input component
 import { Label } from '../ui/label' // Import the Label component
+import ContributionHeatmap from '../ui/contribution-heatmap'
 
 export default function SettingsPanel() {
   const { t, language } = useTranslation()
@@ -253,11 +254,24 @@ export default function SettingsPanel() {
         </CardContent>
       </Card>
 
+      {/* Activity Heatmap */}
+      <Card className="bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-3">
+            <Activity className="h-6 w-6 text-green-500" />
+            <span>Активность</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ContributionHeatmap />
+        </CardContent>
+      </Card>
+
       {/* Usage Stats */}
       <Card className="bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50">
         <CardHeader>
           <CardTitle className="flex items-center space-x-3">
-            <BarChart3 className="h-6 w-6 text-green-500" />
+            <BarChart3 className="h-6 w-6 text-blue-500" />
             <span>{t('usage')}</span>
           </CardTitle>
         </CardHeader>

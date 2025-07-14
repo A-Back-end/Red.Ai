@@ -58,26 +58,26 @@ export default function Step2Elements({ setElements, nextStep, prevStep }: Step2
 
   return (
     <div className="flex flex-col items-center text-center">
-      <h2 className="text-2xl font-bold text-white mb-2">Add 2D Elements (Optional)</h2>
-      <p className="text-gray-400 mb-6">Upload additional 2D images like furniture or decorations.</p>
+      <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Add 2D Elements (Optional)</h2>
+      <p className="text-slate-600 dark:text-slate-400 mb-6">Upload additional 2D images like furniture or decorations.</p>
 
       <div
         {...getRootProps()}
-        className={`w-full min-h-[16rem] border-2 border-dashed rounded-xl flex flex-col items-center justify-center p-4 cursor-pointer transition-all duration-300 bg-gray-800/20
-        ${isDragActive ? 'border-purple-500' : 'border-gray-600'}
+        className={`w-full min-h-[16rem] border-2 border-dashed rounded-xl flex flex-col items-center justify-center p-4 cursor-pointer transition-all duration-300 bg-slate-50 dark:bg-slate-800/20
+        ${isDragActive ? 'border-purple-500' : 'border-slate-300 dark:border-slate-600'}
         ${error ? 'border-red-500' : 'hover:border-purple-400'}`}
       >
         <input {...getInputProps()} />
         {files.length === 0 ? (
           <div className="flex flex-col items-center">
-            <UploadCloud className="w-16 h-16 text-gray-500 mb-4" />
-            <p className="text-gray-400">Drag & drop files here or <span className="text-purple-400 font-semibold">browse</span></p>
-            <p className="text-xs text-gray-500 mt-2">JPG, PNG, WEBP up to 10MB each</p>
+            <UploadCloud className="w-16 h-16 text-slate-400 dark:text-slate-500 mb-4" />
+            <p className="text-slate-600 dark:text-slate-400">Drag & drop files here or <span className="text-purple-500 dark:text-purple-400 font-semibold">browse</span></p>
+            <p className="text-xs text-slate-500 dark:text-slate-500 mt-2">JPG, PNG, WEBP up to 10MB each</p>
           </div>
         ) : (
           <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {files.map((file, index) => (
-              <div key={index} className="relative group bg-gray-700/50 p-1 rounded-md">
+              <div key={index} className="relative group bg-slate-100 dark:bg-slate-700/50 p-1 rounded-md">
                 <img src={URL.createObjectURL(file)} alt={file.name} className="w-full h-24 object-cover rounded-md" />
                 <button 
                   onClick={(e) => { e.stopPropagation(); removeFile(index); }} 
@@ -86,20 +86,20 @@ export default function Step2Elements({ setElements, nextStep, prevStep }: Step2
                 >
                   <X size={14} className="text-white" />
                 </button>
-                <p className="text-xs text-gray-300 mt-1 truncate px-1">{file.name}</p>
+                <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 truncate px-1">{file.name}</p>
               </div>
             ))}
           </div>
         )}
       </div>
 
-      {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
+      {error && <p className="mt-2 text-sm text-red-500 dark:text-red-400">{error}</p>}
 
       <div className="flex w-full justify-between mt-8 max-w-xs mx-auto">
         <Button
           onClick={prevStep}
           variant="outline"
-          className="bg-transparent border-gray-600 hover:bg-gray-700 text-gray-300 font-bold py-3 px-6 rounded-lg"
+          className="bg-transparent border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold py-3 px-6 rounded-lg"
         >
           Back
         </Button>

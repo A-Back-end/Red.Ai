@@ -4,7 +4,6 @@ import React, { useState, useRef, useCallback } from 'react';
 import { UploadCloud } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useDropzone } from 'react-dropzone';
-import { useTranslation } from '@/lib/useTranslation';
 
 interface Step1UploadProps {
   setMainImage: (file: File | null) => void;
@@ -22,7 +21,6 @@ export default function Step1Upload({ setMainImage, nextStep }: Step1UploadProps
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const { t } = useTranslation();
 
   const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
     setError(null);
@@ -56,14 +54,13 @@ export default function Step1Upload({ setMainImage, nextStep }: Step1UploadProps
 
   return (
     <div className="flex flex-col items-center text-center">
-      <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{t('upload_main_image')}</h2>
-      <p className="text-slate-600 dark:text-slate-400 mb-6">{t('start_by_uploading')}</p>
+      <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Upload Main Image</h2>
+      <p className="text-slate-600 dark:text-slate-400 mb-6">Start by uploading the main picture of your interior.</p>
 
       <div
         {...getRootProps()}
-        className={`w-full h-64 border-2 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all duration-300 
-        bg-slate-100 dark:bg-gray-800/20 
-        ${isDragActive ? 'border-purple-500' : 'border-slate-300 dark:border-gray-600'}
+        className={`w-full h-64 border-2 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all duration-300 bg-slate-50 dark:bg-slate-800/20 
+        ${isDragActive ? 'border-purple-500' : 'border-slate-300 dark:border-slate-600'}
         ${error ? 'border-red-500' : 'hover:border-purple-400'}`}
       >
         <input {...getInputProps()} />
@@ -71,9 +68,9 @@ export default function Step1Upload({ setMainImage, nextStep }: Step1UploadProps
           <img src={preview} alt="Preview" className="h-full w-full object-cover rounded-xl" />
         ) : (
           <div className="flex flex-col items-center">
-            <UploadCloud className="w-16 h-16 text-slate-500 dark:text-gray-500 mb-4" />
-            <p className="text-slate-600 dark:text-gray-400">{t('drag_drop_files')} <span className="text-purple-500 dark:text-purple-400 font-semibold">{t('or_browse_files')}</span></p>
-            <p className="text-xs text-slate-500 dark:text-gray-500 mt-2">{t('supports_formats')}</p>
+            <UploadCloud className="w-16 h-16 text-slate-400 dark:text-slate-500 mb-4" />
+            <p className="text-slate-600 dark:text-slate-400">Drag & drop an image here or <span className="text-purple-500 dark:text-purple-400 font-semibold">browse</span></p>
+            <p className="text-xs text-slate-500 dark:text-slate-500 mt-2">JPG, PNG, WEBP up to 10MB</p>
           </div>
         )}
       </div>
@@ -83,9 +80,9 @@ export default function Step1Upload({ setMainImage, nextStep }: Step1UploadProps
       <Button
         onClick={nextStep}
         disabled={!imageFile}
-        className="mt-8 w-full max-w-xs"
+        className="mt-8 w-full max-w-xs bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed dark:disabled:bg-slate-700 dark:disabled:text-slate-400"
       >
-        {t('next_step')}
+        Next
       </Button>
     </div>
   );

@@ -1,15 +1,15 @@
 [
   {
-    "id": "project_1752360214499_q87zrasns",
+    "id": "project_1752443996010_ai4k3jnur",
     "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Transform this room into a modern minimalist bedro",
-    "description": "Transform this room into a modern minimalist bedroom design for a cozy apartment, following 2025 interior trends. Keep the current room layout and existing furniture exactly as is. Apply warm neutral tones, soft natural lighting, light wood flooring, white and beige walls. Use sustainable materials like bamboo and recycled stone. Add cozy textures, clean lines, and Scandinavian-Japanese fusion aesthetics. Include subtle indoor plants, bookshelves, and minimal framed artwork to add personality. Emphasize calm atmosphere, aesthetic harmony, and smart home feel. Render in ultra-photorealistic style, 4K resolution",
-    "imageUrl": "https://delivery-eu1.bfl.ai/results/3f/21666410f95645/10f9564564534fbf8bc7dc25bd7ce2e9/sample.png?se=2025-07-12T22%3A53%3A37Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=2e95fImro8A8WMpH4Bl5DM4Wf2OFuEEtDnkAHXaPFGI%3D",
-    "createdAt": "2025-07-12T22:43:34.499Z",
-    "updatedAt": "2025-07-12T22:43:34.499Z",
+    "name": "From this room image make modern minimalist interi",
+    "description": "From this room image make modern minimalist interior design for a cozy apartment. Soft natural lighting, light wood flooring, white and beige walls, Scandinavian furniture, indoor plants, warm neutral tones, clean lines, cozy textures, aesthetic harmony. Add a touch of personality with bookshelves and framed artwork. Render in photorealistic style, high-resolution. Keep this room layout, and does not add new furniture to room.",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/82/99815512ce6225/12ce6225cdf14edaa57ab4f8dfe5ab6d/sample.png?se=2025-07-13T22%3A09%3A59Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=pqTvVBsI8gyOtkMGIuYtLjiHqBevY980GnKlJnLgVEA%3D",
+    "createdAt": "2025-07-13T21:59:56.010Z",
+    "updatedAt": "2025-07-13T21:59:56.010Z",
     "status": "completed",
     "generatedImages": [
-      "https://delivery-eu1.bfl.ai/results/3f/21666410f95645/10f9564564534fbf8bc7dc25bd7ce2e9/sample.png?se=2025-07-12T22%3A53%3A37Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=2e95fImro8A8WMpH4Bl5DM4Wf2OFuEEtDnkAHXaPFGI%3D"
+      "https://delivery-us1.bfl.ai/results/82/99815512ce6225/12ce6225cdf14edaa57ab4f8dfe5ab6d/sample.png?se=2025-07-13T22%3A09%3A59Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=pqTvVBsI8gyOtkMGIuYtLjiHqBevY980GnKlJnLgVEA%3D"
     ],
     "budget": {
       "min": 5000,

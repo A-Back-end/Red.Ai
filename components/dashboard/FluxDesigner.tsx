@@ -648,7 +648,7 @@ export default function FluxDesigner({ onAnalyze, onGenerate, onDesign }: FluxDe
         </div>
 
         {/* Main Container */}
-        <div className="bg-slate-800 dark:bg-slate-800 border border-slate-700 rounded-3xl p-8 shadow-2xl shadow-black/20">
+        <div className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-8 shadow-2xl shadow-slate-900/20 dark:shadow-black/20">
           <Stepper currentStep={step} />
           
           <div className="mt-8">

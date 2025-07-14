@@ -27,13 +27,13 @@ async function getProjectFromAPI(projectId: string): Promise<Project | null> {
 export async function POST(request: NextRequest) {
   try {
     const { projectId } = await request.json();
-
+    
     if (!projectId) {
       return NextResponse.json({ error: 'Project ID required' }, { status: 400 });
     }
 
     let project = await getProjectFromAPI(projectId);
-
+    
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
@@ -71,11 +71,11 @@ function generateProjectHTML(project: Project): string {
   <!DOCTYPE html>
   <html lang="en">
   <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Project Report: ${project.name}</title>
       <script src="https://cdn.tailwindcss.com"></script>
-      <style>
+    <style>
           @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Lora:wght@400;600&display=swap');
           body {
               font-family: 'Montserrat', sans-serif;
@@ -90,7 +90,7 @@ function generateProjectHTML(project: Project): string {
               flex-direction: column;
           }
           h1, h2, h3 { font-family: 'Lora', serif; }
-      </style>
+    </style>
   </head>
   <body class="text-gray-800">
     <div class="magazine-page p-12 bg-white">
@@ -100,7 +100,7 @@ function generateProjectHTML(project: Project): string {
           <div class="text-right">
               <p class="text-lg font-semibold text-purple-700">RED AI</p>
               <p class="text-sm text-gray-500">Interior Design Report</p>
-          </div>
+      </div>
       </header>
 
       <!-- Main Content -->
@@ -109,15 +109,15 @@ function generateProjectHTML(project: Project): string {
           <div class="col-span-2">
               <div class="w-full h-[240mm] bg-gray-100 rounded-lg overflow-hidden shadow-lg">
                   <img src="${project.imageUrl || 'https://via.placeholder.com/800x1200'}" alt="Main project image" class="w-full h-full object-cover">
-              </div>
-          </div>
+        </div>
+      </div>
 
           <!-- Right Column -->
           <div class="col-span-1 flex flex-col space-y-6">
               <div>
                   <h2 class="text-2xl font-semibold border-b border-gray-200 pb-2 mb-3">Concept</h2>
                   <p class="text-gray-600 text-sm leading-relaxed">${project.description}</p>
-              </div>
+      </div>
 
               <div>
                   <h3 class="text-xl font-semibold mb-3">Key Parameters</h3>
@@ -129,16 +129,16 @@ function generateProjectHTML(project: Project): string {
                     <div class="flex justify-between">
                       <span class="font-semibold text-gray-700">Budget:</span>
                       <span>${project.budget.min} - ${project.budget.max} ${project.budget.currency}</span>
-                    </div>
-                  </div>
-              </div>
+          </div>
+        </div>
+            </div>
 
               <div>
                   <h3 class="text-xl font-semibold mb-3">Color Palette</h3>
                   <div class="flex space-x-2">
                       ${colorPalette.map(color => `<div style="background-color: ${color};" class="w-10 h-10 rounded-full border-2 border-white shadow-md"></div>`).join('')}
-                  </div>
-              </div>
+                </div>
+            </div>
 
               <div>
                 <h3 class="text-xl font-semibold mb-3">Next Steps</h3>
@@ -146,11 +146,11 @@ function generateProjectHTML(project: Project): string {
                   <li>Review the shopping list for required items.</li>
                   <li>Purchase furniture and decor from recommended retailers.</li>
                   <li>Follow layout suggestions for optimal placement.</li>
-                </ul>
+            </ul>
               </div>
           </div>
       </main>
-    </div>
+        </div>
 
     <!-- Second Page for Shopping List -->
     <div class="magazine-page p-12 bg-white" style="page-break-before: always;">
@@ -159,25 +159,25 @@ function generateProjectHTML(project: Project): string {
         </header>
         <div class="flex-grow">
             <table class="w-full text-sm">
-                <thead>
+            <thead>
                     <tr class="border-b-2 border-gray-300">
                         <th class="text-left py-2 font-semibold">Item</th>
                         <th class="text-left py-2 font-semibold">Category</th>
                         <th class="text-right py-2 font-semibold">Price</th>
                         <th class="text-center py-2 font-semibold">Link</th>
-                    </tr>
-                </thead>
-                <tbody>
+              </tr>
+            </thead>
+            <tbody>
                     ${shoppingListItems.map((item: FurnitureItem) => `
                         <tr class="border-b border-gray-200">
                             <td class="py-3">${item.name}</td>
                             <td class="py-3 text-gray-600">${item.category}</td>
                             <td class="py-3 text-right font-semibold">${item.price?.toLocaleString() || 'N/A'} ${project.budget.currency}</td>
                             <td class="py-3 text-center"><a href="#" class="text-purple-600 hover:underline">View</a></td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
             <div class="mt-8 text-right">
                 <p class="text-xl font-bold">Total Estimated Cost: ${totalCost.toLocaleString()} ${project.budget.currency}</p>
             </div>

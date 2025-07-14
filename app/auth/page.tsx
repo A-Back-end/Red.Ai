@@ -13,8 +13,9 @@ import Testimonials from '../../components/Testimonials'
 import Contact from '../../components/Contact'
 import CTA from '../../components/CTA'
 import Footer from '../../components/Footer'
-import { useTranslations } from '@/lib/translations'
+import { useTranslation } from '@/lib/useTranslation'
 import { useAppStore } from '@/lib/store'
+import { useTheme } from '@/lib/theme-context'
 import { initThemeSync, getSavedTheme, getSavedLanguage, setGlobalTheme, setGlobalLanguage } from '@/lib/theme-sync'
 
 export default function AuthLandingPage() {
@@ -22,10 +23,13 @@ export default function AuthLandingPage() {
   const [isScrolled, setIsScrolled] = useState(false)
   
   // Используем систему переводов
-  const { t, language, setLanguage } = useTranslations()
+  const { t, language } = useTranslation()
   
   // Синхронизируем с глобальным store
   const { setLanguage: setStoreLanguage } = useAppStore()
+  
+  // Получаем setLanguage из темы
+  const { setLanguage } = useTheme()
 
   useEffect(() => {
     // Initialize global theme sync system

@@ -110,7 +110,7 @@ export default function SettingsPanel() {
               )}
             </div>
             <div className="flex-1">
-              <Label htmlFor="displayName" className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
+              <Label htmlFor="displayName" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                 {t('displayName')}
               </Label>
               <div className="flex items-center space-x-2">
@@ -147,9 +147,9 @@ export default function SettingsPanel() {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              {theme === 'dark' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+              {theme === 'dark' ? <Moon className="h-5 w-5 text-slate-600 dark:text-slate-400" /> : <Sun className="h-5 w-5 text-slate-600 dark:text-slate-400" />}
               <div>
-                <p className="font-medium">{t('theme')}</p>
+                <p className="font-medium text-slate-700 dark:text-slate-300">{t('theme')}</p>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
                   {theme === 'dark' ? t('darkMode') : t('lightMode')}
                 </p>
@@ -168,9 +168,9 @@ export default function SettingsPanel() {
           
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <Globe className="h-5 w-5" />
+              <Globe className="h-5 w-5 text-slate-600 dark:text-slate-400" />
               <div>
-                <p className="font-medium">{t('language')}</p>
+                <p className="font-medium text-slate-700 dark:text-slate-300">{t('language')}</p>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
                   {language === 'en' ? 'English' : 'Русский'}
                 </p>
@@ -198,7 +198,7 @@ export default function SettingsPanel() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               OpenAI API Key
             </label>
             <div className="flex space-x-2">
@@ -233,7 +233,7 @@ export default function SettingsPanel() {
         <CardContent className="space-y-4">
           <div className="space-y-3">
             <label className="flex items-center justify-between">
-              <span className="text-sm font-medium">{t('notifications')}</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{t('notifications')}</span>
               <input
                 type="checkbox"
                 checked={localSettings.notifications}
@@ -243,7 +243,7 @@ export default function SettingsPanel() {
             </label>
             
             <label className="flex items-center justify-between">
-              <span className="text-sm font-medium">{t('autoSave')}</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{t('autoSave')}</span>
               <input
                 type="checkbox"
                 checked={localSettings.autoSave}
@@ -253,7 +253,7 @@ export default function SettingsPanel() {
             </label>
             
             <label className="flex items-center justify-between">
-              <span className="text-sm font-medium">{t('highQuality')}</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{t('highQuality')}</span>
               <input
                 type="checkbox"
                 checked={localSettings.highQuality}

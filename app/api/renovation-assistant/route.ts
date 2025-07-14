@@ -15,9 +15,9 @@ interface Message {
 
 export async function POST(request: NextRequest) {
   try {
-    if (!process.env.OPENAI_API_KEY) {
+    if (!process.env.OPENAI_API_KEY && !process.env.AZURE_OPENAI_API_KEY) {
       return NextResponse.json(
-        { error: 'OpenAI API key not configured' },
+        { error: 'AI provider API key not configured. Set OPENAI_API_KEY or AZURE_OPENAI_API_KEY in your environment.' },
         { status: 500 }
       )
     }

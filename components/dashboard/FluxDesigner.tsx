@@ -8,6 +8,7 @@ import { Textarea } from '../ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Slider } from '../ui/slider'
 import { useTranslations } from '@/lib/translations'
+import BeforeAfterSlider from '../design-studio/BeforeAfterSlider'
 
 interface FluxDesignerProps {
   onAnalyze?: (data: any) => void
@@ -481,6 +482,7 @@ export default function FluxDesigner({ onAnalyze, onGenerate, onDesign }: FluxDe
   const { t } = useTranslations()
   const [step, setStep] = useState(1)
   const [mainImage, setMainImage] = useState<File | null>(null)
+  const [mainImageUrl, setMainImageUrl] = useState<string | null>(null)
   const [elements, setElements] = useState<File[]>([])
   const [settings, setSettings] = useState({
     link: '',
@@ -503,6 +505,17 @@ export default function FluxDesigner({ onAnalyze, onGenerate, onDesign }: FluxDe
   useEffect(() => {
     latestStateRef.current = { settings, mainImage, elements, onDesign };
   });
+
+  // Create URL from mainImage file
+  useEffect(() => {
+    if (mainImage) {
+      const url = URL.createObjectURL(mainImage);
+      setMainImageUrl(url);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setMainImageUrl(null);
+    }
+  }, [mainImage]);
 
   const stopPolling = () => {
     if (pollingRef.current) {
@@ -623,6 +636,7 @@ export default function FluxDesigner({ onAnalyze, onGenerate, onDesign }: FluxDe
   const handleStartOver = () => {
     setStep(1);
     setMainImage(null);
+    setMainImageUrl(null);
     setElements([]);
     setGeneratedResult(null);
     setGenerationStatus('idle');
@@ -708,11 +722,30 @@ export default function FluxDesigner({ onAnalyze, onGenerate, onDesign }: FluxDe
               <>
                 <h3 className="text-2xl font-bold text-white mb-6 text-center">✨ Generated Design</h3>
                 <div className="bg-gray-700/50 rounded-xl p-6">
-                  <img 
-                    src={generatedResult.imageUrl} 
-                    alt="Generated interior design" 
-                    className="w-full max-w-2xl mx-auto rounded-lg shadow-lg"
-                  />
+                  {/* Before/After Slider */}
+                  {mainImageUrl && (
+                    <div className="w-full max-w-4xl mx-auto mb-6">
+                      <div className="aspect-video w-full">
+                        <BeforeAfterSlider 
+                          beforeImage={mainImageUrl}
+                          afterImage={generatedResult.imageUrl}
+                          beforeLabel="Original"
+                          afterLabel="Generated"
+                          className="w-full h-full"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Fallback: Show only generated image if no original */}
+                  {!mainImageUrl && (
+                    <img 
+                      src={generatedResult.imageUrl} 
+                      alt="Generated interior design" 
+                      className="w-full max-w-2xl mx-auto rounded-lg shadow-lg mb-6"
+                    />
+                  )}
+                  
                   <div className="mt-6 text-center text-gray-300 text-sm space-y-2">
                     <p><strong>Style:</strong> {generatedResult.metadata?.style}</p>
                     <p><strong>Room:</strong> {generatedResult.metadata?.roomType}</p>

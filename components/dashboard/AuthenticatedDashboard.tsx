@@ -34,7 +34,6 @@ import { Badge } from '../ui/badge'
 import { useTheme } from '@/lib/theme-context'
 import { useTranslation } from '@/lib/useTranslation'
 import { useUserProfile } from '@/lib/user-profile'
-import { useActivityTracker } from '@/lib/useActivityTracker'
 
 // Import dashboard components
 import FluxDesigner from './FluxDesigner'
@@ -55,7 +54,6 @@ export function AuthenticatedDashboard() {
   const { t, language } = useTranslation()
   const { theme, toggleTheme, toggleLanguage } = useTheme()
   const { profile, getDisplayName, getInitials } = useUserProfile()
-  const { trackVisit } = useActivityTracker()
   
   const [currentView, setCurrentView] = useState<ViewType>('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -122,13 +120,6 @@ export function AuthenticatedDashboard() {
     }
     fetchProjects();
   }, [user, refreshProjects]);
-
-  // Отслеживание посещения dashboard
-  useEffect(() => {
-    if (user) {
-      trackVisit()
-    }
-  }, [user, trackVisit])
 
   const handleLogout = async () => {
     try {

@@ -53,13 +53,6 @@ export const DOMOVENOK_ROLES: DomovenokRole[] = [
     emoji: '💰',
     description: 'Советник по инвестициям в недвижимость',
     specialization: 'consultant'
-  },
-  {
-    id: 'universal',
-    name: 'Универсальный консультант',
-    emoji: '🏆',
-    description: 'Все в одном: риелтор + дизайнер + консультант',
-    specialization: 'consultant'
   }
 ]
 
@@ -184,7 +177,7 @@ export function formatMessage(content: string): string {
 /**
  * Получить приветственное сообщение
  */
-export function getWelcomeMessage(roleName: string = 'Универсальный консультант'): string {
+export function getWelcomeMessage(roleName: string = 'Риелтор'): string {
   return `Привет! Меня зовут **Домовёнок** 🏠✨ 
 
 Я ваш персональный AI-помощник по недвижимости и дизайну интерьера! 

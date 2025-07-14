@@ -27,8 +27,7 @@ const ROLES = {
   realtor: { name: 'Риелтор', emoji: '🏠', icon: Building, color: 'bg-blue-500' },
   interior_designer: { name: 'Дизайнер интерьера', emoji: '🎨', icon: Palette, color: 'bg-purple-500' },
   renovation_expert: { name: 'Эксперт по ремонту', emoji: '🔨', icon: PaintBucket, color: 'bg-orange-500' },
-  investment_advisor: { name: 'Инвестиционный консультант', emoji: '💰', icon: TrendingUp, color: 'bg-green-500' },
-  universal: { name: 'Универсальный консультант', emoji: '🏆', icon: Star, color: 'bg-gradient-to-r from-purple-500 to-blue-500' }
+  investment_advisor: { name: 'Инвестиционный консультант', emoji: '💰', icon: TrendingUp, color: 'bg-green-500' }
 }
 
 // Стили общения
@@ -89,7 +88,7 @@ export default function DomovenokAIAssistant({ userId, onClose }: DomovenokAIAss
   const [isLoading, setIsLoading] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showQuickQuestions, setShowQuickQuestions] = useState(false)
-  const [selectedRole, setSelectedRole] = useState('universal')
+  const [selectedRole, setSelectedRole] = useState('realtor')
   const [communicationStyle, setCommunicationStyle] = useState('friendly')
   const [isMaximized, setIsMaximized] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)

@@ -1,118 +1,74 @@
-import React, { useRef, useState } from 'react';
+'use client'
 
-/**
- * Компонент сравнения двух изображений (до/после) с draggable-слайдером.
- * Использование:
- * <BeforeAfterSlider beforeImage="/path/to/before.jpg" afterImage="/path/to/after.jpg" />
- */
+import React from 'react'
+import ReactBeforeSliderComponent from 'react-before-after-slider-component'
+import 'react-before-after-slider-component/dist/build.css'
+
 interface BeforeAfterSliderProps {
-  beforeImage: string;
-  afterImage: string;
-  beforeLabel?: string;
-  afterLabel?: string;
+  beforeImage: string
+  afterImage: string
+  beforeLabel?: string
+  afterLabel?: string
+  className?: string
 }
 
 const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
   beforeImage,
   afterImage,
-  beforeLabel = 'До',
-  afterLabel = 'После',
+  beforeLabel = 'Before',
+  afterLabel = 'After',
+  className = ''
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [sliderPos, setSliderPos] = useState(50); // %
-  const [dragging, setDragging] = useState(false);
 
-  // Обработка перемещения слайдера
-  const onDrag = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    let clientX = 0;
-    if ('touches' in e) {
-      clientX = e.touches[0].clientX;
-    } else {
-      clientX = e.clientX;
-    }
-    let newPos = ((clientX - rect.left) / rect.width) * 100;
-    newPos = Math.max(0, Math.min(100, newPos));
-    setSliderPos(newPos);
-  };
-
-  const startDrag = (e: React.MouseEvent | React.TouchEvent) => {
-    setDragging(true);
-    onDrag(e);
-    document.body.style.userSelect = 'none';
-  };
-  const stopDrag = () => {
-    setDragging(false);
-    document.body.style.userSelect = '';
-  };
-
-  React.useEffect(() => {
-    if (!dragging) return;
-    const moveHandler = (e: MouseEvent | TouchEvent) => {
-      if ('touches' in e) {
-        onDrag(e as any);
-      } else {
-        onDrag(e as any);
-      }
-    };
-    const upHandler = () => stopDrag();
-    window.addEventListener('mousemove', moveHandler);
-    window.addEventListener('touchmove', moveHandler);
-    window.addEventListener('mouseup', upHandler);
-    window.addEventListener('touchend', upHandler);
-    return () => {
-      window.removeEventListener('mousemove', moveHandler);
-      window.removeEventListener('touchmove', moveHandler);
-      window.removeEventListener('mouseup', upHandler);
-      window.removeEventListener('touchend', upHandler);
-    };
-  }, [dragging]);
+  // Объекты изображений для библиотеки
+  const beforeImageObj = {
+    imageUrl: beforeImage
+  }
+  
+  const afterImageObj = {
+    imageUrl: afterImage
+  }
 
   return (
-    <div
-      ref={containerRef}
-      className="relative w-full max-w-2xl aspect-video mx-auto overflow-hidden rounded-lg shadow-lg select-none bg-gray-200"
-      style={{ touchAction: 'none' }}
-    >
-      {/* Картинка "до" */}
-      <img
-        src={beforeImage}
-        alt="До"
-        className="absolute inset-0 w-full h-full object-cover"
-        draggable={false}
-        style={{ zIndex: 1 }}
-      />
-      {/* Картинка "после" */}
-      <img
-        src={afterImage}
-        alt="После"
-        className="absolute inset-0 h-full object-cover"
-        draggable={false}
-        style={{ width: `${sliderPos}%`, zIndex: 2, clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
-      />
-      {/* Слайдер */}
-      <div
-        className="absolute top-0 left-0 h-full flex items-center"
-        style={{ left: `calc(${sliderPos}% - 24px)`, zIndex: 3 }}
-      >
-        <button
-          className="w-12 h-12 rounded-full bg-white border-2 border-gray-400 shadow flex items-center justify-center cursor-pointer focus:outline-none transition hover:scale-105"
-          style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}
-          onMouseDown={startDrag}
-          onTouchStart={startDrag}
-          aria-label="Сдвинуть слайдер сравнения"
-        >
-          <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path d="M8 12h8M12 8l-4 4 4 4" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
+    <div className={`relative w-full h-full ${className}`}>
+      {/* Лейблы */}
+      <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10 pointer-events-none">
+        <div className="bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm">
+          {beforeLabel}
+        </div>
+        <div className="bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm">
+          {afterLabel}
+        </div>
       </div>
-      {/* Подписи */}
-      <span className="absolute left-4 top-4 bg-black/60 text-white text-xs px-2 py-1 rounded z-10">{beforeLabel}</span>
-      <span className="absolute right-4 top-4 bg-black/60 text-white text-xs px-2 py-1 rounded z-10">{afterLabel}</span>
-    </div>
-  );
-};
 
-export default BeforeAfterSlider; 
+      {/* Before/After Slider */}
+      <div className="w-full h-full rounded-xl overflow-hidden shadow-2xl">
+        <ReactBeforeSliderComponent
+          firstImage={beforeImageObj}
+          secondImage={afterImageObj}
+          delimiterColor="rgba(255, 255, 255, 0.8)"
+          delimiterIconStyles={{
+            width: '40px',
+            height: '40px',
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+            cursor: 'ew-resize'
+          }}
+        />
+      </div>
+
+      {/* Инструкция */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10 pointer-events-none">
+        <div className="bg-black/60 text-white px-4 py-2 rounded-full text-xs font-medium backdrop-blur-sm">
+          ← Drag to compare →
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default BeforeAfterSlider 

@@ -36,6 +36,7 @@
     "postcss": "^8",
     "puppeteer": "^24.12.1",
     "react": "^18",
+    "react-before-after-slider-component": "^1.1.8",
     "react-dom": "^18",
     "react-dropzone": "^14.3.8",
     "react-google-recaptcha": "^3.1.0",

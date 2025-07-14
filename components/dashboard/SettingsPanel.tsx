@@ -1,23 +1,20 @@
 'use client'
 
 import React, { useState, useRef } from 'react'
-import { Settings, Sun, Moon, User, Globe, BarChart, Camera, Check, X, Upload, Trash2, MapPin, Link, FileText, Palette, BarChart3, Zap, Activity, RefreshCw } from 'lucide-react'
+import { Settings, Sun, Moon, User, Globe, BarChart, Camera, Check, X, Upload, Trash2, MapPin, Link, FileText, Palette, BarChart3, Zap } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { useTranslation } from '@/lib/useTranslation'
 import { useTheme } from '@/lib/theme-context'
 import { useUserProfile } from '@/lib/user-profile'
-import { useActivityTracker } from '@/lib/useActivityTracker'
 import toast from 'react-hot-toast'
 import { Input } from '../ui/input' // Import the Input component
 import { Label } from '../ui/label' // Import the Label component
-import ContributionHeatmap from '../ui/contribution-heatmap'
 
 export default function SettingsPanel() {
   const { t, language } = useTranslation()
   const { theme, toggleTheme, toggleLanguage } = useTheme()
-  const { profile, isLoaded, getInitials, getDisplayName, updateUserProfile } = useUserProfile()
-  const { activityData, getActivityStats, clearActivity, trackVisit } = useActivityTracker()
+  const { profile, isLoaded, getInitials, getDisplayName, updateUserProfile } = useUserProfile() // Destructure updateUserProfile
   
   const [apiKey, setApiKey] = useState('')
   const [localSettings, setLocalSettings] = useState({
@@ -34,9 +31,6 @@ export default function SettingsPanel() {
       setDisplayName(profile.fullName || '')
     }
   }, [profile])
-
-  // Получить статистику активности
-  const activityStats = getActivityStats()
 
   // Сохранение API ключа
   const handleSaveApiKey = () => {
@@ -55,19 +49,13 @@ export default function SettingsPanel() {
     if (!profile) return
     setIsSavingName(true)
     try {
-      await updateUserProfile(displayName)
+      await updateUserProfile(displayName) // Use the new updateUserProfile function
       toast.success(t('displayNameSaved'))
     } catch (error) {
       toast.error(t('displayNameSaveError'))
     } finally {
       setIsSavingName(false)
     }
-  }
-
-  // Очистить данные активности (для тестирования)
-  const handleClearActivity = () => {
-    clearActivity()
-    toast.success('Данные активности очищены')
   }
 
   if (!isLoaded) {
@@ -110,7 +98,7 @@ export default function SettingsPanel() {
               )}
             </div>
             <div className="flex-1">
-              <Label htmlFor="displayName" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <Label htmlFor="displayName" className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
                 {t('displayName')}
               </Label>
               <div className="flex items-center space-x-2">
@@ -147,9 +135,9 @@ export default function SettingsPanel() {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              {theme === 'dark' ? <Moon className="h-5 w-5 text-slate-600 dark:text-slate-400" /> : <Sun className="h-5 w-5 text-slate-600 dark:text-slate-400" />}
+              {theme === 'dark' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
               <div>
-                <p className="font-medium text-slate-700 dark:text-slate-300">{t('theme')}</p>
+                <p className="font-medium">{t('theme')}</p>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
                   {theme === 'dark' ? t('darkMode') : t('lightMode')}
                 </p>
@@ -168,9 +156,9 @@ export default function SettingsPanel() {
           
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <Globe className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+              <Globe className="h-5 w-5" />
               <div>
-                <p className="font-medium text-slate-700 dark:text-slate-300">{t('language')}</p>
+                <p className="font-medium">{t('language')}</p>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
                   {language === 'en' ? 'English' : 'Русский'}
                 </p>
@@ -198,7 +186,7 @@ export default function SettingsPanel() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium mb-2">
               OpenAI API Key
             </label>
             <div className="flex space-x-2">
@@ -233,7 +221,7 @@ export default function SettingsPanel() {
         <CardContent className="space-y-4">
           <div className="space-y-3">
             <label className="flex items-center justify-between">
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{t('notifications')}</span>
+              <span className="text-sm font-medium">{t('notifications')}</span>
               <input
                 type="checkbox"
                 checked={localSettings.notifications}
@@ -243,7 +231,7 @@ export default function SettingsPanel() {
             </label>
             
             <label className="flex items-center justify-between">
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{t('autoSave')}</span>
+              <span className="text-sm font-medium">{t('autoSave')}</span>
               <input
                 type="checkbox"
                 checked={localSettings.autoSave}
@@ -253,7 +241,7 @@ export default function SettingsPanel() {
             </label>
             
             <label className="flex items-center justify-between">
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{t('highQuality')}</span>
+              <span className="text-sm font-medium">{t('highQuality')}</span>
               <input
                 type="checkbox"
                 checked={localSettings.highQuality}
@@ -265,76 +253,11 @@ export default function SettingsPanel() {
         </CardContent>
       </Card>
 
-      {/* Activity Heatmap */}
-      <Card className="bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50">
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Activity className="h-6 w-6 text-green-500" />
-              <span>Активность входов</span>
-            </div>
-            <Button
-              onClick={handleClearActivity}
-              variant="ghost"
-              size="sm"
-              className="text-red-500 hover:text-red-700"
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Очистить
-            </Button>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ContributionHeatmap data={activityData} />
-          
-          {/* Статистика активности */}
-          <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-              <div className="text-xl font-bold text-blue-600 dark:text-blue-400">{activityStats.totalVisits}</div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">Всего заходов</div>
-            </div>
-            <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-              <div className="text-xl font-bold text-green-600 dark:text-green-400">{activityStats.activeDays}</div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">Активных дней</div>
-            </div>
-            <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-              <div className="text-xl font-bold text-purple-600 dark:text-purple-400">{activityStats.activeWeeks}</div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">Активных недель</div>
-            </div>
-            <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-              <div className="text-xl font-bold text-orange-600 dark:text-orange-400">{activityStats.averageVisitsPerDay}</div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">В среднем в день</div>
-            </div>
-          </div>
-          
-          {/* Тестовая панель */}
-          <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-700">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-                Тестирование трекинга
-              </h4>
-              <Button
-                onClick={() => { trackVisit(); toast.success('Заход записан!') }}
-                size="sm"
-                variant="outline"
-                className="border-yellow-300 text-yellow-700 hover:bg-yellow-100 dark:border-yellow-600 dark:text-yellow-300"
-              >
-                <User className="h-4 w-4 mr-2" />
-                Добавить заход
-              </Button>
-            </div>
-            <p className="text-xs text-yellow-700 dark:text-yellow-300">
-              Кликните "Добавить заход" чтобы симулировать заходы на dashboard и увидеть изменения в heatmap
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Usage Stats */}
       <Card className="bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50">
         <CardHeader>
           <CardTitle className="flex items-center space-x-3">
-            <BarChart3 className="h-6 w-6 text-blue-500" />
+            <BarChart3 className="h-6 w-6 text-green-500" />
             <span>{t('usage')}</span>
           </CardTitle>
         </CardHeader>

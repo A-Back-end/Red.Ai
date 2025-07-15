@@ -259,3 +259,5 @@ node_modules
 .env*.backup
 
 .example
+
+red.ai_key.pem

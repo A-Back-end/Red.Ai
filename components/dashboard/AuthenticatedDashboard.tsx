@@ -36,6 +36,8 @@ import { useTranslation } from '@/lib/useTranslation'
 import { useUserProfile } from '@/lib/user-profile'
 import { useCredits } from '@/lib/useCredits'
 import { CreditsDisplay } from '../ui/credits-display'
+// Import credits admin utilities for development
+import '@/lib/credits-admin'
 
 // Import dashboard components
 import FluxDesigner from './FluxDesigner'

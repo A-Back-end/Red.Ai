@@ -1,5 +1,6 @@
 services:
-  # PostgreSQL Database
+
+  
   postgres:
     image: postgres:15
     container_name: redai_postgres
@@ -177,3 +178,5 @@ networks:
   default:
     name: redai_network
     driver: bridge 
+
+

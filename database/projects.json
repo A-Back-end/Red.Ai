@@ -106,5 +106,32 @@
     "threeDModel": null,
     "pdfReport": null,
     "shoppingList": null
+  },
+  {
+    "id": "project_1752582390631_qk3eieow3",
+    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
+    "name": "Сделай мне реомнт ",
+    "description": "Сделай мне реомнт ",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/8f/390934225bde71/225bde7191d54724a99dc16ab0080f7f/sample.png?se=2025-07-15T12%3A36%3A32Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=frORuDQwQiW2j3j6Zq0dzVvaXcNqiE99i%2BjyoGMOvNY%3D",
+    "createdAt": "2025-07-15T12:26:30.631Z",
+    "updatedAt": "2025-07-15T12:26:30.631Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-us1.bfl.ai/results/8f/390934225bde71/225bde7191d54724a99dc16ab0080f7f/sample.png?se=2025-07-15T12%3A36%3A32Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=frORuDQwQiW2j3j6Zq0dzVvaXcNqiE99i%2BjyoGMOvNY%3D"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
   }
 ]

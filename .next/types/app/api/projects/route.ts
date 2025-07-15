@@ -1,4 +1,4 @@
-// File: /Users/a/Documents/red.ai/app/api/projects/route.ts
+// File: /Users/a/Desktop/RED.ai/app/api/projects/route.ts
 import * as entry from '../../../../../app/api/projects/route.js'
 import type { NextRequest } from 'next/server.js'
 

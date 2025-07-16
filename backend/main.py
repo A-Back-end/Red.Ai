@@ -248,6 +248,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://74.234.32.197",
+        "https://redai.site",
     ],
     allow_credentials=True,
     allow_methods=["*"], 

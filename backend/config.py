@@ -35,7 +35,7 @@ class Settings:
     # CORS Configuration
     ALLOWED_ORIGINS: List[str] = os.getenv(
         "ALLOWED_ORIGINS", 
-        "http://localhost:3000"
+        "http://localhost:3000,https://redai.site"
     ).split(",")
     
     # Database Configuration

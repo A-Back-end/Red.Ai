@@ -1576,7 +1576,7 @@
                     </button>
                 </li>
             </ul>
-                                    <a href="http://localhost:3000/login" class="nav-cta" data-translate="nav_get_started" onclick="updateDashboardLink(this)">Get Started</a>
+                                    <a href="/login" class="nav-cta" data-translate="nav_get_started" onclick="updateDashboardLink(this)">Get Started</a>
         </nav>
     </header>
 
@@ -1598,7 +1598,7 @@
             </p>
             
             <div class="hero-buttons animate__animated animate__fadeInUp animate__delay-1s">
-                                    <a href="http://localhost:3000/login" class="btn btn-primary" onclick="updateDashboardLink(this)">
+                                    <a href="/login" class="btn btn-primary" onclick="updateDashboardLink(this)">
                     <i class="fas fa-rocket"></i>
                     <span data-translate="hero_btn_primary">Get Started Free</span>
                 </a>
@@ -1891,7 +1891,7 @@
                         <li><i class="fas fa-check check"></i> <span data-translate="starter_feature_3">Cost estimates</span></li>
                         <li><i class="fas fa-check check"></i> <span data-translate="starter_feature_4">Email support</span></li>
                     </ul>
-                                                <a href="http://localhost:3000/login" class="btn btn-secondary" style="width: 100%;" data-translate="pricing_get_started" onclick="updateDashboardLink(this)">Get Started</a>
+                                                <a href="/login" class="btn btn-secondary" style="width: 100%;" data-translate="pricing_get_started" onclick="updateDashboardLink(this)">Get Started</a>
                 </div>
                 
                 <div class="pricing-card featured animate-on-scroll">
@@ -1906,7 +1906,7 @@
                         <li><i class="fas fa-check check"></i> <span data-translate="pro_feature_4">Market analytics</span></li>
                         <li><i class="fas fa-check check"></i> <span data-translate="pro_feature_5">Priority support</span></li>
                     </ul>
-                                                <a href="http://localhost:3000/login" class="btn btn-primary" style="width: 100%;" data-translate="pricing_get_started" onclick="updateDashboardLink(this)">Get Started</a>
+                                                <a href="/login" class="btn btn-primary" style="width: 100%;" data-translate="pricing_get_started" onclick="updateDashboardLink(this)">Get Started</a>
                 </div>
                 
                 <div class="pricing-card animate-on-scroll">
@@ -2029,7 +2029,7 @@
                     Join thousands of professionals already using RED AI to revolutionize their work
                 </p>
                 <div style="margin-top: 2rem;">
-                    <a href="http://localhost:3000/login" class="btn btn-secondary" style="background: white; color: #667eea; margin-right: 1rem;">
+                    <a href="/login" class="btn btn-secondary" style="background: white; color: #667eea; margin-right: 1rem;">
                         <i class="fas fa-rocket"></i>
                         <span data-translate="cta_btn_trial">Start Free Trial</span>
                     </a>
@@ -2639,143 +2639,36 @@
             });
         }
 
-        // Update all dashboard links at once
-        function updateAllDashboardLinks() {
-            // Update all links with onclick="updateDashboardLink(this)"
-            const clickableLinks = document.querySelectorAll('a[onclick*="updateDashboardLink"]');
-            clickableLinks.forEach(link => {
-                updateDashboardLink(link);
-            });
-            
-            // Update any remaining links that point to app routes
-            const appLinks = document.querySelectorAll('a[href*="/login"], a[href*="/dashboard"], a[href*="/design-studio"]');
-            appLinks.forEach(link => {
-                if (!link.getAttribute('onclick')) {
-                    updateDashboardLink(link);
-                }
-            });
-            
-            console.log(`🔗 Updated ${clickableLinks.length + appLinks.length} dashboard links for current environment`);
-        }
-        
         // Initialize
         window.addEventListener('load', () => {
             loadTheme();
             loadLanguage();
             initPricingAnimations();
-            
-            // Update all links for current environment
             updateLinksToCurrentPort();
-            updateAllDashboardLinks();
-            
             initGlobalSync();
-            console.log('🎨 Landing page initialized for environment:', window.location.hostname);
-            
-            // Add a small delay and update again to catch any dynamically loaded content
-            setTimeout(() => {
-                updateLinksToCurrentPort();
-                updateAllDashboardLinks();
-                console.log('🔄 Second pass link update completed');
-            }, 1000);
+            console.log('🎨 Landing page theme sync initialized');
         });
 
-        // Universal link update script for all environments
+        // Auto-update port script
         function updateLinksToCurrentPort() {
-            const currentHost = window.location.hostname;
-            const currentProtocol = window.location.protocol;
-            const currentPort = window.location.port;
-            
-            // Determine the correct base URL based on environment
-            let newBaseUrl;
-            if (currentHost === 'redai.site') {
-                // Production environment - use HTTPS without port
-                newBaseUrl = 'https://redai.site';
-            } else if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-                // Local environment - use current protocol and port
-                const port = currentPort || '3000';
-                newBaseUrl = `${currentProtocol}//${currentHost}:${port}`;
-            } else {
-                // Other environments (staging, etc.) - use current setup
-                newBaseUrl = currentPort ? 
-                    `${currentProtocol}//${currentHost}:${currentPort}` : 
-                    `${currentProtocol}//${currentHost}`;
-            }
-            
-            // Find and update all hardcoded localhost links
-            const localhostLinks = document.querySelectorAll('a[href*="localhost:3000"]');
-            localhostLinks.forEach(link => {
-                const oldHref = link.getAttribute('href');
-                const newHref = oldHref.replace(/http:\/\/localhost:3000/, newBaseUrl);
-                link.setAttribute('href', newHref);
-                console.log(`🔄 Updated localhost link: ${oldHref} → ${newHref}`);
-            });
-            
-            // Also find and update any other hardcoded base URLs
-            const allRedAiLinks = document.querySelectorAll('a[href*="/login"], a[href*="/dashboard"], a[href*="/design-studio"]');
-            allRedAiLinks.forEach(link => {
-                const href = link.getAttribute('href');
-                // Only update if it starts with a path (not already a full URL)
-                if (href && href.startsWith('/')) {
-                    const newHref = newBaseUrl + href;
-                    link.setAttribute('href', newHref);
-                    console.log(`🔄 Updated relative link: ${href} → ${newHref}`);
-                }
-            });
-            
-            const totalUpdated = localhostLinks.length;
-            if (totalUpdated > 0) {
-                console.log(`✅ Updated ${totalUpdated} links for environment: ${currentHost} (${newBaseUrl})`);
-            }
-            
-            return newBaseUrl;
+            // Все ссылки теперь используют относительные пути, обновление не требуется
+            console.log('✅ Используются относительные пути - обновление ссылок не требуется');
         }
 
         // Update dashboard link with current theme and language
         function updateDashboardLink(element) {
-            const savedTheme = localStorage.getItem('redai-theme') || localStorage.getItem('theme') || 'dark';
-            const savedLanguage = localStorage.getItem('redai-language') || localStorage.getItem('language') || 'en';
-            
-            // Get the correct base URL for current environment
-            const currentHost = window.location.hostname;
-            let baseUrl;
-            if (currentHost === 'redai.site') {
-                baseUrl = 'https://redai.site';
-            } else if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-                const port = window.location.port || '3000';
-                baseUrl = `${window.location.protocol}//${currentHost}:${port}`;
-            } else {
-                baseUrl = window.location.port ? 
-                    `${window.location.protocol}//${currentHost}:${window.location.port}` : 
-                    `${window.location.protocol}//${currentHost}`;
-            }
+            const savedTheme = localStorage.getItem('redai-theme') || 'dark';
+            const savedLanguage = localStorage.getItem('redai-language') || 'en';
             
             const currentHref = element.getAttribute('href');
-            let url;
+            const url = new URL(currentHref, window.location.origin);
             
-            try {
-                // If the href is a full URL, use it as-is but update the base
-                if (currentHref.startsWith('http')) {
-                    url = new URL(currentHref);
-                    // Update the origin to match current environment
-                    url.protocol = baseUrl.includes('https') ? 'https:' : window.location.protocol;
-                    url.host = baseUrl.replace(/^https?:\/\//, '');
-                } else {
-                    // If the href is relative, create full URL
-                    url = new URL(currentHref, baseUrl);
-                }
-                
-                // Add theme and language parameters
-                url.searchParams.set('theme', savedTheme);
-                url.searchParams.set('lang', savedLanguage);
-                
-                element.setAttribute('href', url.toString());
-                console.log(`🎨 Dashboard link updated: ${url.toString()} (theme: ${savedTheme}, lang: ${savedLanguage})`);
-            } catch (error) {
-                console.error('Error updating dashboard link:', error);
-                // Fallback: just add the base URL if href is relative
-                const finalHref = currentHref.startsWith('/') ? baseUrl + currentHref : currentHref;
-                element.setAttribute('href', finalHref);
-            }
+            // Add theme and language parameters
+            url.searchParams.set('theme', savedTheme);
+            url.searchParams.set('lang', savedLanguage);
+            
+            element.setAttribute('href', url.toString());
+            console.log(`🎨 Dashboard link updated with theme: ${savedTheme}, language: ${savedLanguage}`);
         }
     </script>
 </body>

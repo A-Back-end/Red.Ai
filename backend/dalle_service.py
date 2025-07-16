@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 # --- CORS Configuration ---
 # Read allowed origins from environment variable, split by comma
-allowed_origins_str = os.getenv("DALLE_ALLOWED_ORIGINS", "http://localhost:3000")
+allowed_origins_str = os.getenv("DALLE_ALLOWED_ORIGINS", "http://localhost:3000,https://redai.site")
 ALLOWED_ORIGINS = [origin.strip() for origin in allowed_origins_str.split(',')]
 logger.info(f"CORS allowed origins: {ALLOWED_ORIGINS}")
 

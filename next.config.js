@@ -15,7 +15,7 @@ const nextConfig = {
     }
   }),
   env: {
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || (process.env.NODE_ENV === 'production' ? 'https://redai.site' : 'http://localhost:3000'),
   },
   images: {
     domains: ['images.unsplash.com', 'oaidalleapiprodscus.blob.core.windows.net'],

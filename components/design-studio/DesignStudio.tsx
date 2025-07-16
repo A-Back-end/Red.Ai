@@ -247,12 +247,27 @@ export default function DesignStudio() {
 
       // Immediate first check
       const checkStatus = async () => {
-        console.log('[Polling] Checking status...');
+        console.log(`[DesignStudio] Checking status for URL: ${data.polling_url}`);
         try {
           const statusResponse = await fetch(`/api/check-status?url=${encodeURIComponent(data.polling_url)}`);
+          
+          if (!statusResponse.ok) {
+            // Try to get specific error message from backend
+            let errorMessage = 'Status check request failed.';
+            try {
+              const errorData = await statusResponse.json();
+              errorMessage = errorData.message || errorMessage;
+              console.error(`[DesignStudio] Backend error response:`, errorData);
+            } catch {
+              // If can't parse JSON, use generic message
+              console.error(`[DesignStudio] Could not parse error response from backend`);
+            }
+            throw new Error(`Status check failed (${statusResponse.status}): ${errorMessage}`);
+          }
+          
           const statusData = await statusResponse.json();
 
-          console.log('[Polling] Status:', statusData);
+          console.log('[DesignStudio] Status response:', statusData);
 
           if (statusData.status === 'Ready') {
             stopPolling();

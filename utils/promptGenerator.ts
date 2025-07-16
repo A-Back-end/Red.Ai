@@ -87,7 +87,7 @@ const getRoomFunctionality = (roomType: string): string => {
 };
 
 /**
- * Определение типа визуализации
+ * Определение типа визуализации (подробная версия)
  */
 const getVisualizationType = (temperature: string): string => {
   const typeMap: { [key: string]: string } = {
@@ -100,7 +100,30 @@ const getVisualizationType = (temperature: string): string => {
 };
 
 /**
- * Генерирует оптимизированный промпт для AI
+ * Краткое определение типа визуализации для коротких промптов
+ */
+const getShortVisualizationType = (temperature: string): string => {
+  const typeMap: { [key: string]: string } = {
+    'SketchUp': 'Photorealistic SketchUp-style render of',
+    '3D': 'Photorealistic 3D render of',
+    'Rooming': 'Interior design visualization of'
+  };
+  
+  return typeMap[temperature] || 'Photorealistic render of';
+};
+
+/**
+ * Получает краткое описание уровня бюджета
+ */
+const getBudgetLevel = (budget: number): string => {
+  if (budget < 1000) return 'basic';
+  if (budget <= 7000) return 'mid-range';
+  if (budget <= 20000) return 'premium';
+  return 'luxury';
+};
+
+/**
+ * Генерирует оптимизированный промпт для AI (краткая версия)
  */
 export const generateOptimizedPrompt = (params: DesignParameters): string => {
   const {
@@ -112,53 +135,45 @@ export const generateOptimizedPrompt = (params: DesignParameters): string => {
     link
   } = params;
 
-  const budgetContext = getBudgetContext(budget);
-  const styleDescription = getStyleDescription(style);
-  const roomFunctionality = getRoomFunctionality(roomType);
-  const visualizationType = getVisualizationType(temperature);
+  const budgetLevel = getBudgetLevel(budget);
+  const visualType = getShortVisualizationType(temperature);
+  
+  // Формируем краткий, но информативный промпт
+  let optimizedPrompt = `${visualType} ${roomType.replace('-', ' ')} in ${style} style. ${prompt}. Budget: $${budget} (${budgetLevel}). Professional quality, realistic lighting, clean composition.`;
 
-  // Формируем структурированный промпт
-  let optimizedPrompt = `Create a ${visualizationType} of a ${roomType.replace('-', ' ')} interior design.
-
-STYLE: ${styleDescription}
-
-USER REQUEST: "${prompt}"
-
-BUDGET CONSTRAINT ($${budget}): ${budgetContext.description}
-- Materials: ${budgetContext.materials.join(', ')}
-- Furniture level: ${budgetContext.furnitureLevel}
-- Lighting: ${budgetContext.lighting}
-- Decor: ${budgetContext.decor}
-
-FUNCTIONAL REQUIREMENTS: ${roomFunctionality}
-
-VISUAL QUALITY REQUIREMENTS:
-- Photorealistic rendering with accurate lighting and shadows
-- Professional interior photography composition
-- Proper scale and proportions
-- Realistic material textures and finishes
-- Warm, inviting atmosphere
-- Clean, uncluttered composition
-
-TECHNICAL SPECIFICATIONS:
-- High resolution, professional quality
-- Proper perspective and depth of field
-- Realistic color grading and contrast
-- Sharp focus on key design elements
-- Natural lighting setup
-
-BUDGET COMPLIANCE:
-- All furniture and materials must be appropriate for $${budget} budget
-- Avoid items that exceed the budget range
-- Focus on achievable, realistic design solutions
-- Maintain professional look within budget constraints`;
-
-  // Добавляем референсную ссылку если есть
+  // Добавляем референс если есть
   if (link && link.trim()) {
-    optimizedPrompt += `\n\nREFERENCE INSPIRATION: ${link}`;
+    optimizedPrompt += ` Reference: ${link}`;
   }
 
   return optimizedPrompt;
+};
+
+/**
+ * Генерирует подробный промпт для сложных случаев (альтернатива)
+ */
+export const generateDetailedPrompt = (params: DesignParameters): string => {
+  const {
+    prompt,
+    style = 'modern',
+    roomType = 'living-room',
+    temperature = 'SketchUp',
+    budget = 5000,
+    link
+  } = params;
+
+  const budgetContext = getBudgetContext(budget);
+  const styleDescription = getStyleDescription(style);
+  const visualizationType = getVisualizationType(temperature);
+
+  // Более короткая версия подробного промпта
+  let detailedPrompt = `${visualizationType} of ${roomType.replace('-', ' ')} interior. ${styleDescription}. User request: "${prompt}". Budget $${budget}: ${budgetContext.description}. ${budgetContext.furnitureLevel}. Professional quality, realistic lighting.`;
+
+  if (link && link.trim()) {
+    detailedPrompt += ` Reference: ${link}`;
+  }
+
+  return detailedPrompt;
 };
 
 /**

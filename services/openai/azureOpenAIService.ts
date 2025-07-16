@@ -99,7 +99,7 @@ export class AzureOpenAIService {
    */
   static getAvailableModels(): string[] {
     return [
-      'gpt-4.1',
+      'gpt-4',
       'gpt-4-turbo',
       'gpt-4',
       'gpt-3.5-turbo'

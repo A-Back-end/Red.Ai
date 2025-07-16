@@ -5,11 +5,11 @@ import type { ChatCompletionMessageParam } from 'openai/resources/chat/completio
 // Azure OpenAI Client
 const azureClient = process.env.AZURE_OPENAI_API_KEY ? new AzureOpenAI({
     apiKey: process.env.AZURE_OPENAI_API_KEY,
-    apiVersion: process.env.AZURE_OPENAI_API_VERSION || '2024-04-01-preview',
-    baseURL: process.env.AZURE_OPENAI_ENDPOINT,
+    apiVersion: process.env.AZURE_OPENAI_API_VERSION || '2024-05-01-preview',
+    baseURL: process.env.AZURE_OPENAI_ENDPOINT || 'https://neuroflow-hub.openai.azure.com/',
 }) : null;
 
-const azureDeploymentName = process.env.AZURE_OPENAI_DEPLOYMENT || 'gpt-4-turbo';
+const azureDeploymentName = process.env.AZURE_OPENAI_DEPLOYMENT_NAME || 'gpt-4';
 
 // Standard OpenAI Client (as a fallback)
 const openaiClient = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;

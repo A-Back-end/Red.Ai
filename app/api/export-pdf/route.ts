@@ -43,13 +43,14 @@ export async function POST(request: NextRequest) {
     const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
     const page = await browser.newPage();
     await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-    const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+    const pdfBytes = await page.pdf({ format: 'A4', printBackground: true });
     await browser.close();
 
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(pdfBytes, {
+      status: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${project.name.replace(/ /g, '_')}_design.pdf"`,
+        'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(`RED.AI_Project_${project.id}.pdf`)}`,
       },
     });
 

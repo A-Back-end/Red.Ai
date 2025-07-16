@@ -52,7 +52,7 @@ OPENAI_API_KEY=your_openai_api_key_here
 
 # Optional: Azure OpenAI (для резервного подключения)
 AZURE_OPENAI_API_KEY=your_azure_key_here
-AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
+AZURE_OPENAI_ENDPOINT=https://neuroflow-hub.openai.azure.com/
 ```
 
 ### 2. Зависимости

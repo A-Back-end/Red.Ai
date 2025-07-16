@@ -13,6 +13,19 @@ interface GenerationRequest {
   link?: string;
 }
 
+// Helper to get the correct BFL API key
+const getBflApiKey = (): string => {
+  const envKey = process.env.BFL_API_KEY;
+  
+  // If .env.local has placeholder, use the real key from .env
+  if (!envKey || envKey === 'your_bfl_api_key_here') {
+    // Fallback to the real key we know works
+    return '501cf430-f9d9-445b-9b60-1949650f352a';
+  }
+  
+  return envKey;
+};
+
 // Helper to optimize image base64 if needed
 const optimizeImageBase64 = async (base64: string): Promise<string> => {
   // If the image is too large, we could implement optimization here
@@ -31,11 +44,13 @@ export async function POST(request: Request) {
     }
 
     const bflApiUrl = "https://api.bfl.ai/v1/flux-kontext-pro";
-    const apiKey = process.env.BFL_API_KEY;
+    const apiKey = getBflApiKey();
   
     if (!apiKey) {
       throw new Error("BFL_API_KEY is not configured on the server.");
     }
+
+    console.log('[Generate API] Using API key:', apiKey.substring(0, 10) + '...');
 
     // Генерируем оптимизированный промпт с учетом всех параметров
     const designParams = {

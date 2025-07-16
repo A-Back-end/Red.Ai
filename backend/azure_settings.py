@@ -24,7 +24,7 @@ def get_azure_config() -> Optional[Dict]:
         "backup_key": os.getenv("AZURE_OPENAI_BACKUP_KEY", "AZURE_OPENAI_API_KEY"),
         "endpoint": endpoint,
         "api_version": os.getenv("OPENAI_API_VERSION", "AZURE_OPENAI_API_KEY"),
-        "gpt_deployment": os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4.1"),
+        "gpt_deployment": os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4"),
         "dalle_deployment": os.getenv("AZURE_DALLE_DEPLOYMENT_NAME", "dall-e-3"),
         "use_azure_ad": os.getenv("USE_AZURE_AD", "false").lower() == "true"
     }
@@ -56,7 +56,7 @@ def get_azure_openai_settings() -> dict:
         "api-version": os.getenv("AZURE_OPENAI_API_VERSION", "2024-04-01-preview"),
         "endpoint": os.getenv("AZURE_OPENAI_ENDPOINT"),
         "dalle_deployment": os.getenv("AZURE_DALLE_DEPLOYMENT_NAME", "dall-e-3"),
-        "gpt_deployment": os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4-turbo"),
+        "gpt_deployment": os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4"),
     }
 
 def get_dalle_settings() -> dict:
@@ -88,7 +88,7 @@ AZURE_OPENAI_CONFIG = {
         "api_version": "2024-04-01-preview",
     },
     "gpt-4": {
-        "deployment": os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4"),
+        "deployment": os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4"),
         "api_version": "2023-12-01-preview",
     }
 } 

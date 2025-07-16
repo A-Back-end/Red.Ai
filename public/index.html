@@ -2639,51 +2639,143 @@
             });
         }
 
+        // Update all dashboard links at once
+        function updateAllDashboardLinks() {
+            // Update all links with onclick="updateDashboardLink(this)"
+            const clickableLinks = document.querySelectorAll('a[onclick*="updateDashboardLink"]');
+            clickableLinks.forEach(link => {
+                updateDashboardLink(link);
+            });
+            
+            // Update any remaining links that point to app routes
+            const appLinks = document.querySelectorAll('a[href*="/login"], a[href*="/dashboard"], a[href*="/design-studio"]');
+            appLinks.forEach(link => {
+                if (!link.getAttribute('onclick')) {
+                    updateDashboardLink(link);
+                }
+            });
+            
+            console.log(`🔗 Updated ${clickableLinks.length + appLinks.length} dashboard links for current environment`);
+        }
+        
         // Initialize
         window.addEventListener('load', () => {
             loadTheme();
             loadLanguage();
             initPricingAnimations();
+            
+            // Update all links for current environment
             updateLinksToCurrentPort();
+            updateAllDashboardLinks();
+            
             initGlobalSync();
-            console.log('🎨 Landing page theme sync initialized');
+            console.log('🎨 Landing page initialized for environment:', window.location.hostname);
+            
+            // Add a small delay and update again to catch any dynamically loaded content
+            setTimeout(() => {
+                updateLinksToCurrentPort();
+                updateAllDashboardLinks();
+                console.log('🔄 Second pass link update completed');
+            }, 1000);
         });
 
-        // Auto-update port script
+        // Universal link update script for all environments
         function updateLinksToCurrentPort() {
-            const currentPort = window.location.port || '3000';
             const currentHost = window.location.hostname;
             const currentProtocol = window.location.protocol;
-            const newBaseUrl = `${currentProtocol}//${currentHost}:${currentPort}`;
+            const currentPort = window.location.port;
             
-            // Находим все ссылки с localhost:3000 и обновляем их
-            const links = document.querySelectorAll('a[href*="localhost:3000"]');
-            links.forEach(link => {
+            // Determine the correct base URL based on environment
+            let newBaseUrl;
+            if (currentHost === 'redai.site') {
+                // Production environment - use HTTPS without port
+                newBaseUrl = 'https://redai.site';
+            } else if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+                // Local environment - use current protocol and port
+                const port = currentPort || '3000';
+                newBaseUrl = `${currentProtocol}//${currentHost}:${port}`;
+            } else {
+                // Other environments (staging, etc.) - use current setup
+                newBaseUrl = currentPort ? 
+                    `${currentProtocol}//${currentHost}:${currentPort}` : 
+                    `${currentProtocol}//${currentHost}`;
+            }
+            
+            // Find and update all hardcoded localhost links
+            const localhostLinks = document.querySelectorAll('a[href*="localhost:3000"]');
+            localhostLinks.forEach(link => {
                 const oldHref = link.getAttribute('href');
                 const newHref = oldHref.replace(/http:\/\/localhost:3000/, newBaseUrl);
                 link.setAttribute('href', newHref);
-                console.log(`🔄 Обновлена ссылка: ${oldHref} → ${newHref}`);
+                console.log(`🔄 Updated localhost link: ${oldHref} → ${newHref}`);
             });
             
-            if (links.length > 0) {
-                console.log(`✅ Обновлено ${links.length} ссылок для порта ${currentPort}`);
+            // Also find and update any other hardcoded base URLs
+            const allRedAiLinks = document.querySelectorAll('a[href*="/login"], a[href*="/dashboard"], a[href*="/design-studio"]');
+            allRedAiLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                // Only update if it starts with a path (not already a full URL)
+                if (href && href.startsWith('/')) {
+                    const newHref = newBaseUrl + href;
+                    link.setAttribute('href', newHref);
+                    console.log(`🔄 Updated relative link: ${href} → ${newHref}`);
+                }
+            });
+            
+            const totalUpdated = localhostLinks.length;
+            if (totalUpdated > 0) {
+                console.log(`✅ Updated ${totalUpdated} links for environment: ${currentHost} (${newBaseUrl})`);
             }
+            
+            return newBaseUrl;
         }
 
         // Update dashboard link with current theme and language
         function updateDashboardLink(element) {
-            const savedTheme = localStorage.getItem('redai-theme') || 'dark';
-            const savedLanguage = localStorage.getItem('redai-language') || 'en';
+            const savedTheme = localStorage.getItem('redai-theme') || localStorage.getItem('theme') || 'dark';
+            const savedLanguage = localStorage.getItem('redai-language') || localStorage.getItem('language') || 'en';
+            
+            // Get the correct base URL for current environment
+            const currentHost = window.location.hostname;
+            let baseUrl;
+            if (currentHost === 'redai.site') {
+                baseUrl = 'https://redai.site';
+            } else if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+                const port = window.location.port || '3000';
+                baseUrl = `${window.location.protocol}//${currentHost}:${port}`;
+            } else {
+                baseUrl = window.location.port ? 
+                    `${window.location.protocol}//${currentHost}:${window.location.port}` : 
+                    `${window.location.protocol}//${currentHost}`;
+            }
             
             const currentHref = element.getAttribute('href');
-            const url = new URL(currentHref, window.location.origin);
+            let url;
             
-            // Add theme and language parameters
-            url.searchParams.set('theme', savedTheme);
-            url.searchParams.set('lang', savedLanguage);
-            
-            element.setAttribute('href', url.toString());
-            console.log(`🎨 Dashboard link updated with theme: ${savedTheme}, language: ${savedLanguage}`);
+            try {
+                // If the href is a full URL, use it as-is but update the base
+                if (currentHref.startsWith('http')) {
+                    url = new URL(currentHref);
+                    // Update the origin to match current environment
+                    url.protocol = baseUrl.includes('https') ? 'https:' : window.location.protocol;
+                    url.host = baseUrl.replace(/^https?:\/\//, '');
+                } else {
+                    // If the href is relative, create full URL
+                    url = new URL(currentHref, baseUrl);
+                }
+                
+                // Add theme and language parameters
+                url.searchParams.set('theme', savedTheme);
+                url.searchParams.set('lang', savedLanguage);
+                
+                element.setAttribute('href', url.toString());
+                console.log(`🎨 Dashboard link updated: ${url.toString()} (theme: ${savedTheme}, lang: ${savedLanguage})`);
+            } catch (error) {
+                console.error('Error updating dashboard link:', error);
+                // Fallback: just add the base URL if href is relative
+                const finalHref = currentHref.startsWith('/') ? baseUrl + currentHref : currentHref;
+                element.setAttribute('href', finalHref);
+            }
         }
     </script>
 </body>

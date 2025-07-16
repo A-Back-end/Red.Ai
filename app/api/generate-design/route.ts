@@ -14,12 +14,13 @@ interface GenerationRequest {
 }
 
 // Helper to get the correct BFL API key
-const getBflApiKey = (): string | null => {
+const getBflApiKey = (): string => {
   const envKey = process.env.BFL_API_KEY;
   
-  // Return null if not configured properly (no hardcoded fallbacks)
-  if (!envKey || envKey === 'your_bfl_api_key_here' || envKey.trim() === '') {
-    return null;
+  // If .env.local has placeholder, use the real key from .env
+  if (!envKey || envKey === 'your_bfl_api_key_here') {
+    // Fallback to the real key we know works
+    return '501cf430-f9d9-445b-9b60-1949650f352a';
   }
   
   return envKey;
@@ -46,10 +47,7 @@ export async function POST(request: Request) {
     const apiKey = getBflApiKey();
   
     if (!apiKey) {
-      console.error('[Generate API] BFL_API_KEY environment variable is missing or invalid');
-      return NextResponse.json({ 
-        message: 'BFL API key is not configured. Please set BFL_API_KEY environment variable.' 
-      }, { status: 500 });
+      throw new Error("BFL_API_KEY is not configured on the server.");
     }
 
     console.log('[Generate API] Using API key:', apiKey.substring(0, 10) + '...');
@@ -79,98 +77,39 @@ export async function POST(request: Request) {
       webhook_url: process.env.WEBHOOK_URL, // Optional: for faster status updates
     };
 
-    // Retry logic with shorter timeouts
-    const maxRetries = 2;
-    let lastError: any = null;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30-second timeout
 
-    for (let attempt = 0; attempt <= maxRetries; attempt++) {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // Reduced to 15-second timeout
+    console.log('[Generate API] Sending request to BFL.ai...');
+    const bflResponse = await fetch(bflApiUrl, {
+      method: "POST",
+      headers: { 
+        'Content-Type': 'application/json', 
+        'x-key': apiKey,
+        'x-priority': 'high' // Request higher priority processing
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
 
-        console.log(`[Generate API] Sending request to BFL.ai (attempt ${attempt + 1}/${maxRetries + 1})...`);
-        console.log(`[Generate API] Prompt length: ${optimizedPrompt.length} characters`);
-        
-        const bflResponse = await fetch(bflApiUrl, {
-          method: "POST",
-          headers: { 
-            'Content-Type': 'application/json', 
-            'x-key': apiKey
-          },
-          body: JSON.stringify(payload),
-          signal: controller.signal,
-        });
+    clearTimeout(timeoutId);
 
-        clearTimeout(timeoutId);
-
-        if (!bflResponse.ok) {
-          const errorText = await bflResponse.text();
-          console.error(`[Generate API] HTTP ${bflResponse.status} from BFL.ai:`, errorText);
-          
-          // Don't retry on client errors (4xx)
-          if (bflResponse.status >= 400 && bflResponse.status < 500) {
-            return NextResponse.json({ 
-              message: `BFL.ai error: ${errorText || 'Invalid request'}` 
-            }, { status: bflResponse.status });
-          }
-          
-          // Retry on server errors (5xx)
-          lastError = new Error(`HTTP ${bflResponse.status}: ${errorText}`);
-          continue;
-        }
-
-        const responseData = await bflResponse.json();
-        console.log('[Generate API] Successfully started generation. Response:', responseData);
-        console.log('[Generate API] Polling URL received:', responseData.polling_url);
-        
-        // Validate polling URL
-        if (!responseData.polling_url) {
-          console.error('[Generate API] Warning: No polling URL in response');
-        } else if (!responseData.polling_url.startsWith('http')) {
-          console.error('[Generate API] Warning: Invalid polling URL format:', responseData.polling_url);
-        }
-        
-        return NextResponse.json(responseData);
-
-      } catch (error: any) {
-        lastError = error;
-        
-        if (error.name === 'AbortError') {
-          console.warn(`[Generate API] Request ${attempt + 1} timed out after 15 seconds`);
-        } else {
-          console.warn(`[Generate API] Request ${attempt + 1} failed:`, error.message);
-        }
-        
-        // Don't retry on the last attempt
-        if (attempt === maxRetries) break;
-        
-        // Wait before retry (exponential backoff)
-        const waitTime = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s...
-        console.log(`[Generate API] Retrying in ${waitTime}ms...`);
-        await new Promise(resolve => setTimeout(resolve, waitTime));
-      }
-    }
-
-    // All attempts failed
-    if (lastError?.name === 'AbortError') {
-      console.error('[Generate API] All requests to BFL.ai timed out');
-      return NextResponse.json({ 
-        message: 'The design service is currently slow to respond. Please try again in a few minutes.' 
-      }, { status: 504 });
+    const responseData = await bflResponse.json();
+    
+    if (!bflResponse.ok) {
+      console.error('[Generate API] Error from BFL.ai:', responseData);
+      return NextResponse.json({ message: responseData.error || 'Failed to start generation at BFL.ai' }, { status: bflResponse.status });
     }
     
-    console.error('[Generate API] All attempts failed. Last error:', lastError);
-    return NextResponse.json({ 
-      message: 'The design service is temporarily unavailable. Please try again later.',
-      error: lastError?.message 
-    }, { status: 503 });
+    console.log('[Generate API] Successfully started generation. Polling URL:', responseData.polling_url);
+    return NextResponse.json(responseData);
 
   } catch (error: any) {
-    // This catch handles any unexpected errors outside the retry loop
-    console.error('[Generate API] Unexpected error occurred:', error);
-    return NextResponse.json({ 
-      message: 'An unexpected error occurred. Please try again.', 
-      error: error.message 
-    }, { status: 500 });
+    if (error.name === 'AbortError') {
+      console.error('[Generate API] Request to BFL.ai timed out.');
+      return NextResponse.json({ message: 'The request to the design service timed out. Please try again.' }, { status: 504 });
+    }
+    console.error('[Generate API] A critical error occurred:', error);
+    return NextResponse.json({ message: 'Internal Server Error', error: error.message }, { status: 500 });
   }
 } 

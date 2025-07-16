@@ -532,26 +532,11 @@ export default function FluxDesigner({ onAnalyze, onGenerate, onDesign, credits 
     if (generationStatus === 'polling' && pollingUrl) {
       const checkStatus = async () => {
         try {
-          console.log(`[FluxDesigner] Checking status for URL: ${pollingUrl}`);
           // Use mock data for status response (for limited tokens/testing)
             const statusResp = await fetch(`/api/check-status?url=${encodeURIComponent(pollingUrl)}`);
-          
-          if (!statusResp.ok) {
-            // Try to get specific error message from backend
-            let errorMessage = 'Network response was not ok during polling.';
-            try {
-              const errorData = await statusResp.json();
-              errorMessage = errorData.message || errorMessage;
-              console.error(`[FluxDesigner] Backend error response:`, errorData);
-            } catch {
-              // If can't parse JSON, use generic message
-              console.error(`[FluxDesigner] Could not parse error response from backend`);
-            }
-            throw new Error(`Status check failed (${statusResp.status}): ${errorMessage}`);
-          }
+          if (!statusResp.ok) throw new Error('Network response was not ok during polling.');
           
           const statusData = await statusResp.json();
-          console.log(`[FluxDesigner] Status response:`, statusData);
 
           if (statusData.status === 'Ready') {
             stopPolling();

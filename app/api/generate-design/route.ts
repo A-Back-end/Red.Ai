@@ -15,14 +15,14 @@ interface GenerationRequest {
 
 // Helper to get the correct BFL API key
 const getBflApiKey = (): string | null => {
-  const envKey = process.env.BFL_API_KEY;
+  // const envKey = process.env.BFL_API_KEY;
   
   // Return null if not configured properly (no hardcoded fallbacks)
-  if (!envKey || envKey === 'your_bfl_api_key_here' || envKey.trim() === '') {
-    return null;
-  }
+  // if (!envKey || envKey === '501cf430-f9d9-445b-9b60-1949650f352a' || envKey.trim() === '') {
+  //   return null;
+  // }
   
-  return envKey;
+  return "501cf430-f9d9-445b-9b60-1949650f352a";
 };
 
 // Helper to optimize image base64 if needed

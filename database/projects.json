@@ -187,5 +187,32 @@
     "threeDModel": null,
     "pdfReport": null,
     "shoppingList": null
+  },
+  {
+    "id": "project_1752667267013_m64pb4mxi",
+    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
+    "name": "lock",
+    "description": "lock",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/68/26921071a6bc47/71a6bc47cf054ca1afdfdf771b0a68f7/sample.png?se=2025-07-16T12%3A11%3A10Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=TtTmocZKCFKdTjaMFsgy7txfPyEQsXIm%2Bl%2BE4K1p5/I%3D",
+    "createdAt": "2025-07-16T12:01:07.013Z",
+    "updatedAt": "2025-07-16T12:01:07.013Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-us1.bfl.ai/results/68/26921071a6bc47/71a6bc47cf054ca1afdfdf771b0a68f7/sample.png?se=2025-07-16T12%3A11%3A10Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=TtTmocZKCFKdTjaMFsgy7txfPyEQsXIm%2Bl%2BE4K1p5/I%3D"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
   }
 ]

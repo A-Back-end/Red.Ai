@@ -118,7 +118,16 @@ export async function POST(request: Request) {
         }
 
         const responseData = await bflResponse.json();
-        console.log('[Generate API] Successfully started generation. Polling URL:', responseData.polling_url);
+        console.log('[Generate API] Successfully started generation. Response:', responseData);
+        console.log('[Generate API] Polling URL received:', responseData.polling_url);
+        
+        // Validate polling URL
+        if (!responseData.polling_url) {
+          console.error('[Generate API] Warning: No polling URL in response');
+        } else if (!responseData.polling_url.startsWith('http')) {
+          console.error('[Generate API] Warning: Invalid polling URL format:', responseData.polling_url);
+        }
+        
         return NextResponse.json(responseData);
 
       } catch (error: any) {

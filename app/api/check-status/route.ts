@@ -2,13 +2,12 @@
 import { NextResponse } from 'next/server';
 
 // Helper to get the correct BFL API key (same as in generate-design)
-const getBflApiKey = (): string => {
+const getBflApiKey = (): string | null => {
   const envKey = process.env.BFL_API_KEY;
   
-  // If .env.local has placeholder, use the real key from .env
-  if (!envKey || envKey === 'BFL_API_KEY') {
-    // Fallback to the real key we know works
-    return '501cf430-f9d9-445b-9b60-1949650f352a';
+  // Return null if not configured properly (no hardcoded fallbacks)
+  if (!envKey || envKey === 'your_bfl_api_key_here' || envKey === 'BFL_API_KEY' || envKey.trim() === '') {
+    return null;
   }
   
   return envKey;
@@ -24,7 +23,10 @@ export async function GET(request: Request) {
 
   const apiKey = getBflApiKey();
   if (!apiKey) {
-    return NextResponse.json({ message: 'API key is not configured on the server' }, { status: 500 });
+    console.error('[Check Status API] BFL_API_KEY environment variable is missing or invalid');
+    return NextResponse.json({ 
+      message: 'BFL API key is not configured. Please set BFL_API_KEY environment variable.' 
+    }, { status: 500 });
   }
 
   console.log('[Check Status API] Checking status at:', pollingUrl);

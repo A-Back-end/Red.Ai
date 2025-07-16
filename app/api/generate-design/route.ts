@@ -14,13 +14,12 @@ interface GenerationRequest {
 }
 
 // Helper to get the correct BFL API key
-const getBflApiKey = (): string => {
+const getBflApiKey = (): string | null => {
   const envKey = process.env.BFL_API_KEY;
   
-  // If .env.local has placeholder, use the real key from .env
-  if (!envKey || envKey === 'your_bfl_api_key_here') {
-    // Fallback to the real key we know works
-    return '501cf430-f9d9-445b-9b60-1949650f352a';
+  // Return null if not configured properly (no hardcoded fallbacks)
+  if (!envKey || envKey === 'your_bfl_api_key_here' || envKey.trim() === '') {
+    return null;
   }
   
   return envKey;
@@ -47,7 +46,10 @@ export async function POST(request: Request) {
     const apiKey = getBflApiKey();
   
     if (!apiKey) {
-      throw new Error("BFL_API_KEY is not configured on the server.");
+      console.error('[Generate API] BFL_API_KEY environment variable is missing or invalid');
+      return NextResponse.json({ 
+        message: 'BFL API key is not configured. Please set BFL_API_KEY environment variable.' 
+      }, { status: 500 });
     }
 
     console.log('[Generate API] Using API key:', apiKey.substring(0, 10) + '...');

@@ -3,13 +3,14 @@ import { AzureOpenAI, OpenAI } from 'openai';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
 // Azure OpenAI Client
-const azureClient = process.env.AZURE_OPENAI_API_KEY ? new AzureOpenAI({
-    apiKey: process.env.AZURE_OPENAI_API_KEY,
+const azureApiKey = process.env.AZURE_OPENAI_KEY || process.env.AZURE_OPENAI_API_KEY;
+const azureClient = azureApiKey ? new AzureOpenAI({
+    apiKey: azureApiKey,
     apiVersion: process.env.AZURE_OPENAI_API_VERSION || '2024-05-01-preview',
     baseURL: process.env.AZURE_OPENAI_ENDPOINT || 'https://neuroflow-hub.openai.azure.com/',
 }) : null;
 
-const azureDeploymentName = process.env.AZURE_OPENAI_DEPLOYMENT_NAME || 'gpt-4';
+const azureDeploymentName = process.env.AZURE_OPENAI_DEPLOYMENT_NAME || 'gpt-4.1';
 
 // Standard OpenAI Client (as a fallback)
 const openaiClient = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
@@ -40,7 +41,7 @@ export async function POST(req: NextRequest) {
         }
 
         if (!client) {
-            return NextResponse.json({ error: "No AI provider is configured. Please set either AZURE_OPENAI_API_KEY or OPENAI_API_KEY." }, { status: 500 });
+            return NextResponse.json({ error: "No AI provider is configured. Please set either AZURE_OPENAI_KEY (or AZURE_OPENAI_API_KEY) or OPENAI_API_KEY." }, { status: 500 });
         }
 
         const systemMessage: ChatCompletionMessageParam = {

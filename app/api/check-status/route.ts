@@ -6,7 +6,7 @@ const getBflApiKey = (): string | null => {
   const envKey = process.env.BFL_API_KEY;
   
   // Return null if not configured properly (no hardcoded fallbacks)
-  if (!envKey || envKey === 'your_bfl_api_key_here' || envKey === 'BFL_API_KEY' || envKey.trim() === '') {
+  if (!envKey || envKey === 'BFL_API_KEY' || envKey.trim() === '') {
     return null;
   }
   

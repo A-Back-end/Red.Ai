@@ -23,9 +23,9 @@ class AzureDalleService:
     def __init__(self):
         """Initialize Azure DALL-E 3 service"""
         # Azure OpenAI configuration
-        self.api_key = os.getenv("AZURE_OPENAI_API_KEY", "AZURE_OPENAI_API_KEY")
-        self.endpoint = os.getenv("AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_ENDPOINT")
-        self.api_version = os.getenv("AZURE_OPENAI_API_VERSION", "AZURE_OPENAI_API_VERSION")
+        self.api_key = os.getenv("AZURE_OPENAI_KEY") or os.getenv("AZURE_OPENAI_API_KEY")
+        self.endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+        self.api_version = os.getenv("AZURE_OPENAI_API_VERSION", "2024-04-01-preview")
         self.deployment_name = os.getenv("AZURE_DALLE_DEPLOYMENT_NAME", "dall-e-3")
         
         # Construct the full endpoint URL
@@ -62,7 +62,7 @@ class AzureDalleService:
         if not self.is_configured():
             return {
                 "success": False,
-                "error": "Azure DALL-E 3 service not configured. Please set AZURE_OPENAI_API_KEY and AZURE_OPENAI_ENDPOINT."
+                "error": "Azure DALL-E 3 service not configured. Please set AZURE_OPENAI_KEY (or AZURE_OPENAI_API_KEY) and AZURE_OPENAI_ENDPOINT."
             }
         
         try:
@@ -249,14 +249,11 @@ async def test_azure_dalle_service():
     logger.info(f"\n✅ Testing completed!")
 
 if __name__ == "__main__":
-    print("🚀 Azure DALL-E 3 Service for RED AI")
-    print("=" * 50)
-    
     # Run tests
     asyncio.run(test_azure_dalle_service())
     
     print("\n💡 Service ready for integration!")
     print("🔧 Configure your .env file with Azure credentials:")
-    print("   - AZURE_OPENAI_API_KEY")
+    print("   - AZURE_OPENAI_KEY или AZURE_OPENAI_API_KEY")
     print("   - AZURE_OPENAI_ENDPOINT")
     print("   - AZURE_DALLE_DEPLOYMENT_NAME") 

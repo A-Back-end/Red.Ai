@@ -43,12 +43,12 @@ CORS(app, resources={
 # OpenAI client setup
 client = None
 try:
-    api_key = os.getenv('AZURE_OPENAI_API_KEY')
+    api_key = os.getenv('AZURE_OPENAI_KEY') or os.getenv('AZURE_OPENAI_API_KEY')
     if api_key:
         client = OpenAI(api_key=api_key)
         logger.info("OpenAI client initialized successfully")
     else:
-        logger.warning("AZURE_OPENAI_API_KEY not found in environment variables")
+        logger.warning("AZURE_OPENAI_KEY или AZURE_OPENAI_API_KEY not found in environment variables")
 except Exception as e:
     logger.error(f"Failed to initialize OpenAI client: {e}")
 

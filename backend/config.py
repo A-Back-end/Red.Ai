@@ -19,7 +19,7 @@ class Settings:
     DEBUG: bool = os.getenv("DEBUG", "True").lower() == "true"
     
     # Azure OpenAI Configuration
-    AZURE_OPENAI_API_KEY: str = os.getenv("AZURE_OPENAI_API_KEY", "AZURE_OPENAI_KEY_1")
+    AZURE_OPENAI_API_KEY: str = os.getenv("AZURE_OPENAI_KEY") or os.getenv("AZURE_OPENAI_API_KEY", "AZURE_OPENAI_KEY_1")
     AZURE_OPENAI_BACKUP_KEY: str = os.getenv("AZURE_OPENAI_BACKUP_KEY", "AZURE_OPENAI_BACKUP_KEY")
     AZURE_OPENAI_ENDPOINT: str = os.getenv("AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_ENDPOINT")
     AZURE_OPENAI_API_VERSION: str = os.getenv("AZURE_OPENAI_API_VERSION", "2024-05-01-preview")

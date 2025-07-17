@@ -2,16 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { AzureOpenAI } from 'openai';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
-const azureClient = process.env.AZURE_OPENAI_API_KEY
+const azureApiKey = process.env.AZURE_OPENAI_KEY || process.env.AZURE_OPENAI_API_KEY;
+const azureClient = azureApiKey
   ? new AzureOpenAI({
-      apiKey: process.env.AZURE_OPENAI_API_KEY,
+      apiKey: azureApiKey,
       apiVersion: process.env.AZURE_OPENAI_API_VERSION || '2024-05-01-preview',
       baseURL: process.env.AZURE_OPENAI_ENDPOINT || 'https://neuroflow-hub.openai.azure.com/',
     })
   : null;
 
 // Use the correct deployment name from your Azure OpenAI service
-const azureDeploymentName = process.env.AZURE_OPENAI_DEPLOYMENT_NAME || 'gpt-4'; // Updated to match production config
+const azureDeploymentName = process.env.AZURE_OPENAI_DEPLOYMENT_NAME || 'gpt-4.1'; // Updated to match production config
 
 async function searchIkea(furnitureName: string): Promise<{ url: string, price: string, imageUrl: string } | null> {
     // This is a placeholder. In a real scenario, this would involve scraping or using an IKEA API.

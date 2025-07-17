@@ -15,7 +15,8 @@ export const validateConfiguration = (): ConfigValidation => {
 
   const optional = [
     'OPENAI_API_KEY',
-    'AZURE_OPENAI_API_KEY',
+    'AZURE_OPENAI_KEY',
+  'AZURE_OPENAI_API_KEY',
     'AZURE_OPENAI_ENDPOINT'
   ];
 

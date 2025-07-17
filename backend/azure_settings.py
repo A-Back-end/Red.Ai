@@ -13,7 +13,7 @@ def get_azure_config() -> Optional[Dict]:
     """
     
     # Check if we have the required environment variables
-    api_key = os.getenv("AZURE_OPENAI_API_KEY")
+    api_key = os.getenv("AZURE_OPENAI_KEY") or os.getenv("AZURE_OPENAI_API_KEY")
     endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
     
     if not api_key or not endpoint:
@@ -24,7 +24,7 @@ def get_azure_config() -> Optional[Dict]:
         "backup_key": os.getenv("AZURE_OPENAI_BACKUP_KEY", "AZURE_OPENAI_API_KEY"),
         "endpoint": endpoint,
         "api_version": os.getenv("OPENAI_API_VERSION", "AZURE_OPENAI_API_KEY"),
-        "gpt_deployment": os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4"),
+        "gpt_deployment": os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4.1"),
         "dalle_deployment": os.getenv("AZURE_DALLE_DEPLOYMENT_NAME", "dall-e-3"),
         "use_azure_ad": os.getenv("USE_AZURE_AD", "false").lower() == "true"
     }
@@ -44,11 +44,11 @@ def validate_azure_config() -> bool:
 
 def get_azure_openai_settings() -> dict:
     """Загрузка настроек Azure OpenAI из .env"""
-    api_key = os.getenv("AZURE_OPENAI_API_KEY")
+    api_key = os.getenv("AZURE_OPENAI_KEY") or os.getenv("AZURE_OPENAI_API_KEY")
     backup_key = os.getenv("AZURE_OPENAI_BACKUP_KEY")
 
     if not api_key:
-        raise ValueError("AZURE_OPENAI_API_KEY не найден в переменных окружения.")
+        raise ValueError("AZURE_OPENAI_KEY или AZURE_OPENAI_API_KEY не найден в переменных окружения.")
 
     return {
         "api-key": api_key,
@@ -56,7 +56,7 @@ def get_azure_openai_settings() -> dict:
         "api-version": os.getenv("AZURE_OPENAI_API_VERSION", "2024-04-01-preview"),
         "endpoint": os.getenv("AZURE_OPENAI_ENDPOINT"),
         "dalle_deployment": os.getenv("AZURE_DALLE_DEPLOYMENT_NAME", "dall-e-3"),
-        "gpt_deployment": os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4"),
+        "gpt_deployment": os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4.1"),
     }
 
 def get_dalle_settings() -> dict:
@@ -78,7 +78,7 @@ AZURE_OPENAI_CONFIG = {
     "default": {
         "api_type": "azure",
         "api_version": os.getenv("AZURE_OPENAI_API_VERSION", "2024-04-01-preview"),
-        "api_key": os.getenv("AZURE_OPENAI_API_KEY"),
+        "api_key": os.getenv("AZURE_OPENAI_KEY") or os.getenv("AZURE_OPENAI_API_KEY"),
         "backup_key": os.getenv("AZURE_OPENAI_BACKUP_KEY"),
         "endpoint": os.getenv("AZURE_OPENAI_ENDPOINT"),
         "region": os.getenv("AZURE_OPENAI_REGION", "eastus"),
@@ -88,7 +88,7 @@ AZURE_OPENAI_CONFIG = {
         "api_version": "2024-04-01-preview",
     },
     "gpt-4": {
-        "deployment": os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4"),
+        "deployment": os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4.1"),
         "api_version": "2023-12-01-preview",
     }
 } 

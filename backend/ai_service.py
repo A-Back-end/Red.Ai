@@ -22,7 +22,7 @@ class AIService:
         self.azure_service = create_azure_openai_service(use_azure_ad=use_azure_ad)
         
         # Legacy configuration for backward compatibility
-        self.azure_api_key = api_key or os.getenv("AZURE_OPENAI_API_KEY") or "YOUR_AZURE_OPENAI_API_KEY_HERE"
+        self.azure_api_key = api_key or os.getenv("AZURE_OPENAI_KEY") or os.getenv("AZURE_OPENAI_API_KEY") or "YOUR_AZURE_OPENAI_API_KEY_HERE"
         
         # Show service info
         service_info = self.azure_service.get_service_info()

@@ -48,7 +48,7 @@ class AzureOpenAIService:
             
             # Alternative Azure keys for load balancing
             self.azure_keys = [
-                os.getenv("AZURE_OPENAI_API_KEY", ""),
+                os.getenv("AZURE_OPENAI_KEY") or os.getenv("AZURE_OPENAI_API_KEY", ""),
                 os.getenv("AZURE_OPENAI_BACKUP_KEY", "")
             ]
         
@@ -94,7 +94,7 @@ class AzureOpenAIService:
         if not all(config_status.values()):
             print("❌ Missing Azure OpenAI configuration:")
             if not has_api_key:
-                print("   - AZURE_OPENAI_API_KEY not set")
+                print("   - AZURE_OPENAI_KEY или AZURE_OPENAI_API_KEY not set")
             if not has_endpoint:
                 print("   - AZURE_OPENAI_ENDPOINT not set")
             if not has_api_version:

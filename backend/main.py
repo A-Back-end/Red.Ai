@@ -18,8 +18,7 @@ from pathlib import Path
 
 # Import our services
 from ai_service import AIService
-from azure_openai_service import create_azure_openai_service, generate_image_with_azure_dalle  # Import the new service and missing function
-from azure_dalle_service import create_azure_dalle_service
+from azure_openai_service import create_azure_openai_service  # Import the new service and missing function
 from dotenv import load_dotenv
 import sys
 import os
@@ -262,7 +261,7 @@ ai_service = AIService()
 azure_service = create_azure_openai_service()
 
 # Image generation services (DALL-E removed, using BFL)
-dalle_service = create_azure_dalle_service()
+# dalle_service = create_azure_dalle_service()  # Removed - module not available
 
 # ==================== UTILITY FUNCTIONS ====================
 
@@ -286,7 +285,7 @@ def get_dashboard_stats() -> DashboardStats:
 async def health_check():
     """Health check endpoint"""
     azure_info = azure_service.get_service_info()
-    dalle_info = dalle_service.get_service_info()
+    # dalle_info = dalle_service.get_service_info()  # Removed - module not available
     
     return {
         "status": "healthy",
@@ -301,13 +300,8 @@ async def health_check():
                 "endpoint": azure_info.get("endpoint", ""),
                 "deployment": azure_info.get("deployment_name", ""),
                 "api_version": azure_info.get("api_version", "")
-            },
-            "dalle_3": {
-                "configured": dalle_service.is_configured(),
-                "service": "Azure DALL-E 3",
-                "endpoint": dalle_service.endpoint if dalle_service.is_configured() else "",
-                "deployment": dalle_service.deployment_name if dalle_service.is_configured() else ""
             }
+            # Removed DALL-E 3 service info - module not available
         }
     }
 
@@ -501,48 +495,11 @@ async def generate_image_azure(request: AzureImageGenerationRequest):
         print(f"Azure image generation error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/api/ai/generate-image-dalle")
-async def generate_image_dalle(request: DalleRequest):
-    """Generate an image using Azure DALL-E 3 service"""
-    if not request.prompt:
-        raise HTTPException(status_code=400, detail="Prompt cannot be empty.")
-
-    # Check if Azure DALL-E 3 is configured
-    if not dalle_service.is_configured():
-        dalle_info = dalle_service.get_service_info()
-        
-        raise HTTPException(
-            status_code=500, 
-            detail=f"Azure DALL-E 3 service not configured. Service info: {dalle_info}"
-        )
-
-    try:
-        result = await dalle_service.generate_image(
-            prompt=request.prompt,
-            style=request.style,
-            quality=request.quality,
-            size=request.size,
-            n=request.n
-        )
-        
-        if result.get("success"):
-            return JSONResponse(content={
-                "success": True,
-                "image_url": result.get("image_url"),
-                "revised_prompt": result.get("revised_prompt"),
-                "model": result.get("model"),
-                "service": result.get("service"),
-                "prompt": result.get("prompt"),
-                "parameters": result.get("parameters")
-            })
-        else:
-            raise HTTPException(
-                status_code=500, 
-                detail=f"Failed to generate image: {result.get('error', 'Unknown error')}"
-            )
-    except Exception as e:
-        print(f"Azure DALL-E 3 generation error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+# @app.post("/api/ai/generate-image-dalle")
+# async def generate_image_dalle(request: DalleRequest):
+#     """Generate an image using Azure DALL-E 3 service"""
+#     # DISABLED - azure_dalle_service module not available
+#     raise HTTPException(status_code=503, detail="DALL-E service temporarily unavailable")
 
 @app.get("/api/ai/suggestions")
 async def get_design_suggestions():

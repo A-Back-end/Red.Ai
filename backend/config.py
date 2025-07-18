@@ -25,7 +25,7 @@ class Settings:
     AZURE_OPENAI_API_VERSION: str = os.getenv("AZURE_OPENAI_API_VERSION", "2024-05-01-preview")
     AZURE_OPENAI_DEPLOYMENT_NAME: str = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4.1")
     USE_AZURE_AD: bool = os.getenv("USE_AZURE_AD", "false").lower() == "true"
-    AZURE_DALLE_DEPLOYMENT_NAME: str = os.getenv("AZURE_DALLE_DEPLOYMENT_NAME", "dall-e-3")
+    # DALL-E deployment removed - using BFL for image generation
 
     # Legacy OpenAI for backward compatibility (deprecated)
     AI_MODEL: str = os.getenv("AI_MODEL", "gpt-4")

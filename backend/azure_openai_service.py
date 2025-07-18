@@ -37,19 +37,17 @@ class AzureOpenAIService:
             self.endpoint = AZURE_CONFIG["endpoint"]
             self.api_version = AZURE_CONFIG["api_version"]
             self.deployment_name = AZURE_CONFIG["gpt_deployment"]
-            self.dalle_deployment = AZURE_CONFIG["dalle_deployment"]
             self.azure_keys = [AZURE_CONFIG["api_key"], AZURE_CONFIG["backup_key"]]
             print("✅ Loading Azure configuration from azure_settings.py")
         else:
-            self.endpoint = os.getenv("AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_ENDPOINT")
-            self.api_version = os.getenv("OPENAI_API_VERSION", "OPENAI_API_VERSION")
+            self.endpoint = os.getenv("AZURE_OPENAI_ENDPOINT") or os.getenv("AZURE_ENDPOINT_KEY")
+            self.api_version = os.getenv("AZURE_OPENAI_API_VERSION") or os.getenv("OPENAI_API_VERSION", "2024-05-01-preview")
             self.deployment_name = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4.1")
-            self.dalle_deployment = os.getenv("DEPLOYMENT_NAME", "dall-e-3")
             
-            # Alternative Azure keys for load balancing
+            # Use correct environment variable names for Azure OpenAI API keys
             self.azure_keys = [
-                os.getenv("AZURE_OPENAI_KEY") or os.getenv("AZURE_OPENAI_API_KEY", ""),
-                os.getenv("AZURE_OPENAI_BACKUP_KEY", "")
+                os.getenv("AZURE_OPENAI_API_KEY") or os.getenv("AZURE_OPENAI_KEY"),
+                os.getenv("AZURE_OPENAI_API_KEY_2") or os.getenv("AZURE_OPENAI_KEY_2")
             ]
         
         # Validate configuration
@@ -65,13 +63,12 @@ class AzureOpenAIService:
     
     def _validate_configuration(self) -> bool:
         """Validate Azure OpenAI configuration"""
-        # Use the correct API keys for Azure OpenAI
-        if not self.azure_keys[0]:
-            self.azure_keys[0] = "AZURE_OPENAI_KEY_1"
-            print("✅ Using Azure OpenAI API key")
+        # Validate that we have actual API keys, not placeholder values
+        if not self.azure_keys[0] or self.azure_keys[0].startswith("AZURE_"):
+            print("❌ Azure OpenAI API key not configured")
         
-        if not self.azure_keys[1]:
-            self.azure_keys[1] = "AZURE_OPENAI_KEY_2"
+        if not self.azure_keys[1] or self.azure_keys[1].startswith("AZURE_"):
+            print("⚠️  Backup Azure OpenAI API key not configured")
         
         # Ensure endpoint is correctly formatted
         if not self.endpoint.endswith('/'):
@@ -155,61 +152,7 @@ class AzureOpenAIService:
         """Check if the service is properly configured"""
         return self.config_valid and self.client is not None
     
-    async def generate_image(self, prompt: str, style: str = "vivid", quality: str = "standard") -> Dict:
-        """Generate image using DALL-E 3 with Azure OpenAI"""
-        if not self.is_configured():
-            return {
-                "success": False,
-                "error": "Azure OpenAI service not configured properly"
-            }
-            
-        try:
-            print(f"🎨 Generating image with DALL-E 3...")
-            print(f"📝 Prompt: {prompt[:100]}...")
-            
-            result = self.client.images.generate(
-                model=self.dalle_deployment,
-                prompt=prompt,
-                n=1,
-                style=style,  # "vivid" or "natural"
-                quality=quality,  # "standard" or "hd"
-                size="1024x1024",
-                response_format="url"  # or "b64_json"
-            )
-            
-            # Parse response
-            response_data = json.loads(result.model_dump_json())
-            image_url = response_data['data'][0]['url']
-            
-            print(f"✅ Image generated successfully!")
-            print(f"🔗 Image URL: {image_url[:50]}...")
-            
-            return {
-                "success": True,
-                "image_url": image_url,
-                "revised_prompt": response_data['data'][0].get('revised_prompt', ''),
-                "style": style,
-                "quality": quality,
-                "model": self.dalle_deployment
-            }
-            
-        except Exception as e:
-            error_msg = str(e)
-            print(f"❌ Image generation failed: {e}")
-            
-            # Check for common authentication errors
-            if "401" in error_msg or "Access denied" in error_msg:
-                error_msg = "Authentication failed. Please check your Azure OpenAI API key and endpoint configuration."
-            elif "403" in error_msg:
-                error_msg = "Access forbidden. Please check your Azure OpenAI permissions and quotas."
-            elif "429" in error_msg:
-                error_msg = "Rate limit exceeded. Please try again later or check your quota."
-            
-            return {
-                "success": False,
-                "error": error_msg,
-                "model": self.dalle_deployment
-            }
+    # DALL-E image generation removed - using BFL (Black Forest Labs) instead
     
     async def analyze_image(self, image_base64: str, prompt: str) -> Dict:
         """Analyze image using GPT-4 Vision"""
@@ -341,7 +284,6 @@ class AzureOpenAIService:
             "endpoint": self.endpoint,
             "api_version": self.api_version,
             "deployment_name": self.deployment_name,
-            "dalle_deployment": self.dalle_deployment,
             "use_azure_ad": self.use_azure_ad,
             "azure_ad_available": AZURE_AD_AVAILABLE,
             "configured": self.is_configured(),

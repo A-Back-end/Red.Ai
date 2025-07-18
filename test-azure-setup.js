@@ -5,8 +5,8 @@
 require('dotenv').config();
 
 const testAzureApi = async () => {
-    const apiKey = process.env.AZURE_OPENAI_KEY || process.env.AZURE_OPENAI_API_KEY;
-    const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
+    const apiKey = process.env.AZURE_OPENAPI_KEY|| process.env.AZURE_OPENAPI_KEY;
+    const endpoint = process.env.AZURE_ENDPOINT_KEY;
 
     if (!apiKey || !endpoint) {
         console.error("❌ Error: AZURE_OPENAI_KEY (or AZURE_OPENAI_API_KEY) and AZURE_OPENAI_ENDPOINT must be set in your .env file.");

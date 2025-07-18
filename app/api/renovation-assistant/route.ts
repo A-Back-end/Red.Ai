@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.AZURE_OPENAPI_KEY,
 })
 
 interface Message {
@@ -15,8 +15,8 @@ interface Message {
 
 export async function POST(request: NextRequest) {
   try {
-      const azureApiKey = process.env.AZURE_OPENAI_KEY || process.env.AZURE_OPENAI_API_KEY;
-  if (!process.env.OPENAI_API_KEY && !azureApiKey) {
+      const azureApiKey = process.env.AZURE_OPENAPI_KEY || process.env.AZURE_OPENAPI_KEY;
+  if (!process.env.AZURE_OPENAPI_KEY && !azureApiKey) {
     return NextResponse.json(
       { error: 'AI provider API key not configured. Set OPENAI_API_KEY or AZURE_OPENAI_KEY (or AZURE_OPENAI_API_KEY) in your environment.' },
         { status: 500 }

@@ -126,7 +126,7 @@ class AzureImageGenerationRequest(BaseModel):
     prompt: str
 
 class DalleRequest(BaseModel):
-    """DALL-E 3 image generation request"""
+    """Image generation request (using BFL instead of DALL-E)"""
     prompt: str
     style: str = "vivid"
     quality: str = "standard"
@@ -261,7 +261,7 @@ ai_service = AIService()
 # Initialize Azure OpenAI service for additional functionality
 azure_service = create_azure_openai_service()
 
-# Initialize Azure DALL-E 3 service
+# Image generation services (DALL-E removed, using BFL)
 dalle_service = create_azure_dalle_service()
 
 # ==================== UTILITY FUNCTIONS ====================

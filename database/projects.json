@@ -1,397 +1,19 @@
 [
   {
-    "id": "project_1752502328962_2gmkdy5jd",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Сделай мне ремонт",
-    "description": "Сделай мне ремонт",
-    "imageUrl": "https://delivery-us1.bfl.ai/results/82/3311244f91d6d6/4f91d6d663884d2aaf7cdd3268418a1a/sample.png?se=2025-07-14T14%3A22%3A12Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=JNAh8gbV1c9jJhbs2rjDXvUmPx8HwaZODK7iT6h8X8o%3D",
-    "createdAt": "2025-07-14T14:12:08.962Z",
-    "updatedAt": "2025-07-14T14:12:08.962Z",
+    "id": "project_1753024990755_uum7j34aq",
+    "userId": "user_2zYwvV5CzJOaembaK7d8gMPUo64",
+    "name": "Please generate me the best room of 2025",
+    "description": "Please generate me the best room of 2025",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/87/989822bc82e19e/bc82e19ec9894c0aa650804c0dd65064/sample.png?se=2025-07-20T15%3A33%3A10Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=6TRdJRGlqbtAk3Xvnv33mFFKUCTDQPQDUeNZZ1x45Kk%3D",
+    "createdAt": "2025-07-20T15:23:10.755Z",
+    "updatedAt": "2025-07-20T15:23:10.755Z",
     "status": "completed",
     "generatedImages": [
-      "https://delivery-us1.bfl.ai/results/82/3311244f91d6d6/4f91d6d663884d2aaf7cdd3268418a1a/sample.png?se=2025-07-14T14%3A22%3A12Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=JNAh8gbV1c9jJhbs2rjDXvUmPx8HwaZODK7iT6h8X8o%3D"
+      "https://delivery-us1.bfl.ai/results/87/989822bc82e19e/bc82e19ec9894c0aa650804c0dd65064/sample.png?se=2025-07-20T15%3A33%3A10Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=6TRdJRGlqbtAk3Xvnv33mFFKUCTDQPQDUeNZZ1x45Kk%3D"
     ],
     "budget": {
-      "min": 5000,
-      "max": 7500,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "modern"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
-  },
-  {
-    "id": "project_1752503055886_l7ernejp1",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Сделай мне ремонт ",
-    "description": "Сделай мне ремонт ",
-    "imageUrl": "https://delivery-eu1.bfl.ai/results/43/05643885207d6c/85207d6c868d46ceb5ac5e0c136d2e58/sample.png?se=2025-07-14T14%3A34%3A17Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=kJosGey5sKQgVPL%2BuaHNjM6d1vWFaUsb8SAAHXxm6mk%3D",
-    "createdAt": "2025-07-14T14:24:15.886Z",
-    "updatedAt": "2025-07-14T14:24:15.886Z",
-    "status": "completed",
-    "generatedImages": [
-      "https://delivery-eu1.bfl.ai/results/43/05643885207d6c/85207d6c868d46ceb5ac5e0c136d2e58/sample.png?se=2025-07-14T14%3A34%3A17Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=kJosGey5sKQgVPL%2BuaHNjM6d1vWFaUsb8SAAHXxm6mk%3D"
-    ],
-    "budget": {
-      "min": 5000,
-      "max": 7500,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "modern"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
-  },
-  {
-    "id": "project_1752582390631_qk3eieow3",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Сделай мне реомнт ",
-    "description": "Сделай мне реомнт ",
-    "imageUrl": "https://delivery-us1.bfl.ai/results/8f/390934225bde71/225bde7191d54724a99dc16ab0080f7f/sample.png?se=2025-07-15T12%3A36%3A32Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=frORuDQwQiW2j3j6Zq0dzVvaXcNqiE99i%2BjyoGMOvNY%3D",
-    "createdAt": "2025-07-15T12:26:30.631Z",
-    "updatedAt": "2025-07-15T12:26:30.631Z",
-    "status": "completed",
-    "generatedImages": [
-      "https://delivery-us1.bfl.ai/results/8f/390934225bde71/225bde7191d54724a99dc16ab0080f7f/sample.png?se=2025-07-15T12%3A36%3A32Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=frORuDQwQiW2j3j6Zq0dzVvaXcNqiE99i%2BjyoGMOvNY%3D"
-    ],
-    "budget": {
-      "min": 5000,
-      "max": 7500,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "modern"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
-  },
-  {
-    "id": "project_1752615543710_aj919u6s9",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Сделай мне ремонт ",
-    "description": "Сделай мне ремонт ",
-    "imageUrl": "https://delivery-us1.bfl.ai/results/7b/5427385aeecc98/5aeecc985d144661a8ce840780facbca/sample.png?se=2025-07-15T21%3A49%3A03Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=2dgBKsfNdlkfJzwA95R4kq1q1EGf54FOJHMmLT8Xqmo%3D",
-    "createdAt": "2025-07-15T21:39:03.710Z",
-    "updatedAt": "2025-07-15T21:39:03.710Z",
-    "status": "completed",
-    "generatedImages": [
-      "https://delivery-us1.bfl.ai/results/7b/5427385aeecc98/5aeecc985d144661a8ce840780facbca/sample.png?se=2025-07-15T21%3A49%3A03Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=2dgBKsfNdlkfJzwA95R4kq1q1EGf54FOJHMmLT8Xqmo%3D"
-    ],
-    "budget": {
-      "min": 27500,
-      "max": 41250,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "modern"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
-  },
-  {
-    "id": "project_1752642317112_dnit5jipe",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Сделай мне ремонт ",
-    "description": "Сделай мне ремонт ",
-    "imageUrl": "https://delivery-us1.bfl.ai/results/81/319332efc00f0f/efc00f0fca674e94b2c6290b0e6285f9/sample.png?se=2025-07-16T05%3A15%3A20Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=DKiMxAMxL6%2BoYKO92fzOiA7ZZcsszUnJ98faZODR38Y%3D",
-    "createdAt": "2025-07-16T05:05:17.112Z",
-    "updatedAt": "2025-07-16T05:05:17.112Z",
-    "status": "completed",
-    "generatedImages": [
-      "https://delivery-us1.bfl.ai/results/81/319332efc00f0f/efc00f0fca674e94b2c6290b0e6285f9/sample.png?se=2025-07-16T05%3A15%3A20Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=DKiMxAMxL6%2BoYKO92fzOiA7ZZcsszUnJ98faZODR38Y%3D"
-    ],
-    "budget": {
-      "min": 28300,
-      "max": 42450,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "loft"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
-  },
-  {
-    "id": "project_1752644390630_fmnenu81g",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Сделай мне ремонт",
-    "description": "Сделай мне ремонт",
-    "imageUrl": "https://delivery-eu1.bfl.ai/results/b4/3929707074581a/7074581afc8f4877a188f132807d0b42/sample.png?se=2025-07-16T05%3A49%3A53Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=xc3IT8ZIvgBmu3U6oSpv5kfWb9uaICjT7Pdem8Lxv8c%3D",
-    "createdAt": "2025-07-16T05:39:50.630Z",
-    "updatedAt": "2025-07-16T05:39:50.630Z",
-    "status": "completed",
-    "generatedImages": [
-      "https://delivery-eu1.bfl.ai/results/b4/3929707074581a/7074581afc8f4877a188f132807d0b42/sample.png?se=2025-07-16T05%3A49%3A53Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=xc3IT8ZIvgBmu3U6oSpv5kfWb9uaICjT7Pdem8Lxv8c%3D"
-    ],
-    "budget": {
-      "min": 5000,
-      "max": 7500,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "loft"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
-  },
-  {
-    "id": "project_1752658834434_5wjawwjyk",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "сделай мне ремонт ",
-    "description": "сделай мне ремонт ",
-    "imageUrl": "https://delivery-us1.bfl.ai/results/d6/833283d152f539/d152f53907cd4db197092c671c041f74/sample.png?se=2025-07-16T09%3A50%3A34Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=HZzT3NFsLuNuG9tsgxsVLkpB48z4vfxyTFvd6uC%2BkCQ%3D",
-    "createdAt": "2025-07-16T09:40:34.434Z",
-    "updatedAt": "2025-07-16T09:40:34.434Z",
-    "status": "completed",
-    "generatedImages": [
-      "https://delivery-us1.bfl.ai/results/d6/833283d152f539/d152f53907cd4db197092c671c041f74/sample.png?se=2025-07-16T09%3A50%3A34Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=HZzT3NFsLuNuG9tsgxsVLkpB48z4vfxyTFvd6uC%2BkCQ%3D"
-    ],
-    "budget": {
-      "min": 5000,
-      "max": 7500,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "classic"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
-  },
-  {
-    "id": "project_1752667267013_m64pb4mxi",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "lock",
-    "description": "lock",
-    "imageUrl": "https://delivery-us1.bfl.ai/results/68/26921071a6bc47/71a6bc47cf054ca1afdfdf771b0a68f7/sample.png?se=2025-07-16T12%3A11%3A10Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=TtTmocZKCFKdTjaMFsgy7txfPyEQsXIm%2Bl%2BE4K1p5/I%3D",
-    "createdAt": "2025-07-16T12:01:07.013Z",
-    "updatedAt": "2025-07-16T12:01:07.013Z",
-    "status": "completed",
-    "generatedImages": [
-      "https://delivery-us1.bfl.ai/results/68/26921071a6bc47/71a6bc47cf054ca1afdfdf771b0a68f7/sample.png?se=2025-07-16T12%3A11%3A10Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=TtTmocZKCFKdTjaMFsgy7txfPyEQsXIm%2Bl%2BE4K1p5/I%3D"
-    ],
-    "budget": {
-      "min": 5000,
-      "max": 7500,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "modern"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
-  },
-  {
-    "id": "project_1752668344951_uhxbnykl6",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Сделай мне ремонт ",
-    "description": "Сделай мне ремонт ",
-    "imageUrl": "https://delivery-us1.bfl.ai/results/46/34730089585be8/89585be8d5134ac1a975ad3e556316f1/sample.png?se=2025-07-16T12%3A29%3A08Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=RRng/5j/yxxTYLv8evz7LSNBJ%2BW8DJ2WDJ/JzZ7GnQY%3D",
-    "createdAt": "2025-07-16T12:19:04.951Z",
-    "updatedAt": "2025-07-16T12:19:04.951Z",
-    "status": "completed",
-    "generatedImages": [
-      "https://delivery-us1.bfl.ai/results/46/34730089585be8/89585be8d5134ac1a975ad3e556316f1/sample.png?se=2025-07-16T12%3A29%3A08Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=RRng/5j/yxxTYLv8evz7LSNBJ%2BW8DJ2WDJ/JzZ7GnQY%3D"
-    ],
-    "budget": {
-      "min": 26800,
-      "max": 40200,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "modern"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
-  },
-  {
-    "id": "project_1752671283185_l9go3e3hz",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "end",
-    "description": "end",
-    "imageUrl": "https://delivery-eu1.bfl.ai/results/3d/285730c003ad39/c003ad393146404a86bbd2ee8745b82c/sample.png?se=2025-07-16T13%3A18%3A06Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=oc2uTZcHYQqHChB2hHqcfsWyEalSKFtJLJyHL9SYUM0%3D",
-    "createdAt": "2025-07-16T13:08:03.185Z",
-    "updatedAt": "2025-07-16T13:08:03.185Z",
-    "status": "completed",
-    "generatedImages": [
-      "https://delivery-eu1.bfl.ai/results/3d/285730c003ad39/c003ad393146404a86bbd2ee8745b82c/sample.png?se=2025-07-16T13%3A18%3A06Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=oc2uTZcHYQqHChB2hHqcfsWyEalSKFtJLJyHL9SYUM0%3D"
-    ],
-    "budget": {
-      "min": 5000,
-      "max": 7500,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "modern"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
-  },
-  {
-    "id": "project_1752680328912_2gztbe5jd",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "kjhg",
-    "description": "kjhg",
-    "imageUrl": "https://delivery-us1.bfl.ai/results/1c/33083635985443/35985443912849249f2733ab42cef9d5/sample.png?se=2025-07-16T15%3A48%3A51Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=cE5m6Afb5mzobok6k1IWByC273OF9v5qqJ8QjOUjUVA%3D",
-    "createdAt": "2025-07-16T15:38:48.912Z",
-    "updatedAt": "2025-07-16T15:38:48.912Z",
-    "status": "completed",
-    "generatedImages": [
-      "https://delivery-us1.bfl.ai/results/1c/33083635985443/35985443912849249f2733ab42cef9d5/sample.png?se=2025-07-16T15%3A48%3A51Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=cE5m6Afb5mzobok6k1IWByC273OF9v5qqJ8QjOUjUVA%3D"
-    ],
-    "budget": {
-      "min": 5000,
-      "max": 7500,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "minimalist"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
-  },
-  {
-    "id": "project_1752751793332_uzuna6ooj",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "зщшгпа",
-    "description": "зщшгпа",
-    "imageUrl": "https://delivery-eu1.bfl.ai/results/34/7935806142a4db/6142a4dbbaf04df49513ad5b41a7eed9/sample.png?se=2025-07-17T11%3A39%3A54Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=IaNEZoo1U21TSv2BqYe6ZUGrT1Ga9Q2YTfQHsna1gbM%3D",
-    "createdAt": "2025-07-17T11:29:53.332Z",
-    "updatedAt": "2025-07-17T11:29:53.332Z",
-    "status": "completed",
-    "generatedImages": [
-      "https://delivery-eu1.bfl.ai/results/34/7935806142a4db/6142a4dbbaf04df49513ad5b41a7eed9/sample.png?se=2025-07-17T11%3A39%3A54Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=IaNEZoo1U21TSv2BqYe6ZUGrT1Ga9Q2YTfQHsna1gbM%3D"
-    ],
-    "budget": {
-      "min": 5000,
-      "max": 7500,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "modern"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
-  },
-  {
-    "id": "project_1752801696042_272ofjfq7",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Сделай мне ремон ",
-    "description": "Сделай мне ремон ",
-    "imageUrl": "https://delivery-eu1.bfl.ai/results/92/69847938339021/38339021a0ec459baa94f99672441b5b/sample.png?se=2025-07-18T01%3A31%3A39Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=oXcGVv5T37HvvE8AFEKNb3wulc3L8Y3b8A4DnrnK3u8%3D",
-    "createdAt": "2025-07-18T01:21:36.042Z",
-    "updatedAt": "2025-07-18T01:21:36.042Z",
-    "status": "completed",
-    "generatedImages": [
-      "https://delivery-eu1.bfl.ai/results/92/69847938339021/38339021a0ec459baa94f99672441b5b/sample.png?se=2025-07-18T01%3A31%3A39Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=oXcGVv5T37HvvE8AFEKNb3wulc3L8Y3b8A4DnrnK3u8%3D"
-    ],
-    "budget": {
-      "min": 5000,
-      "max": 7500,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "modern"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
-  },
-  {
-    "id": "project_1752807127948_ka5hr3pox",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "lkjkhgh",
-    "description": "lkjkhgh",
-    "imageUrl": "https://delivery-eu1.bfl.ai/results/07/13051951199e5b/51199e5b912845f2b7f8da8790462b4f/sample.png?se=2025-07-18T03%3A02%3A11Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=sKilly92n/XkCDpRiZiytLqtF0YSS0Df2qqsD8JDveE%3D",
-    "createdAt": "2025-07-18T02:52:07.948Z",
-    "updatedAt": "2025-07-18T02:52:07.948Z",
-    "status": "completed",
-    "generatedImages": [
-      "https://delivery-eu1.bfl.ai/results/07/13051951199e5b/51199e5b912845f2b7f8da8790462b4f/sample.png?se=2025-07-18T03%3A02%3A11Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=sKilly92n/XkCDpRiZiytLqtF0YSS0Df2qqsD8JDveE%3D"
-    ],
-    "budget": {
-      "min": 5000,
-      "max": 7500,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "modern"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
-  },
-  {
-    "id": "project_1752828003264_3y3q3bwlq",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Сделай мне ремонт ",
-    "description": "Сделай мне ремонт ",
-    "imageUrl": "https://delivery-us1.bfl.ai/results/ab/0059722415f194/2415f1946fac468ebba5688d1ab7787c/sample.png?se=2025-07-18T08%3A50%3A06Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=e8WHR4miGE8YQOZEuEqkjqtWJzUq3gDc%2BhQ915SLTe4%3D",
-    "createdAt": "2025-07-18T08:40:03.264Z",
-    "updatedAt": "2025-07-18T08:40:03.264Z",
-    "status": "completed",
-    "generatedImages": [
-      "https://delivery-us1.bfl.ai/results/ab/0059722415f194/2415f1946fac468ebba5688d1ab7787c/sample.png?se=2025-07-18T08%3A50%3A06Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=e8WHR4miGE8YQOZEuEqkjqtWJzUq3gDc%2BhQ915SLTe4%3D"
-    ],
-    "budget": {
-      "min": 24500,
-      "max": 36750,
+      "min": 25000,
+      "max": 37500,
       "currency": "RUB"
     },
     "preferredStyles": [
@@ -405,24 +27,51 @@
     "shoppingList": null
   },
   {
-    "id": "project_1752828003728_xgc34mre1",
+    "id": "project_1753090649955_4yzv3p33u",
     "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Сделай мне ремонт ",
-    "description": "Сделай мне ремонт ",
-    "imageUrl": "https://delivery-us1.bfl.ai/results/ab/0059722415f194/2415f1946fac468ebba5688d1ab7787c/sample.png?se=2025-07-18T08%3A50%3A06Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=e8WHR4miGE8YQOZEuEqkjqtWJzUq3gDc%2BhQ915SLTe4%3D",
-    "createdAt": "2025-07-18T08:40:03.728Z",
-    "updatedAt": "2025-07-18T08:40:03.728Z",
+    "name": "дьлод",
+    "description": "дьлод",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/3b/652593f3323294/f332329445c649058b6c01c8c6f32ac7/sample.png?se=2025-07-21T09%3A47%3A33Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=OIW7%2BDOqyVQqxYP7/hKM0z7wk8RvvNAn1ZtY%2BAXvCIg%3D",
+    "createdAt": "2025-07-21T09:37:29.955Z",
+    "updatedAt": "2025-07-21T09:37:29.955Z",
     "status": "completed",
     "generatedImages": [
-      "https://delivery-us1.bfl.ai/results/ab/0059722415f194/2415f1946fac468ebba5688d1ab7787c/sample.png?se=2025-07-18T08%3A50%3A06Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=e8WHR4miGE8YQOZEuEqkjqtWJzUq3gDc%2BhQ915SLTe4%3D"
+      "https://delivery-us1.bfl.ai/results/3b/652593f3323294/f332329445c649058b6c01c8c6f32ac7/sample.png?se=2025-07-21T09%3A47%3A33Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=OIW7%2BDOqyVQqxYP7/hKM0z7wk8RvvNAn1ZtY%2BAXvCIg%3D"
     ],
     "budget": {
-      "min": 24500,
-      "max": 36750,
+      "min": 5000,
+      "max": 7500,
       "currency": "RUB"
     },
     "preferredStyles": [
-      "scandinavian"
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753090675705_n1di8vibw",
+    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
+    "name": "дьлод",
+    "description": "дьлод",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/b0/6785422607acff/2607acff726a45628004ac857db681db/sample.png?se=2025-07-21T09%3A47%3A59Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=34olTj81tLWt37r6THXRLYhnD/fwF7DPlDhQgPtxk4o%3D",
+    "createdAt": "2025-07-21T09:37:55.705Z",
+    "updatedAt": "2025-07-21T09:37:55.705Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-us1.bfl.ai/results/b0/6785422607acff/2607acff726a45628004ac857db681db/sample.png?se=2025-07-21T09%3A47%3A59Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=34olTj81tLWt37r6THXRLYhnD/fwF7DPlDhQgPtxk4o%3D"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
     ],
     "restrictions": [],
     "roomAnalysis": null,

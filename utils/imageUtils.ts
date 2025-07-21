@@ -7,7 +7,11 @@ interface SaveImageResult {
   localUrl?: string
   filename?: string
   error?: string
+  storageType?: 's3' | 'local'
+  s3Key?: string
 }
+
+
 
 // Интерфейс для проекта
 interface Project {
@@ -35,14 +39,18 @@ interface Project {
   shoppingList?: any
 }
 
-// Функция для скачивания и сохранения изображения локально
+// Функция для скачивания и сохранения изображения в облачное хранилище (S3) или локально как fallback
 export async function downloadAndSaveImage(imageUrl: string, customFilename?: string): Promise<SaveImageResult> {
   try {
     console.log('🔄 Starting image download process for:', imageUrl)
     
-    // Проверяем, не является ли URL уже локальным
-    if (imageUrl.startsWith('/generated-images/') || imageUrl.startsWith('/uploads/')) {
-      console.log('ℹ️  Image is already local, skipping download')
+    // Проверяем, не является ли URL уже постоянным (локальным или S3)
+    if (imageUrl.startsWith('/generated-images/') || 
+        imageUrl.startsWith('/uploads/') ||
+        imageUrl.includes('amazonaws.com') ||
+        imageUrl.includes('s3.') ||
+        imageUrl.startsWith('https://') && !isTemporaryUrl(imageUrl)) {
+      console.log('ℹ️  Image is already permanent, skipping download')
       return {
         success: true,
         localUrl: imageUrl,
@@ -50,52 +58,36 @@ export async function downloadAndSaveImage(imageUrl: string, customFilename?: st
       }
     }
 
-    // Создаем папку для сохранения изображений
-    const saveDir = path.join(process.cwd(), 'public', 'generated-images')
-    if (!fs.existsSync(saveDir)) {
-      fs.mkdirSync(saveDir, { recursive: true })
-    }
-
-    // Генерируем уникальное имя файла
-    const timestamp = Date.now()
-    const randomId = Math.random().toString(36).substring(2, 9)
-    const filename = customFilename || `saved-image-${timestamp}-${randomId}.png`
-    const filePath = path.join(saveDir, filename)
-
-    console.log('📥 Downloading image from URL...')
+    // Используем API endpoint для сохранения изображения (S3 или локально)
+    console.log('📥 Using /api/save-image endpoint for storage...')
     
-    // Скачиваем изображение с таймаутом
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 секунд таймаут
-
-    const response = await fetch(imageUrl, {
-      signal: controller.signal,
+    const response = await fetch('/api/save-image', {
+      method: 'POST',
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; RedAI-ImageSaver/1.0)',
-      }
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        imageUrl: imageUrl,
+        filename: customFilename
+      })
     })
 
-    clearTimeout(timeoutId)
-
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      throw new Error(`Save API failed: ${response.statusText}`)
     }
 
-    // Получаем данные изображения
-    const imageBuffer = await response.arrayBuffer()
-    const buffer = Buffer.from(imageBuffer)
-
-    // Сохраняем изображение
-    fs.writeFileSync(filePath, buffer)
-
-    const localUrl = `/generated-images/${filename}`
+    const result = await response.json()
     
-    console.log('✅ Image saved successfully to:', localUrl)
-    
-    return {
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to save image')
+    }
+
+        return {
       success: true,
-      localUrl: localUrl,
-      filename: filename
+      localUrl: result.localUrl,
+      filename: result.filename,
+      storageType: result.storageType,
+      s3Key: result.s3Key
     }
 
   } catch (error) {

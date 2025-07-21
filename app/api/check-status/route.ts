@@ -13,19 +13,49 @@ const getBflApiKey = (): string | null => {
   return envKey;
 };
 
+// Validate BFL.ai URL format
+const isValidBflUrl = (url: string): boolean => {
+  try {
+    const urlObj = new URL(url);
+    // Accept both EU and global endpoints
+    const validHosts = ['api.bfl.ai', 'api.eu1.bfl.ai', 'api.us1.bfl.ai'];
+    const isValidHost = validHosts.includes(urlObj.hostname);
+    const isValidPath = urlObj.pathname.includes('/v1/get_result') || urlObj.pathname.includes('/flux-');
+    const hasId = urlObj.searchParams.has('id') || urlObj.pathname.includes('/');
+    
+    return isValidHost && (isValidPath || hasId);
+  } catch {
+    return false;
+  }
+};
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const pollingUrl = searchParams.get('url');
 
   if (!pollingUrl) {
-    return NextResponse.json({ message: 'Polling URL parameter is required' }, { status: 400 });
+    return NextResponse.json({ 
+      message: 'Polling URL parameter is required',
+      error: 'Missing url parameter'
+    }, { status: 400 });
+  }
+
+  // Validate URL format
+  if (!isValidBflUrl(pollingUrl)) {
+    console.error('[Check Status API] Invalid URL format:', pollingUrl);
+    return NextResponse.json({ 
+      message: 'Invalid polling URL format',
+      error: 'URL must be a valid BFL.ai polling endpoint',
+      receivedUrl: pollingUrl
+    }, { status: 400 });
   }
 
   const apiKey = getBflApiKey();
   if (!apiKey) {
     console.error('[Check Status API] BFL_API_KEY environment variable is missing or invalid');
     return NextResponse.json({ 
-      message: 'BFL API key is not configured. Please set BFL_API_KEY environment variable.' 
+      message: 'BFL API key is not configured. Please set BFL_API_KEY environment variable.',
+      error: 'API key missing'
     }, { status: 500 });
   }
 
@@ -42,11 +72,14 @@ export async function GET(request: Request) {
 
       console.log(`[Check Status API] Attempt ${attempt + 1}/${maxRetries + 1}`);
       
-    const bflResponse = await fetch(pollingUrl, {
-      method: 'GET',
-      headers: { 'x-key': apiKey },
+      const bflResponse = await fetch(pollingUrl, {
+        method: 'GET',
+        headers: { 
+          'x-key': apiKey,
+          'Content-Type': 'application/json'
+        },
         signal: controller.signal,
-    });
+      });
 
       clearTimeout(timeoutId);
 
@@ -57,7 +90,9 @@ export async function GET(request: Request) {
         // Don't retry on client errors (4xx)
         if (bflResponse.status >= 400 && bflResponse.status < 500) {
           return NextResponse.json({ 
-            message: `Status check failed: ${errorText || 'Invalid request'}` 
+            message: `Status check failed: ${errorText || 'Invalid request'}`,
+            error: `HTTP ${bflResponse.status}`,
+            url: pollingUrl
           }, { status: bflResponse.status });
         }
         
@@ -66,13 +101,13 @@ export async function GET(request: Request) {
         continue;
       }
 
-    const responseData = await bflResponse.json();
+      const responseData = await bflResponse.json();
       console.log('[Check Status API] Status response:', responseData.status || 'no status field');
       
       // Forward the exact response from BFL.ai to our frontend
-    return NextResponse.json(responseData);
+      return NextResponse.json(responseData);
 
-  } catch (error: any) {
+    } catch (error: any) {
       lastError = error;
       
       if (error.name === 'AbortError') {
@@ -95,13 +130,14 @@ export async function GET(request: Request) {
   if (lastError?.name === 'AbortError') {
     console.error('[Check Status API] All status check requests timed out');
     return NextResponse.json({ 
-      message: 'Status check timed out. The generation may still be in progress.' 
+      message: 'Status check timed out. The generation may still be in progress.',
+      error: 'Timeout'
     }, { status: 504 });
   }
   
   console.error('[Check Status API] All attempts failed. Last error:', lastError);
   return NextResponse.json({ 
     message: 'Unable to check generation status. Please try again.',
-    error: lastError?.message 
+    error: lastError?.message || 'Unknown error'
   }, { status: 503 });
 } 

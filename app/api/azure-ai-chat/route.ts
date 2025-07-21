@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AzureOpenAI, OpenAI } from 'openai';
+import { AzureOpenAI } from 'openai';
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
 // Azure OpenAI Client для Домовёнка
@@ -20,10 +20,6 @@ const azureClient = azureApiKey && azureEndpoint ? new AzureOpenAI({
 }) : null;
 
 const azureDeploymentName = process.env.AZURE_OPENAI_DEPLOYMENT_NAME || 'gpt-4';
-
-// Standard OpenAI Client (as a fallback)
-const openaiClient = process.env.OPENAI_API_KEY ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) : null;
-const openaiModel = 'gpt-4o';
 
 // Специальный промпт для Домовёнка
 const DOMOVENOK_SYSTEM_PROMPT = `Ты - Домовёнок 🏠, дружелюбный и опытный ИИ-помощник по недвижимости и дизайну интерьера для Red.AI платформы.
@@ -64,25 +60,75 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Поле 'messages' обязательно и должно быть массивом." }, { status: 400 });
         }
 
-        // Try Azure first, fallback to OpenAI
-        let client = null;
-        let model = '';
-        let provider = '';
-        
-        if (useAzure && azureClient) {
-            client = azureClient;
-            model = azureDeploymentName;
-            provider = 'Azure OpenAI';
-        } else if (openaiClient) {
-            client = openaiClient;
-            model = openaiModel;
-            provider = 'OpenAI';
+        // Check if Azure is configured
+        if (!azureClient) {
+            return NextResponse.json({ 
+                error: "❌ Azure OpenAI не настроен. Пожалуйста, настройте переменные окружения AZURE_OPENAI_API_KEY и AZURE_OPENAI_ENDPOINT.",
+                details: "Azure OpenAI configuration missing or invalid",
+                troubleshooting: {
+                    "step1": "Создайте файл .env.local в корне проекта",
+                    "step2": "Добавьте AZURE_OPENAI_API_KEY=ваш_ключ",
+                    "step3": "Добавьте AZURE_OPENAI_ENDPOINT=ваш_endpoint", 
+                    "step4": "Перезапустите сервер: npm run dev"
+                }
+            }, { status: 500 });
         }
 
-        if (!client) {
+        // Try to get available deployments from Azure
+        const configuredDeployment = process.env.AZURE_OPENAI_DEPLOYMENT_NAME;
+        const availableDeployments = [
+            configuredDeployment, // Try configured deployment first
+            'gpt-4.1',            // Known working deployment
+            'gpt-4o',
+            'gpt-4',
+            'gpt-35-turbo', 
+            'gpt-4-turbo',
+            'gpt-4o-mini',
+            'GPT-4',
+            'GPT-35-TURBO',
+            'gpt-4-32k',
+            'gpt-35-turbo-16k'
+        ].filter(Boolean); // Remove undefined values
+
+        // Try Azure deployments
+        let workingDeployment = null;
+        let lastError = null;
+        
+                 for (const deployment of availableDeployments) {
+             if (!deployment) continue; // Skip undefined/null values
+             
+             try {
+                 console.log(`🔍 Trying Azure deployment: ${deployment}`);
+                 // Quick test call to verify deployment exists with minimal tokens
+                 await azureClient.chat.completions.create({
+                     model: deployment,
+                     messages: [{ role: 'user', content: 'Hi' }],
+                     max_tokens: 1,
+                 });
+                
+                // If we get here, deployment works
+                workingDeployment = deployment;
+                console.log(`✅ Found working Azure deployment: ${deployment}`);
+                break;
+            } catch (error: any) {
+                lastError = error;
+                console.log(`❌ Azure deployment ${deployment} failed:`, error.message);
+                continue;
+            }
+        }
+
+        if (!workingDeployment) {
             return NextResponse.json({ 
-                error: "❌ ИИ-провайдер не настроен. Пожалуйста, настройте AZURE_OPENAI_KEY или OPENAI_API_KEY для работы Домовёнка.",
-                details: "Настройте Azure OpenAI ключи в переменных окружения" 
+                error: "❌ Не найдено рабочих Azure deployments. Проверьте настройки в Azure Portal.",
+                details: `Tried deployments: ${availableDeployments.join(', ')}`,
+                lastError: lastError?.message,
+                troubleshooting: {
+                    "step1": "Откройте Azure Portal → Azure OpenAI",
+                    "step2": "Перейдите в 'Model deployments'",
+                    "step3": "Создайте deployment с именем 'gpt-4' или 'gpt-35-turbo'",
+                    "step4": "Убедитесь, что deployment активен",
+                    "step5": "Если deployment есть, проверьте имя в AZURE_OPENAI_DEPLOYMENT_NAME"
+                }
             }, { status: 500 });
         }
 
@@ -101,84 +147,69 @@ export async function POST(req: NextRequest) {
             content: systemPrompt
         };
 
-        try {
-            const response = await client.chat.completions.create({
-                model: model,
-                messages: [systemMessage, ...messages.slice(-10)], // Use system prompt + last 10 messages
-                max_tokens: data?.maxTokens || 1800,
-                temperature: data?.temperature || 0.7,
-                top_p: 1,
-                frequency_penalty: 0,
-                presence_penalty: 0,
-                stream: false,
-            });
+        // Make the actual API call with the working deployment
+        const response = await azureClient.chat.completions.create({
+            model: workingDeployment,
+            messages: [systemMessage, ...messages.slice(-10)], // Use system prompt + last 10 messages
+            max_tokens: data?.maxTokens || 1800,
+            temperature: data?.temperature || 0.7,
+            top_p: 1,
+            frequency_penalty: 0,
+            presence_penalty: 0,
+            stream: false,
+        });
 
-            const choice = response.choices[0];
-            if (!choice || !choice.message?.content) {
-                throw new Error("Не удалось получить корректный ответ от ИИ модели.");
-            }
-
-            return NextResponse.json({
-                message: choice.message.content,
-                usage: response.usage,
-                provider: provider,
-                model: model,
-                assistant: assistantType === 'domovenok' ? 'Домовёнок 🏠' : 'Red.AI'
-            });
-        } catch (apiError: any) {
-            console.error(`[${provider}] API Error:`, apiError);
-            
-            // If Azure fails and we haven't tried OpenAI yet, try OpenAI as fallback
-            if (provider === 'Azure OpenAI' && openaiClient) {
-                console.log('Azure failed, trying OpenAI fallback...');
-                try {
-                    const fallbackResponse = await openaiClient.chat.completions.create({
-                        model: openaiModel,
-                        messages: [systemMessage, ...messages.slice(-10)],
-                        max_tokens: data?.maxTokens || 1800,
-                        temperature: data?.temperature || 0.7,
-                        top_p: 1,
-                        frequency_penalty: 0,
-                        presence_penalty: 0,
-                        stream: false,
-                    });
-
-                    const fallbackChoice = fallbackResponse.choices[0];
-                    if (fallbackChoice && fallbackChoice.message?.content) {
-                        return NextResponse.json({
-                            message: fallbackChoice.message.content,
-                            usage: fallbackResponse.usage,
-                            provider: 'OpenAI (Запасной)',
-                            model: openaiModel,
-                            assistant: assistantType === 'domovenok' ? 'Домовёнок 🏠' : 'Red.AI'
-                        });
-                    }
-                } catch (fallbackError: any) {
-                    console.error('OpenAI fallback also failed:', fallbackError);
-                }
-            }
-            
-            throw apiError; // Re-throw original error if fallback fails
+        const choice = response.choices[0];
+        if (!choice || !choice.message?.content) {
+            throw new Error("Не удалось получить корректный ответ от ИИ модели.");
         }
+
+        return NextResponse.json({
+            message: choice.message.content,
+            usage: response.usage,
+            provider: 'Azure OpenAI',
+            model: workingDeployment,
+            workingDeployment: workingDeployment,
+            assistant: assistantType === 'domovenok' ? 'Домовёнок 🏠' : 'Red.AI'
+        });
 
     } catch (error: any) {
         console.error(`[${new Date().toISOString()}] Error in azure-ai-chat:`, error);
         
         const isAuthError = error.status === 401 || error.status === 403;
+        const isQuotaError = error.status === 429 || error.message?.includes('quota') || error.message?.includes('limit');
+        
         let errorMessage = 'Произошла внутренняя ошибка сервера.';
+        let troubleshooting = {};
         
         if (isAuthError) {
-            errorMessage = '🔑 Ошибка аутентификации. Проверьте Azure OpenAI ключи в настройках.';
+            errorMessage = '🔑 Ошибка аутентификации Azure OpenAI. Проверьте API ключ.';
+            troubleshooting = {
+                "step1": "Проверьте AZURE_OPENAI_API_KEY в .env.local",
+                "step2": "Убедитесь, что ключ активен в Azure Portal",
+                "step3": "Проверьте правильность endpoint URL"
+            };
+        } else if (isQuotaError) {
+            errorMessage = '⚠️ Превышен лимит запросов Azure OpenAI. Попробуйте через несколько минут.';
+            troubleshooting = {
+                "step1": "Подождите несколько минут",
+                "step2": "Проверьте квоты в Azure Portal",
+                "step3": "Увеличьте лимиты TPM в deployment"
+            };
         } else if (error.message?.includes('model')) {
-            errorMessage = '🤖 Модель ИИ недоступна. Попробуйте позже.';
-        } else if (error.message?.includes('quota') || error.message?.includes('limit')) {
-            errorMessage = '⚠️ Превышен лимит запросов. Попробуйте через несколько минут.';
+            errorMessage = '🤖 Модель ИИ недоступна. Проверьте deployment в Azure.';
+            troubleshooting = {
+                "step1": "Откройте Azure Portal → Model deployments",
+                "step2": "Убедитесь, что deployment активен",
+                "step3": "Проверьте имя модели в AZURE_OPENAI_DEPLOYMENT_NAME"
+            };
         }
             
         return NextResponse.json(
             { 
                 error: errorMessage, 
                 details: error.message,
+                troubleshooting: troubleshooting,
                 assistant: 'Домовёнок 🏠',
                 timestamp: new Date().toISOString()
             },

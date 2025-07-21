@@ -32,6 +32,9 @@ class AzureOpenAIService:
     
     def __init__(self, use_azure_ad: bool = False):
         """Initialize Azure OpenAI service"""
+        print("🤖 RED AI Service - Interior Design Assistant")
+        print("=" * 50)
+        
         # Use Azure config if available, otherwise fall back to environment variables
         if AZURE_CONFIG:
             self.endpoint = AZURE_CONFIG["endpoint"]
@@ -41,14 +44,21 @@ class AzureOpenAIService:
             print("✅ Loading Azure configuration from azure_settings.py")
         else:
             self.endpoint = os.getenv("AZURE_OPENAI_ENDPOINT") or os.getenv("AZURE_ENDPOINT_KEY")
-            self.api_version = os.getenv("AZURE_OPENAI_API_VERSION") or os.getenv("OPENAI_API_VERSION", "2024-05-01-preview")
-            self.deployment_name = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4.1")
+            self.api_version = os.getenv("AZURE_OPENAPI_VERSION") or os.getenv("OPENAI_API_VERSION", "2024-02-01")
+            self.deployment_name = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4")
             
             # Use correct environment variable names for Azure OpenAI API keys
             self.azure_keys = [
                 os.getenv("AZURE_OPENAI_API_KEY") or os.getenv("AZURE_OPENAI_KEY"),
                 os.getenv("AZURE_OPENAI_API_KEY_2") or os.getenv("AZURE_OPENAI_KEY_2")
             ]
+            print("📋 Loading Azure configuration from environment variables")
+        
+        # Initialize default values for missing configuration
+        self.endpoint = self.endpoint or ""
+        self.api_version = self.api_version or "2024-02-01"
+        self.deployment_name = self.deployment_name or "gpt-4"
+        self.azure_keys = [key or "" for key in self.azure_keys]
         
         # Validate configuration
         self.config_valid = self._validate_configuration()
@@ -57,9 +67,15 @@ class AzureOpenAIService:
         self.client = None
         
         if self.config_valid:
-            self.client = self._initialize_client()
+            try:
+                self.client = self._initialize_client()
+                print("✅ Azure OpenAI client initialized successfully")
+            except Exception as e:
+                print(f"❌ Failed to initialize Azure OpenAI client: {e}")
+                self.config_valid = False
         else:
             print("❌ Azure OpenAI configuration invalid. Service will not be available.")
+            print("💡 Please check your .env file or azure_settings.py configuration")
     
     def _validate_configuration(self) -> bool:
         """Validate Azure OpenAI configuration"""
@@ -70,11 +86,11 @@ class AzureOpenAIService:
         if not self.azure_keys[1] or self.azure_keys[1].startswith("AZURE_"):
             print("⚠️  Backup Azure OpenAI API key not configured")
         
-        # Ensure endpoint is correctly formatted
-        if not self.endpoint.endswith('/'):
+        # Ensure endpoint is correctly formatted (only if endpoint exists)
+        if self.endpoint and not self.endpoint.endswith('/'):
             self.endpoint = self.endpoint + '/'
         
-        has_api_key = bool(self.azure_keys[0])
+        has_api_key = bool(self.azure_keys[0] and not self.azure_keys[0].startswith("AZURE_"))
         has_endpoint = bool(self.endpoint)
         has_api_version = bool(self.api_version)
         has_deployment = bool(self.deployment_name)
@@ -91,7 +107,7 @@ class AzureOpenAIService:
         if not all(config_status.values()):
             print("❌ Missing Azure OpenAI configuration:")
             if not has_api_key:
-                print("   - AZURE_OPENAI_KEY или AZURE_OPENAI_API_KEY not set")
+                print("   - AZURE_OPENAI_KEY or AZURE_OPENAI_API_KEY not set")
             if not has_endpoint:
                 print("   - AZURE_OPENAI_ENDPOINT not set")
             if not has_api_version:
@@ -284,10 +300,11 @@ class AzureOpenAIService:
             "endpoint": self.endpoint,
             "api_version": self.api_version,
             "deployment_name": self.deployment_name,
+            "dalle_deployment": self.deployment_name,  # Add this for backward compatibility
             "use_azure_ad": self.use_azure_ad,
             "azure_ad_available": AZURE_AD_AVAILABLE,
             "configured": self.is_configured(),
-            "has_api_key": bool(self.azure_keys[0]),
+            "has_api_key": bool(self.azure_keys[0] and not self.azure_keys[0].startswith("AZURE_")),
             "has_endpoint": bool(self.endpoint),
             "config_valid": self.config_valid
         }

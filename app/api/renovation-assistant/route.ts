@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import OpenAI from 'openai'
+import { AzureOpenAI } from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.AZURE_OPENAPI_KEY,
-})
+// Initialize Azure OpenAI client
+const azureApiKey = process.env.AZURE_OPENAI_API_KEY || process.env.AZURE_OPENAI_KEY;
+const azureEndpoint = process.env.AZURE_OPENAI_ENDPOINT || process.env.AZURE_ENDPOINT_KEY;
+const azureDeploymentName = process.env.AZURE_OPENAI_DEPLOYMENT_NAME || 'gpt-4.1';
+
+const azureClient = azureApiKey && azureEndpoint ? new AzureOpenAI({
+  apiKey: azureApiKey,
+  apiVersion: process.env.AZURE_OPENAI_API_VERSION || '2024-05-01-preview',
+  endpoint: azureEndpoint,
+}) : null;
 
 interface Message {
   id: string
@@ -15,10 +22,9 @@ interface Message {
 
 export async function POST(request: NextRequest) {
   try {
-      const azureApiKey = process.env.AZURE_OPENAPI_KEY || process.env.AZURE_OPENAPI_KEY;
-  if (!process.env.AZURE_OPENAPI_KEY && !azureApiKey) {
-    return NextResponse.json(
-      { error: 'AI provider API key not configured. Set OPENAI_API_KEY or AZURE_OPENAI_KEY (or AZURE_OPENAI_API_KEY) in your environment.' },
+    if (!azureClient) {
+      return NextResponse.json(
+        { error: 'Azure OpenAI not configured. Set AZURE_OPENAI_API_KEY and AZURE_OPENAI_ENDPOINT in your environment.' },
         { status: 500 }
       )
     }
@@ -394,8 +400,8 @@ Determine which area the user's question relates to and answer as the relevant e
         content: msg.content
       })) || []
 
-    const response = await openai.chat.completions.create({
-      model: model, // Поддержка разных моделей: gpt-4o, gpt-4-turbo, gpt-4o-mini
+    const response = await azureClient.chat.completions.create({
+      model: azureDeploymentName, // Use Azure deployment name
       messages: [
         {
           role: "system",
@@ -413,7 +419,7 @@ Determine which area the user's question relates to and answer as the relevant e
       frequency_penalty: 0.1
     })
 
-    const assistantResponse = response.choices[0]?.message?.content?.trim()
+    const assistantResponse = response?.choices?.[0]?.message?.content?.trim()
     
     if (!assistantResponse) {
       return NextResponse.json(
@@ -446,8 +452,8 @@ Determine which area the user's question relates to and answer as the relevant e
       timestamp: new Date().toISOString(),
       metadata: {
         model: 'gpt-4o-mini',
-        tokens: response.usage?.total_tokens || 0,
-        cost: ((response.usage?.total_tokens || 0) * 0.0001).toFixed(4) + ' USD'
+        tokens: response?.usage?.total_tokens || 0,
+        cost: ((response?.usage?.total_tokens || 0) * 0.0001).toFixed(4) + ' USD'
       }
     })
 

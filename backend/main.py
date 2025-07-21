@@ -254,11 +254,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize AI service
-ai_service = AIService()
+# Initialize AI service with error handling
+try:
+    ai_service = AIService()
+    print("✅ AI Service initialized successfully")
+except Exception as e:
+    print(f"⚠️  AI Service initialization failed: {e}")
+    print("   Some features may not be available until Azure OpenAI is configured")
+    ai_service = None
 
 # Initialize Azure OpenAI service for additional functionality
-azure_service = create_azure_openai_service()
+try:
+    azure_service = create_azure_openai_service()
+    print("✅ Azure OpenAI service initialized")
+except Exception as e:
+    print(f"⚠️  Azure OpenAI service initialization failed: {e}")
+    azure_service = None
 
 # Image generation services (DALL-E removed, using BFL)
 # dalle_service = create_azure_dalle_service()  # Removed - module not available
@@ -569,16 +580,25 @@ async def get_features():
 # ==================== MAIN ====================
 
 if __name__ == "__main__":
-    print("🚀 Starting RED AI Backend Server...")
-    print(f"📊 Dashboard features: Tasks, Clients, Designs, Analytics")
-    print(f"🤖 AI services: Floor plan analysis, Design generation, Chat assistant")
-    print(f"🔧 API Documentation: http://localhost:{settings.API_PORT}/docs")
-    print(f"🎨 Features: http://localhost:{settings.API_PORT}/api/features")
+    import uvicorn
     
+    print("🚀 Starting Red.AI Backend Service")
+    print("=" * 50)
+    
+    # Initialize AI service with error handling
+    try:
+        ai_service = AIService()
+        print("✅ AI Service initialized successfully")
+    except Exception as e:
+        print(f"⚠️  AI Service initialization failed: {e}")
+        print("   The backend will start but AI features may not be available")
+        print("   Please check your Azure OpenAI configuration")
+        ai_service = None
+    
+    # Run the FastAPI server
     uvicorn.run(
-        "main:app",
-        host=settings.API_HOST,
-        port=settings.API_PORT,
-        reload=settings.DEBUG,
+        app, 
+        host="0.0.0.0", 
+        port=8000,
         log_level="info"
     ) 

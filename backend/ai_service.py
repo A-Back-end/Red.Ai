@@ -24,13 +24,21 @@ class AIService:
         # Legacy configuration for backward compatibility
         self.azure_api_key = api_key or os.getenv("AZURE_OPENAI_KEY") or os.getenv("AZURE_OPENAI_API_KEY") or "YOUR_AZURE_OPENAI_API_KEY_HERE"
         
-        # Show service info
-        service_info = self.azure_service.get_service_info()
-        print(f"✅ Azure OpenAI Service initialized")
-        print(f"   Endpoint: {service_info['endpoint']}")
-        print(f"   Authentication: {'Azure AD' if service_info['use_azure_ad'] else 'API Key'}")
-        print(f"   API Version: {service_info['api_version']}")
-        print(f"   DALL-E Model: {service_info['dalle_deployment']}")
+        # Show service info only if the service is properly configured
+        try:
+            service_info = self.azure_service.get_service_info()
+            if service_info.get('config_valid', False):
+                print(f"✅ Azure OpenAI Service initialized")
+                print(f"   Endpoint: {service_info.get('endpoint', 'Not configured')}")
+                print(f"   Authentication: {'Azure AD' if service_info.get('use_azure_ad', False) else 'API Key'}")
+                print(f"   API Version: {service_info.get('api_version', 'Not configured')}")
+                print(f"   Deployment Model: {service_info.get('deployment_name', 'Not configured')}")
+            else:
+                print("⚠️  Azure OpenAI Service initialized but not properly configured")
+                print("   Some features may not be available until configuration is complete")
+        except Exception as e:
+            print(f"⚠️  Error getting Azure OpenAI service info: {e}")
+            print("   Service initialized but configuration may be incomplete")
 
     async def analyze_floor_plan(self, image_data: bytes, filename: str) -> Dict:
         """Анализ планировки квартиры с помощью ИИ"""

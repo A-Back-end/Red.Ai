@@ -81,6 +81,7 @@ services:
     volumes:
       - ./uploads:/app/uploads
       - ./public/generated-images:/app/generated-images
+      - ./database:/app/database
     networks:
       - redai-network
     restart: unless-stopped

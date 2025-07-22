@@ -6,9 +6,20 @@ import path from 'path';
 // Path to the JSON database file
 const dbPath = path.join(process.cwd(), 'database', 'projects.json');
 
+// Helper function to ensure database directory exists
+async function ensureDatabaseDirectory(): Promise<void> {
+  const dbDir = path.dirname(dbPath);
+  try {
+    await fs.access(dbDir);
+  } catch {
+    await fs.mkdir(dbDir, { recursive: true });
+  }
+}
+
 // Helper function to read projects from the database
 async function readProjects(): Promise<Project[]> {
   try {
+    await ensureDatabaseDirectory();
     const data = await fs.readFile(dbPath, 'utf-8');
     const projects = JSON.parse(data);
     // It's important to parse dates back into Date objects
@@ -20,17 +31,25 @@ async function readProjects(): Promise<Project[]> {
   } catch (error: any) {
     // If the file doesn't exist, return an empty array
     if (error.code === 'ENOENT') {
+      console.log('Database file not found, creating new one');
       return [];
     }
+    console.error('Error reading projects:', error);
     throw error;
   }
 }
 
 // Helper function to write projects to the database
 async function writeProjects(projects: Project[]): Promise<void> {
-  await fs.writeFile(dbPath, JSON.stringify(projects, null, 2), 'utf-8');
+  try {
+    await ensureDatabaseDirectory();
+    await fs.writeFile(dbPath, JSON.stringify(projects, null, 2), 'utf-8');
+    console.log(`Successfully wrote ${projects.length} projects to database`);
+  } catch (error) {
+    console.error('Error writing projects to database:', error);
+    throw error;
+  }
 }
-
 
 export async function GET(request: NextRequest) {
   try {

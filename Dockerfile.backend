@@ -13,12 +13,20 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend source code
 COPY backend/ .
 
-# Create necessary directories
-RUN mkdir -p uploads logs generated-images
+# Create necessary directories and set permissions
+RUN mkdir -p uploads logs generated-images database
+RUN chmod 755 uploads logs generated-images database
+
+# Create a non-root user for security
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+RUN chown -R appuser:appuser /app
 
 # Set environment variables
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
+
+# Switch to non-root user
+USER appuser
 
 # Expose port
 EXPOSE 8000

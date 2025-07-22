@@ -183,5 +183,172 @@
     "threeDModel": null,
     "pdfReport": null,
     "shoppingList": null
+  },
+  {
+    "id": "project_1753179521808_eir583m8g",
+    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
+    "name": "oih",
+    "description": "oih",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/f4/5245901170b6da/1170b6da210644cf98c3da85cb02b28c/sample.png?se=2025-07-22T10%3A28%3A45Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=eUILZefsMBRGFWIMpOMZSzGbfVPr2vV2J/XJfsaV5q4%3D",
+    "createdAt": "2025-07-22T10:18:41.808Z",
+    "updatedAt": "2025-07-22T10:18:41.808Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-us1.bfl.ai/results/f4/5245901170b6da/1170b6da210644cf98c3da85cb02b28c/sample.png?se=2025-07-22T10%3A28%3A45Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=eUILZefsMBRGFWIMpOMZSzGbfVPr2vV2J/XJfsaV5q4%3D"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "test": "write-test",
+    "createdAt": "1970-01-01T00:00:00.000Z",
+    "updatedAt": "1970-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "project_1753180225818_uzeo5ou3k",
+    "userId": "test-user-123",
+    "name": "Test Project Save",
+    "description": "Testing project save functionality",
+    "imageUrl": "https://example.com/test-image.jpg",
+    "createdAt": "2025-07-22T10:30:25.818Z",
+    "updatedAt": "2025-07-22T10:30:25.818Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://example.com/test-image.jpg"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753180559629_1a0tldwg1",
+    "userId": "test-user-123",
+    "name": "Test Project Save",
+    "description": "Testing project save functionality",
+    "imageUrl": "https://example.com/test-image.jpg",
+    "createdAt": "2025-07-22T10:35:59.629Z",
+    "updatedAt": "2025-07-22T10:35:59.629Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://example.com/test-image.jpg"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753180574974_j593v22nd",
+    "userId": "test-user-123",
+    "name": "Test Project Save",
+    "description": "Testing project save functionality",
+    "imageUrl": "https://example.com/test-image.jpg",
+    "createdAt": "2025-07-22T10:36:14.974Z",
+    "updatedAt": "2025-07-22T10:36:14.974Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://example.com/test-image.jpg"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753180629420_s0u3p6mf3",
+    "userId": "anonymous",
+    "name": "Test Project Save with Auth",
+    "description": "Testing project save functionality with authentication",
+    "imageUrl": "https://example.com/test-image.jpg",
+    "createdAt": "2025-07-22T10:37:09.420Z",
+    "updatedAt": "2025-07-22T10:37:09.420Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://example.com/test-image.jpg"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753180656725_wkegnxqot",
+    "userId": "anonymous",
+    "name": "Test Project Save with Auth",
+    "description": "Testing project save functionality with authentication",
+    "imageUrl": "https://example.com/test-image.jpg",
+    "createdAt": "2025-07-22T10:37:36.725Z",
+    "updatedAt": "2025-07-22T10:37:36.725Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://example.com/test-image.jpg"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
   }
 ]

@@ -1,6 +1,7 @@
 // File: app/api/generate-design/route.ts
 import { NextResponse } from 'next/server';
 import { generateOptimizedPrompt } from '@/utils/promptGenerator';
+import { generateDesign, getBflApiKey } from '@/utils/bflApiClient';
 
 // Интерфейс для входных параметров
 interface GenerationRequest {
@@ -12,18 +13,6 @@ interface GenerationRequest {
   budget?: number;
   link?: string;
 }
-
-// Helper to get the correct BFL API key
-const getBflApiKey = (): string | null => {
-  const envKey = process.env.BFL_API_KEY;
-  
-  // Return null if not configured properly (no hardcoded fallbacks)
-  if (!envKey || envKey === 'BFL_API_KEY' || envKey.trim() === '') {
-    return null;
-  }
-  
-  return envKey;
-};
 
 // Helper to optimize image base64 if needed
 const optimizeImageBase64 = async (base64: string): Promise<string> => {
@@ -42,7 +31,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Prompt is required' }, { status: 400 });
     }
 
-    const bflApiUrl = "https://api.bfl.ai/v1/flux-kontext-pro";
     const apiKey = getBflApiKey();
   
     if (!apiKey) {
@@ -85,41 +73,11 @@ export async function POST(request: Request) {
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-    const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // Reduced to 15-second timeout
-
         console.log(`[Generate API] Sending request to BFL.ai (attempt ${attempt + 1}/${maxRetries + 1})...`);
         console.log(`[Generate API] Prompt length: ${optimizedPrompt.length} characters`);
 
-    const bflResponse = await fetch(bflApiUrl, {
-      method: "POST",
-      headers: { 
-        'Content-Type': 'application/json', 
-            'x-key': apiKey
-      },
-      body: JSON.stringify(payload),
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
-
-        if (!bflResponse.ok) {
-          const errorText = await bflResponse.text();
-          console.error(`[Generate API] HTTP ${bflResponse.status} from BFL.ai:`, errorText);
-          
-          // Don't retry on client errors (4xx)
-          if (bflResponse.status >= 400 && bflResponse.status < 500) {
-            return NextResponse.json({ 
-              message: `BFL.ai error: ${errorText || 'Invalid request'}` 
-            }, { status: bflResponse.status });
-          }
-          
-          // Retry on server errors (5xx)
-          lastError = new Error(`HTTP ${bflResponse.status}: ${errorText}`);
-          continue;
-        }
-
-    const responseData = await bflResponse.json();
+        const responseData = await generateDesign(payload);
+        
         console.log('[Generate API] Successfully started generation. Response:', responseData);
         console.log('[Generate API] Polling URL received:', responseData.polling_url);
         
@@ -130,16 +88,12 @@ export async function POST(request: Request) {
           console.error('[Generate API] Warning: Invalid polling URL format:', responseData.polling_url);
         }
         
-    return NextResponse.json(responseData);
+        return NextResponse.json(responseData);
 
-  } catch (error: any) {
+      } catch (error: any) {
         lastError = error;
         
-    if (error.name === 'AbortError') {
-          console.warn(`[Generate API] Request ${attempt + 1} timed out after 15 seconds`);
-        } else {
-          console.warn(`[Generate API] Request ${attempt + 1} failed:`, error.message);
-        }
+        console.warn(`[Generate API] Request ${attempt + 1} failed:`, error.message);
         
         // Don't retry on the last attempt
         if (attempt === maxRetries) break;
@@ -152,13 +106,6 @@ export async function POST(request: Request) {
     }
 
     // All attempts failed
-    if (lastError?.name === 'AbortError') {
-      console.error('[Generate API] All requests to BFL.ai timed out');
-      return NextResponse.json({ 
-        message: 'The design service is currently slow to respond. Please try again in a few minutes.' 
-      }, { status: 504 });
-    }
-    
     console.error('[Generate API] All attempts failed. Last error:', lastError);
     return NextResponse.json({ 
       message: 'The design service is temporarily unavailable. Please try again later.',

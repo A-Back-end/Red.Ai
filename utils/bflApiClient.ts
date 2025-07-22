@@ -60,19 +60,13 @@ export const checkStatus = async (pollingUrl: string) => {
     throw new Error('BFL_API_KEY environment variable is missing or invalid');
   }
 
-  // Extract the ID from the polling URL
-  const url = new URL(pollingUrl);
-  const id = url.searchParams.get('id');
-  
-  if (!id) {
-    throw new Error('Invalid polling URL: missing ID parameter');
-  }
-
-  // Use our custom client with the ID
-  const response = await bflApiClient.get(`${BFL_API_CONFIG.endpoints.status}?id=${id}`, {
+  // Use direct axios call - this works perfectly as shown by debug endpoint
+  const response = await axios.get(pollingUrl, {
     headers: {
+      'Content-Type': 'application/json',
       'x-key': apiKey
-    }
+    },
+    timeout: BFL_API_CONFIG.timeout
   });
 
   return response.data;

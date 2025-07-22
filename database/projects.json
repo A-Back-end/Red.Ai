@@ -79,5 +79,59 @@
     "threeDModel": null,
     "pdfReport": null,
     "shoppingList": null
+  },
+  {
+    "id": "project_1753163500658_du9bm884p",
+    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
+    "name": "poyfd",
+    "description": "poyfd",
+    "imageUrl": "https://delivery-eu1.bfl.ai/results/fc/503078c3582619/c3582619d29e4e65ad6dfb3ee55469ac/sample.png?se=2025-07-22T06%3A01%3A44Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=Jzr1%2BRdUlAXfOeCYHjhMgFK1h2OzFwKLuAJnpZ%2B2iYs%3D",
+    "createdAt": "2025-07-22T05:51:40.658Z",
+    "updatedAt": "2025-07-22T05:51:40.658Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-eu1.bfl.ai/results/fc/503078c3582619/c3582619d29e4e65ad6dfb3ee55469ac/sample.png?se=2025-07-22T06%3A01%3A44Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=Jzr1%2BRdUlAXfOeCYHjhMgFK1h2OzFwKLuAJnpZ%2B2iYs%3D"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753165298014_ax2z03aer",
+    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
+    "name": "Сделай мне реомнт",
+    "description": "Сделай мне реомнт",
+    "imageUrl": "https://delivery-eu1.bfl.ai/results/7e/300196a8fe7867/a8fe7867974043008f47ccd2b677e5dc/sample.png?se=2025-07-22T06%3A31%3A41Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=zpnCwveImNlMIxsghzveIJhm5kdMXin5oabn9j%2Brk8g%3D",
+    "createdAt": "2025-07-22T06:21:38.014Z",
+    "updatedAt": "2025-07-22T06:21:38.014Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-eu1.bfl.ai/results/7e/300196a8fe7867/a8fe7867974043008f47ccd2b677e5dc/sample.png?se=2025-07-22T06%3A31%3A41Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=zpnCwveImNlMIxsghzveIJhm5kdMXin5oabn9j%2Brk8g%3D"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
   }
 ]

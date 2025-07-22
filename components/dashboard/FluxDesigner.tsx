@@ -584,8 +584,8 @@ export default function FluxDesigner({ onAnalyze, onGenerate, onDesign, credits 
         }
       };
 
-      // Check immediately and then start the interval
-      checkStatus();
+      // Check after a short delay to give the API time to process, then start the interval
+      setTimeout(checkStatus, 2000);
       pollingRef.current = setInterval(checkStatus, 4000);
     }
 

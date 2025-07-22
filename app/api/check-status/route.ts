@@ -70,6 +70,16 @@ export async function GET(request: Request) {
       
       console.warn(`[Check Status API] Request ${attempt + 1} failed:`, error.message);
       
+      // If it's a 404, it might mean the generation is still processing
+      if (error.response && error.response.status === 404) {
+        console.log('[Check Status API] 404 received - generation might still be processing');
+        // Return a "still processing" status instead of error
+        return NextResponse.json({
+          status: 'Processing',
+          message: 'Generation is still in progress'
+        });
+      }
+      
       // Don't retry on the last attempt
       if (attempt === maxRetries) break;
       

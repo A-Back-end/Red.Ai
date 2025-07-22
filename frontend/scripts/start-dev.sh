@@ -116,7 +116,7 @@ echo "   Redis:    localhost:6379"
 echo ""
 echo "📊 Monitoring:"
 echo "   Prometheus: http://localhost:9090"
-echo "   Grafana:    http://localhost:3001"
+
 echo ""
 echo "💡 Tips:"
 echo "   - Edit .env file for configuration"

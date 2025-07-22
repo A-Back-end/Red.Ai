@@ -80,11 +80,13 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY:-}
       - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT:-}
+      - BFL_API_KEY=${BFL_API_KEY:-}
     ports:
       - "3000:3000"
     volumes:
       - ./src/frontend:/app/src/frontend
       - ./public:/app/public
+      - ./database:/app/database
     depends_on:
       - backend
     healthcheck:
@@ -105,6 +107,7 @@ services:
       - HUGGINGFACE_API_KEY=${HUGGINGFACE_API_KEY:-}
       - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY:-}
       - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT:-}
+      - BFL_API_KEY=${BFL_API_KEY:-}
     volumes:
       - ./src/ai_models:/app/src/ai_models
       - ./uploads:/app/uploads
@@ -149,26 +152,10 @@ services:
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
 
-  # Monitoring - Grafana
-  grafana:
-    image: grafana/grafana:latest
-    container_name: redai_grafana
-    ports:
-      - "3001:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards
-      - ./docker/grafana/provisioning:/etc/grafana/provisioning
-    depends_on:
-      - prometheus
-
 volumes:
   postgres_data:
   redis_data:
   prometheus_data:
-  grafana_data:
 
 networks:
   default:

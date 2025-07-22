@@ -95,7 +95,7 @@ echo "   Status:   https://$DOMAIN/health"
 echo ""
 echo "📊 Monitoring:"
 echo "   Prometheus: https://$DOMAIN:9090"
-echo "   Grafana:    https://$DOMAIN:3001"
+
 echo ""
 
 # Отправка уведомления в Slack/Discord (если настроено)
@@ -115,6 +115,6 @@ fi
 echo "🎉 Red.AI is now running in production!"
 echo "📝 Don't forget to:"
 echo "   - Monitor logs: docker-compose -f docker-compose.prod.yml logs -f"
-echo "   - Check metrics in Grafana"
+
 echo "   - Test all major features"
 echo "   - Update DNS records if needed" 

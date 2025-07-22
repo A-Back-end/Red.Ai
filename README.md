@@ -82,16 +82,48 @@ cp .env.example .env
 nano .env
 ```
 
-### 3. Запуск через Docker
-```bash
-# Запуск всех сервисов
-docker-compose up -d
+### 3. Запуск через Docker (Рекомендуется)
 
-# Проверка статуса
-docker-compose ps
+#### Для разработки:
+```bash
+# Запуск в режиме разработки
+./start-docker-dev.sh
+
+# Или вручную:
+docker-compose -f docker-compose.dev.yml up --build -d
 ```
 
-### 4. Запуск для разработки
+#### Для продакшена:
+```bash
+# Запуск в продакшен режиме
+./start-docker-prod.sh
+
+# Или вручную:
+docker-compose up --build -d
+```
+
+#### Остановка:
+```bash
+# Остановка всех контейнеров
+./stop-docker.sh
+
+# Или вручную:
+docker-compose down
+```
+
+#### Полезные команды:
+```bash
+# Просмотр логов
+docker-compose -f docker-compose.dev.yml logs -f
+
+# Перезапуск сервиса
+docker-compose -f docker-compose.dev.yml restart frontend
+
+# Проверка статуса
+docker-compose -f docker-compose.dev.yml ps
+```
+
+### 4. Запуск для разработки (без Docker)
 ```bash
 # Backend
 cd src/backend
@@ -326,7 +358,7 @@ Red.AI/
 
 ### Мониторинг
 - **Prometheus** для метрик
-- **Grafana** для дашбордов
+
 - **Sentry** для отслеживания ошибок
 - **Logs** структурированное логирование
 

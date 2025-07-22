@@ -160,5 +160,28 @@
     "threeDModel": null,
     "pdfReport": null,
     "shoppingList": null
+  },
+  {
+    "id": "project_1753169047724_33yr6l12s",
+    "userId": "test-user",
+    "name": "Test Project",
+    "description": "Test description",
+    "createdAt": "2025-07-22T07:24:07.724Z",
+    "updatedAt": "2025-07-22T07:24:07.724Z",
+    "status": "draft",
+    "generatedImages": [],
+    "budget": {
+      "min": 50000,
+      "max": 200000
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
   }
 ]

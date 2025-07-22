@@ -1,85 +1,84 @@
-# Исправление API Projects - 500 Internal Server Error
+# 🔧 Исправление API Projects на сервере RedAI
 
-## 🐛 Проблема
+## Проблема
+POST запрос на `https://redai.site/api/projects` возвращает ошибку 500 (Internal Server Error).
 
-Ошибка: `POST http://localhost:3000/api/projects 500 (Internal Server Error)`
+## Причина
+В конфигурации nginx все `/api/` запросы проксируются на backend (FastAPI), но API endpoint `/api/projects` находится в Next.js приложении (frontend).
 
-**Причина**: В Docker контейнере отсутствовала директория `/app/database/`, что приводило к ошибке `ENOENT: no such file or directory, open '/app/database/projects.json'`
+## Решение
 
-## 🔧 Решение
+### 1. Обновление конфигурации nginx
 
-### 1. Добавление database volume в docker-compose файлы
+Создана исправленная конфигурация `nginx-redai-fixed.conf`, которая:
+- Проксирует `/api/projects` на frontend (Next.js)
+- Проксирует остальные `/api/` запросы на backend (FastAPI)
 
-#### docker-compose.dev.yml
-```yaml
-frontend:
-  volumes:
-    - ./app:/app/app
-    - ./components:/app/components
-    - ./lib:/app/lib
-    - ./public:/app/public
-    - ./utils:/app/utils
-    - ./services:/app/services
-    - ./pages:/app/pages
-    - ./database:/app/database  # ← Добавлено
-```
+### 2. Развертывание исправления
 
-#### docker-compose.yml
-```yaml
-frontend:
-  volumes:
-    - ./src/frontend:/app/src/frontend
-    - ./public:/app/public
-    - ./database:/app/database  # ← Добавлено
-```
-
-#### docker-compose.yml.bak
-```yaml
-frontend:
-  volumes:
-    - ./src/frontend:/app/src/frontend
-    - ./public:/app/public
-    - ./database:/app/database  # ← Добавлено
-```
-
-### 2. Перезапуск контейнера
-
+#### Вариант A: Через Docker Compose (рекомендуется)
 ```bash
-# Остановка frontend контейнера
-docker-compose -f docker-compose.dev.yml down frontend
+# Остановить текущие контейнеры
+docker-compose -f docker-compose.prod.yml down
 
-# Запуск с новыми volumes
-docker-compose -f docker-compose.dev.yml up -d frontend
+# Запустить с новой конфигурацией
+docker-compose -f docker-compose.prod.yml up -d
 ```
 
-## ✅ Результат
-
-### API Projects теперь работает:
-
-#### Создание проекта (POST)
+#### Вариант B: Ручное обновление nginx
 ```bash
-curl -X POST http://localhost:3000/api/projects \
+# Скопировать исправленную конфигурацию
+sudo cp nginx-redai-fixed.conf /etc/nginx/nginx.conf
+
+# Проверить конфигурацию
+sudo nginx -t
+
+# Перезагрузить nginx
+sudo nginx -s reload
+```
+
+#### Вариант C: Использовать автоматический скрипт
+```bash
+# Запустить скрипт исправления
+./fix-nginx-config.sh
+```
+
+### 3. Проверка исправления
+
+#### Тест через curl
+```bash
+curl -X POST https://redai.site/api/projects \
   -H "Content-Type: application/json" \
-  -d '{"name": "Test Project", "description": "Test description", "userId": "test-user"}'
+  -d '{"name":"Test Project","description":"Test","userId":"test-user"}'
+```
 
-# Ответ:
+#### Тест через Node.js
+```bash
+node test-projects-api.js
+```
+
+### 4. Ожидаемый результат
+
+После исправления API должен возвращать:
+```json
 {
   "success": true,
   "project": {
-    "id": "project_1753169047724_33yr6l12s",
-    "userId": "test-user",
+    "id": "project_1234567890_abc123",
     "name": "Test Project",
-    "description": "Test description",
-    "createdAt": "2025-07-22T07:24:07.724Z",
-    "updatedAt": "2025-07-22T07:24:07.724Z",
+    "description": "Test",
+    "userId": "test-user",
+    "createdAt": "2025-07-22T11:43:43.332Z",
+    "updatedAt": "2025-07-22T11:43:43.332Z",
     "status": "draft",
-    "generatedImages": [],
     "budget": {
       "min": 50000,
-      "max": 200000
+      "max": 200000,
+      "currency": "RUB"
     },
     "preferredStyles": ["modern"],
     "restrictions": [],
+    "generatedImages": [],
     "roomAnalysis": null,
     "designRecommendation": null,
     "threeDModel": null,
@@ -89,106 +88,30 @@ curl -X POST http://localhost:3000/api/projects \
 }
 ```
 
-#### Получение проектов (GET)
+## Файлы изменений
+
+1. `nginx-redai-fixed.conf` - исправленная конфигурация nginx
+2. `docker-compose.prod.yml` - обновлен для использования новой конфигурации
+3. `fix-nginx-config.sh` - автоматический скрипт исправления
+4. `app/api/projects/route.ts` - улучшен с детальным логированием и валидацией
+
+## Логирование
+
+API endpoint теперь включает детальное логирование:
+- Все входящие запросы
+- Валидация данных
+- Ошибки с деталями
+- Успешные операции
+
+Логи можно найти в консоли Next.js сервера.
+
+## Откат изменений
+
+В случае проблем можно откатиться к предыдущей конфигурации:
 ```bash
-curl "http://localhost:3000/api/projects?userId=test-user"
+# Восстановить backup конфигурации nginx
+sudo cp /etc/nginx/nginx.conf.backup.* /etc/nginx/nginx.conf
 
-# Ответ:
-{
-  "success": true,
-  "projects": [
-    {
-      "id": "project_1753169047724_33yr6l12s",
-      "userId": "test-user",
-      "name": "Test Project",
-      "description": "Test description",
-      // ... остальные поля
-    }
-  ]
-}
-```
-
-## 🔍 Диагностика
-
-### Проверка доступности database в контейнере:
-```bash
-# Проверка директории
-docker-compose -f docker-compose.dev.yml exec frontend ls -la /app/database/
-
-# Результат:
-total 12
-drwxr-xr-x    3 nextjs   nogroup         96 Jul 16 06:06 .
-drwxr-xr-x    1 nextjs   nodejs        4096 Jul 22 07:23 ..
--rw-r--r-x    1 nextjs   nogroup       6470 Jul 22 06:36 projects.json
-```
-
-### Проверка логов:
-```bash
-# Просмотр логов frontend
-docker-compose -f docker-compose.dev.yml logs frontend --tail=20
-```
-
-## 📁 Структура файлов
-
-```
-Red.Ai/
-├── database/
-│   └── projects.json          # JSON база данных проектов
-├── app/
-│   └── api/
-│       └── projects/
-│           └── route.ts       # API endpoint для проектов
-├── docker-compose.dev.yml     # ← Обновлен с database volume
-├── docker-compose.yml         # ← Обновлен с database volume
-└── docker-compose.yml.bak     # ← Обновлен с database volume
-```
-
-## 🎯 Функциональность API Projects
-
-### Поддерживаемые операции:
-
-1. **POST /api/projects** - Создание нового проекта
-2. **GET /api/projects?userId=X** - Получение проектов пользователя
-3. **GET /api/projects?projectId=X** - Получение конкретного проекта
-4. **PUT /api/projects** - Обновление проекта
-5. **DELETE /api/projects?projectId=X** - Удаление проекта
-
-### Структура проекта:
-```typescript
-interface Project {
-  id: string;
-  userId: string;
-  name: string;
-  description: string;
-  imageUrl?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  status: 'draft' | 'in_progress' | 'completed';
-  generatedImages: string[];
-  budget: { min: number; max: number };
-  preferredStyles: string[];
-  restrictions: string[];
-  roomAnalysis: any;
-  designRecommendation: any;
-  threeDModel: any;
-  pdfReport: any;
-  shoppingList: any;
-}
-```
-
-## 🚀 Теперь можно:
-
-- ✅ **Создавать проекты** через фронтенд
-- ✅ **Сохранять дизайны** в проекты
-- ✅ **Просматривать историю** проектов
-- ✅ **Обновлять проекты** с новыми данными
-- ✅ **Удалять проекты** при необходимости
-
-## 📝 Примечания
-
-- **Database volume** теперь подключен во всех docker-compose файлах
-- **JSON файл** используется как простое хранилище данных
-- **Автоматическое создание** директории при первом запуске
-- **Совместимость** с Docker и локальной разработкой
-
-**🎉 API Projects полностью исправлен и работает!** 
+# Перезагрузить nginx
+sudo nginx -s reload
+``` 

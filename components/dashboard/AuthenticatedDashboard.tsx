@@ -36,6 +36,7 @@ import { useTranslation } from '@/lib/useTranslation'
 import { useUserProfile } from '@/lib/user-profile'
 import { useCredits } from '@/lib/useCredits'
 import { CreditsDisplay } from '../ui/credits-display'
+import { useGTM } from '@/lib/useGTM'
 // Import credits admin utilities for development
 import '@/lib/credits-admin'
 
@@ -59,6 +60,7 @@ export function AuthenticatedDashboard() {
   const { theme, toggleTheme, toggleLanguage } = useTheme()
   const { profile, getDisplayName, getInitials } = useUserProfile()
   const { credits, canGenerate, spendCredits, setGenerating, resetCredits } = useCredits()
+  const { trackInteraction, trackAI, trackCustom, EVENTS } = useGTM()
   
   const [currentView, setCurrentView] = useState<ViewType>('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -82,6 +84,8 @@ export function AuthenticatedDashboard() {
   const changeView = (view: ViewType) => {
     setCurrentView(view);
     updateURL(view);
+    // Track navigation
+    trackInteraction('click', 'navigation', `dashboard_${view}`);
   };
 
   useEffect(() => {
@@ -128,6 +132,7 @@ export function AuthenticatedDashboard() {
 
   const handleLogout = async () => {
     try {
+      trackInteraction('click', 'auth', 'logout');
       await signOut()
       router.push('/')
     } catch (error) {

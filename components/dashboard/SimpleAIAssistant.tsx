@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Sparkles, Image, MessageCircle, Loader2, AlertCircle, CheckCircle } from 'lucide-react'
+import { useGTM } from '@/lib/useGTM'
 
 interface Message {
   id: string
@@ -13,6 +14,7 @@ interface Message {
 }
 
 export default function SimpleAIAssistant() {
+  const { trackAI, trackInteraction } = useGTM();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -36,6 +38,10 @@ export default function SimpleAIAssistant() {
 
   const generateWithDALLE = async (prompt: string) => {
     setIsLoading(true)
+    
+    // Track DALL-E generation start
+    trackAI('dalle_generation', 'start', { prompt });
+    
     try {
       const response = await fetch('/api/dalle-generator', {
         method: 'POST',
@@ -58,11 +64,31 @@ export default function SimpleAIAssistant() {
 **Модель:** Azure DALL-E 3
 **Качество:** Стандартное`)
         addMessage('success', '🎨 Изображение успешно создано!')
+        
+        // Track successful generation
+        trackAI('dalle_generation', 'complete', { 
+          prompt,
+          image_url: data.image_url,
+          size: '1024x1024',
+          quality: 'standard'
+        });
       } else {
         addMessage('error', `❌ Ошибка генерации: ${data.error || 'Неизвестная ошибка'}`)
+        
+        // Track failed generation
+        trackAI('dalle_generation', 'error', { 
+          prompt,
+          error: data.error || 'Неизвестная ошибка'
+        });
       }
     } catch (error) {
       addMessage('error', `❌ Ошибка подключения: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`)
+      
+      // Track connection error
+      trackAI('dalle_generation', 'error', { 
+        prompt,
+        error: error instanceof Error ? error.message : 'Неизвестная ошибка'
+      });
     }
     setIsLoading(false)
   }
@@ -98,6 +124,9 @@ export default function SimpleAIAssistant() {
     if (!inputValue.trim() || isLoading) return
 
     const userMessage = inputValue.trim()
+    
+    // Track message sent
+    trackInteraction('click', 'ai_chat', 'send_message');
     setInputValue('')
     addMessage('user', userMessage)
 

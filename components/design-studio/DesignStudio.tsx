@@ -11,6 +11,7 @@ import BeforeAfterSlider from './BeforeAfterSlider';
 import { useTranslation } from '@/lib/useTranslation';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
+import { useGTM } from '@/lib/useGTM';
 
 export interface DesignSettings {
   prompt: string;
@@ -27,6 +28,7 @@ export default function DesignStudio() {
   const { t } = useTranslation();
   const { user } = useUser();
   const router = useRouter();
+  const { trackAI, trackInteraction, trackDesign } = useGTM();
   const [currentStep, setCurrentStep] = useState(1);
   const [mainImage, setMainImage] = useState<File | null>(null);
   const [elementFiles, setElementFiles] = useState<File[]>([]);
@@ -39,8 +41,14 @@ export default function DesignStudio() {
     budget: 15000,
   });
 
-  const nextStep = () => setCurrentStep((prev) => prev + 1);
-  const prevStep = () => setCurrentStep((prev) => prev - 1);
+  const nextStep = () => {
+    setCurrentStep((prev) => prev + 1);
+    trackInteraction('click', 'design_studio', `step_${currentStep + 1}`);
+  };
+  const prevStep = () => {
+    setCurrentStep((prev) => prev - 1);
+    trackInteraction('click', 'design_studio', `step_${currentStep - 1}`);
+  };
 
   // Helper to convert File to base64
   const fileToBase64 = (file: File): Promise<string> => {
@@ -214,6 +222,15 @@ export default function DesignStudio() {
       return;
     }
 
+    // Track design generation start
+    trackDesign('interior_design', {
+      room_type: settings.roomType,
+      apartment_style: settings.apartmentStyle,
+      design_style: settings.design,
+      budget: settings.budget,
+      has_prompt: !!settings.prompt
+    });
+
     console.log('%c[handleGenerate] Process started.', 'color: orange; font-weight: bold;');
     setGenerationStatus('loading');
     setErrorMessage(null);
@@ -276,6 +293,15 @@ export default function DesignStudio() {
               setGenerationStatus('completed');
               console.log('%c[Polling] Success! Image generated.', 'color: green;');
               
+              // Track successful design generation
+              trackDesign('interior_design', {
+                status: 'completed',
+                room_type: settings.roomType,
+                apartment_style: settings.apartmentStyle,
+                design_style: settings.design,
+                budget: settings.budget
+              });
+              
               // Сохраняем проект в базу данных после успешной генерации
               await saveProjectToDatabase(statusData.result.sample);
             } else {
@@ -285,6 +311,17 @@ export default function DesignStudio() {
             stopPolling();
             setErrorMessage(statusData.details || 'Generation failed on the server.');
             setGenerationStatus('failed');
+            
+            // Track failed design generation
+            trackDesign('interior_design', {
+              status: 'failed',
+              error: statusData.details || 'Generation failed on the server.',
+              room_type: settings.roomType,
+              apartment_style: settings.apartmentStyle,
+              design_style: settings.design,
+              budget: settings.budget
+            });
+            
             console.error('[Polling] Generation failed:', statusData);
           }
         } catch (pollingError: any) {

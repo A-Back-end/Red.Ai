@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
-// Инициализация OpenAI (moved inside function to avoid build-time access)
-function getOpenAI() {
-  return new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  })
-}
+// Инициализация OpenAI
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+})
 
 // Настройки личности ассистента
 const PERSONALITY_PROMPTS = {
@@ -110,7 +108,6 @@ ${specializationPrompt}
     ]
 
     // Запрос к OpenAI GPT-4
-    const openai = getOpenAI()
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o', // Используем GPT-4o для лучшего качества
       messages: messages as any,

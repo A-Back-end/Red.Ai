@@ -6,76 +6,10 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-model User {
-  id        String   @id @default(cuid())
-  clerkId   String   @unique // The ID from Clerk
-  email     String   @unique
-  name      String?
-  imageUrl  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  projects Project[]
-  designs  Design[]
-  credits  Credit[]
-
-  @@map("users")
-}
-
-model Project {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  images      Image[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("projects")
-}
-
-model Design {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  images      Image[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("designs")
-}
-
-model Image {
-  id        String   @id @default(cuid())
-  url       String
-  type      String   // "before", "after", "generated", etc.
-  projectId String?
-  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  designId  String?
-  design    Design?  @relation(fields: [designId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  @@map("images")
-}
-
-model Credit {
-  id        String   @id @default(cuid())
-  amount    Int      @default(0)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("credits")
 }

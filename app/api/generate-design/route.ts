@@ -86,9 +86,41 @@ export async function POST(request: Request) {
         
         // Validate polling URL
         if (!responseData.polling_url) {
-          console.error('[Generate API] Warning: No polling URL in response');
-        } else if (!responseData.polling_url.startsWith('http')) {
-          console.error('[Generate API] Warning: Invalid polling URL format:', responseData.polling_url);
+          console.error('[Generate API] Error: No polling URL in response');
+          return NextResponse.json({ 
+            message: 'Invalid response from generation service: missing polling URL',
+            error: 'No polling URL received'
+          }, { status: 500 });
+        }
+        
+        if (!responseData.polling_url.startsWith('http')) {
+          console.error('[Generate API] Error: Invalid polling URL format:', responseData.polling_url);
+          return NextResponse.json({ 
+            message: 'Invalid response from generation service: invalid polling URL format',
+            error: 'Invalid polling URL format',
+            receivedUrl: responseData.polling_url
+          }, { status: 500 });
+        }
+        
+        // Validate that it's a BFL.ai URL
+        try {
+          const urlObj = new URL(responseData.polling_url);
+          const validHosts = ['api.bfl.ai', 'api.eu1.bfl.ai', 'api.us1.bfl.ai', 'api.eu4.bfl.ai'];
+          if (!validHosts.includes(urlObj.hostname)) {
+            console.error('[Generate API] Error: Invalid hostname in polling URL:', urlObj.hostname);
+            return NextResponse.json({ 
+              message: 'Invalid response from generation service: invalid hostname',
+              error: 'Invalid hostname in polling URL',
+              receivedUrl: responseData.polling_url
+            }, { status: 500 });
+          }
+        } catch (urlError) {
+          console.error('[Generate API] Error: Invalid URL format:', responseData.polling_url);
+          return NextResponse.json({ 
+            message: 'Invalid response from generation service: invalid URL format',
+            error: 'Invalid URL format',
+            receivedUrl: responseData.polling_url
+          }, { status: 500 });
         }
         
         // Отслеживаем успешную генерацию в аналитике

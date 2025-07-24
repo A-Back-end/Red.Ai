@@ -7,13 +7,23 @@ const isValidBflUrl = (url: string): boolean => {
   try {
     const urlObj = new URL(url);
     // Accept both EU and global endpoints
-    const validHosts = ['api.bfl.ai', 'api.eu1.bfl.ai', 'api.us1.bfl.ai'];
+    const validHosts = ['api.bfl.ai', 'api.eu1.bfl.ai', 'api.us1.bfl.ai', 'api.eu4.bfl.ai'];
     const isValidHost = validHosts.includes(urlObj.hostname);
-    const isValidPath = urlObj.pathname.includes('/v1/get_result') || urlObj.pathname.includes('/flux-');
-    const hasId = urlObj.searchParams.has('id') || urlObj.pathname.includes('/');
+    const isValidPath = urlObj.pathname.includes('/v1/get_result');
+    const hasId = urlObj.searchParams.has('id');
     
-    return isValidHost && (isValidPath || hasId);
-  } catch {
+    console.log('[Check Status API] URL validation:', {
+      url,
+      hostname: urlObj.hostname,
+      pathname: urlObj.pathname,
+      hasId,
+      isValidHost,
+      isValidPath
+    });
+    
+    return isValidHost && isValidPath && hasId;
+  } catch (error) {
+    console.error('[Check Status API] URL parsing error:', error);
     return false;
   }
 };

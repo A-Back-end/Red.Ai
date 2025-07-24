@@ -659,8 +659,14 @@ export default function FluxDesigner({ onAnalyze, onGenerate, onDesign, credits 
 
       const data = await response.json();
 
-      if (!response.ok || !data.polling_url) {
-        throw new Error(data.message || 'Failed to start generation.');
+      if (!response.ok) {
+        console.error('[FluxDesigner] API error response:', data);
+        throw new Error(data.message || `Failed to start generation (${response.status}).`);
+      }
+      
+      if (!data.polling_url) {
+        console.error('[FluxDesigner] No polling URL in response:', data);
+        throw new Error('Invalid response from server: missing polling URL.');
       }
 
       // Set the URL and status to trigger the useEffect for polling

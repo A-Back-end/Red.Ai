@@ -1,7 +1,9 @@
 // File: app/api/generate-design/route.ts
 import { NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { generateOptimizedPrompt } from '@/utils/promptGenerator';
 import { generateDesign, getBflApiKey } from '@/utils/bflApiClient';
+import { clerkAnalytics } from '@/lib/clerk-analytics';
 
 // Интерфейс для входных параметров
 interface GenerationRequest {
@@ -24,6 +26,7 @@ const optimizeImageBase64 = async (base64: string): Promise<string> => {
 export async function POST(request: Request) {
   console.log('[Generate API] Received new generation request.');
   try {
+    const { userId } = await auth();
     const body: GenerationRequest = await request.json();
     const { prompt, imageBase64 } = body;
 
@@ -86,6 +89,27 @@ export async function POST(request: Request) {
           console.error('[Generate API] Warning: No polling URL in response');
         } else if (!responseData.polling_url.startsWith('http')) {
           console.error('[Generate API] Warning: Invalid polling URL format:', responseData.polling_url);
+        }
+        
+        // Отслеживаем успешную генерацию в аналитике
+        if (userId) {
+          try {
+            await clerkAnalytics.trackEvent({
+              event: 'image_generation_started',
+              userId,
+              properties: {
+                prompt: prompt.substring(0, 100), // Ограничиваем длину
+                style: body.style || 'modern',
+                roomType: body.roomType || 'living-room',
+                temperature: body.temperature || 'SketchUp',
+                budget: body.budget || 5000,
+                hasInputImage: !!imageBase64,
+                timestamp: new Date().toISOString(),
+              },
+            });
+          } catch (analyticsError) {
+            console.warn('[Generate API] Failed to track analytics:', analyticsError);
+          }
         }
         
         return NextResponse.json(responseData);

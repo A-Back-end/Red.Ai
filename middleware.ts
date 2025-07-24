@@ -21,11 +21,6 @@ const isProtectedRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-  // For development, allow all routes without authentication
-  if (process.env.NODE_ENV === 'development') {
-    return NextResponse.next();
-  }
-  
   // If it's a protected route and user is not authenticated, redirect to login
   if (isProtectedRoute(req)) {
     const { userId } = await auth();

@@ -48,6 +48,7 @@ import SimpleAIAssistant from './SimpleAIAssistant'
 import SettingsPanel from './SettingsPanel'
 import ProjectManager from './ProjectManager'
 import SavedDesigns from './SavedDesigns'
+import ProjectErrorHandler from './ProjectErrorHandler'
 import { Project } from '@/lib/types'; 
 
 type ViewType = 'flux-designer' | 'ai-assistant' | 'my-projects' | 'saved-designs' | 'settings' | 'dashboard'
@@ -68,6 +69,7 @@ export function AuthenticatedDashboard() {
   const [refreshProjects, setRefreshProjects] = useState(0)
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoadingProjects, setIsLoadingProjects] = useState(true);
+  const [projectError, setProjectError] = useState<string | null>(null);
 
   // Function to update URL when view changes
   const updateURL = (view: ViewType) => {
@@ -110,17 +112,23 @@ export function AuthenticatedDashboard() {
     async function fetchProjects() {
       if (user) {
         setIsLoadingProjects(true);
+        setProjectError(null);
         try {
           const response = await fetch(`/api/projects?userId=${user.id}`);
           if (response.ok) {
             const data = await response.json();
-            setProjects(data.projects);
+            if (data.success) {
+              setProjects(data.projects || []);
+            } else {
+              throw new Error(data.error || 'Failed to fetch projects');
+            }
           } else {
-            console.error('Failed to fetch projects');
-            setProjects([]);
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || `HTTP ${response.status}: Failed to fetch projects`);
           }
         } catch (error) {
           console.error('Error fetching projects:', error);
+          setProjectError(error instanceof Error ? error.message : 'Failed to load projects');
           setProjects([]);
         } finally {
           setIsLoadingProjects(false);
@@ -141,6 +149,14 @@ export function AuthenticatedDashboard() {
     window.location.href = '/'
     }
   }
+
+  const handleRetryProjects = () => {
+    setRefreshProjects(prev => prev + 1);
+  };
+
+  const handleDismissProjectError = () => {
+    setProjectError(null);
+  };
 
   const navigationItems = [
     { id: 'dashboard', label: t('dashboard'), icon: BarChart3, color: 'text-blue-400', bgColor: 'bg-blue-500/10' },
@@ -611,13 +627,20 @@ export function AuthenticatedDashboard() {
         )}
         
         {currentView === 'my-projects' && (
-          <ProjectManager 
-            userId={user.id}
-            projects={projects}
-            isLoading={isLoadingProjects}
-            onNewProject={() => changeView('flux-designer')}
-            onRefreshProjects={() => setRefreshProjects(p => p + 1)}
-          />
+          <>
+            <ProjectErrorHandler
+              error={projectError}
+              onRetry={handleRetryProjects}
+              onDismiss={handleDismissProjectError}
+            />
+            <ProjectManager 
+              userId={user.id}
+              projects={projects}
+              isLoading={isLoadingProjects}
+              onNewProject={() => changeView('flux-designer')}
+              onRefreshProjects={() => setRefreshProjects(p => p + 1)}
+            />
+          </>
         )}
         
         {currentView === 'saved-designs' && (

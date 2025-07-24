@@ -52,10 +52,40 @@ async function writeProjects(projects: Project[]): Promise<void> {
     await ensureDatabaseDirectory();
     console.log(`Writing ${projects.length} projects to database`);
     
-    await fs.writeFile(dbPath, JSON.stringify(projects, null, 2), 'utf-8');
+    // Create a backup before writing
+    const backupPath = `${dbPath}.backup.${Date.now()}`;
+    try {
+      await fs.copyFile(dbPath, backupPath);
+      console.log('Backup created:', backupPath);
+    } catch (backupError) {
+      console.warn('Could not create backup:', backupError);
+    }
+    
+    // Write with atomic operation
+    const tempPath = `${dbPath}.tmp`;
+    await fs.writeFile(tempPath, JSON.stringify(projects, null, 2), 'utf-8');
+    await fs.rename(tempPath, dbPath);
+    
     console.log(`Successfully wrote ${projects.length} projects to database`);
   } catch (error) {
     console.error('Error writing projects to database:', error);
+    
+    // Try to restore from backup if available
+    const backupFiles = await fs.readdir(path.dirname(dbPath));
+    const latestBackup = backupFiles
+      .filter(f => f.startsWith('projects.json.backup.'))
+      .sort()
+      .pop();
+    
+    if (latestBackup) {
+      try {
+        await fs.copyFile(path.join(path.dirname(dbPath), latestBackup), dbPath);
+        console.log('Restored from backup:', latestBackup);
+      } catch (restoreError) {
+        console.error('Failed to restore from backup:', restoreError);
+      }
+    }
+    
     throw error;
   }
 }
@@ -133,7 +163,16 @@ export async function POST(request: NextRequest) {
     console.log('POST /api/projects - Starting request');
     
     // Read current projects
-    const PROJECTS_DB = await readProjects();
+    let PROJECTS_DB: Project[];
+    try {
+      PROJECTS_DB = await readProjects();
+    } catch (readError) {
+      console.error('POST /api/projects - Failed to read projects:', readError);
+      return NextResponse.json({ 
+        error: 'Failed to read existing projects',
+        details: process.env.NODE_ENV === 'development' ? (readError as Error).message : undefined
+      }, { status: 500 });
+    }
     
     // Parse request body
     let projectData;
@@ -196,8 +235,33 @@ export async function POST(request: NextRequest) {
     // Add to database
     PROJECTS_DB.push(newProject)
     
-    // Write to file
-    await writeProjects(PROJECTS_DB);
+    // Write to file with retry logic
+    let writeSuccess = false;
+    let writeError: Error | null = null;
+    
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        await writeProjects(PROJECTS_DB);
+        writeSuccess = true;
+        break;
+      } catch (error) {
+        writeError = error as Error;
+        console.error(`POST /api/projects - Write attempt ${attempt} failed:`, error);
+        
+        if (attempt < 3) {
+          // Wait before retry
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        }
+      }
+    }
+    
+    if (!writeSuccess) {
+      console.error('POST /api/projects - All write attempts failed');
+      return NextResponse.json({ 
+        error: 'Failed to save project after multiple attempts',
+        details: process.env.NODE_ENV === 'development' ? writeError?.message : undefined
+      }, { status: 500 });
+    }
     
     console.log('POST /api/projects - Successfully created project:', newProject.id);
     
@@ -221,7 +285,17 @@ export async function PUT(request: NextRequest) {
   try {
     console.log('PUT /api/projects - Starting request');
     
-    const PROJECTS_DB = await readProjects();
+    // Read current projects
+    let PROJECTS_DB: Project[];
+    try {
+      PROJECTS_DB = await readProjects();
+    } catch (readError) {
+      console.error('PUT /api/projects - Failed to read projects:', readError);
+      return NextResponse.json({ 
+        error: 'Failed to read existing projects',
+        details: process.env.NODE_ENV === 'development' ? (readError as Error).message : undefined
+      }, { status: 500 });
+    }
     
     let updateData;
     try {
@@ -252,7 +326,33 @@ export async function PUT(request: NextRequest) {
       updatedAt: new Date()
     }
     
-    await writeProjects(PROJECTS_DB);
+    // Write to file with retry logic
+    let writeSuccess = false;
+    let writeError: Error | null = null;
+    
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        await writeProjects(PROJECTS_DB);
+        writeSuccess = true;
+        break;
+      } catch (error) {
+        writeError = error as Error;
+        console.error(`PUT /api/projects - Write attempt ${attempt} failed:`, error);
+        
+        if (attempt < 3) {
+          // Wait before retry
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        }
+      }
+    }
+    
+    if (!writeSuccess) {
+      console.error('PUT /api/projects - All write attempts failed');
+      return NextResponse.json({ 
+        error: 'Failed to update project after multiple attempts',
+        details: process.env.NODE_ENV === 'development' ? writeError?.message : undefined
+      }, { status: 500 });
+    }
     
     console.log('PUT /api/projects - Successfully updated project:', projectId);
     

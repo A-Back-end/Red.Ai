@@ -428,5 +428,29 @@
     "threeDModel": null,
     "pdfReport": null,
     "shoppingList": null
+  },
+  {
+    "id": "project_1753362347539_pq03lwqpf",
+    "userId": "test_user_1753362347",
+    "name": "Updated Test Project 18:05:47",
+    "description": "Test project for API fix",
+    "createdAt": "2025-07-24T13:05:47.539Z",
+    "updatedAt": "2025-07-24T13:05:47.619Z",
+    "status": "completed",
+    "generatedImages": [],
+    "budget": {
+      "min": 50000,
+      "max": 200000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
   }
 ]

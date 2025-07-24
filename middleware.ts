@@ -21,6 +21,15 @@ const isProtectedRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
+  // Check if Clerk is properly configured
+  const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  const isClerkConfigured = clerkPublishableKey && !clerkPublishableKey.includes('your_clerk_publishable_key_here');
+  
+  // If Clerk is not configured, allow all routes
+  if (!isClerkConfigured) {
+    return NextResponse.next();
+  }
+  
   // For development, allow all routes without authentication
   if (process.env.NODE_ENV === 'development') {
     return NextResponse.next();
@@ -28,8 +37,14 @@ export default clerkMiddleware(async (auth, req) => {
   
   // If it's a protected route and user is not authenticated, redirect to login
   if (isProtectedRoute(req)) {
-    const { userId } = await auth();
-    if (!userId) {
+    try {
+      const { userId } = await auth();
+      if (!userId) {
+        return NextResponse.redirect(new URL('/login', req.url));
+      }
+    } catch (error) {
+      console.error('Clerk authentication error:', error);
+      // If there's an authentication error, redirect to login
       return NextResponse.redirect(new URL('/login', req.url));
     }
   }

@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/lib/theme-context'
 import { TranslationsProvider } from '@/lib/translations'
 import { ClerkProvider } from '@clerk/nextjs'
 import Script from 'next/script'
+import AuthErrorHandler from '@/components/auth/AuthErrorHandler'
 
 export const metadata: Metadata = {
   title: 'RED AI - Revolutionary Real Estate Designer',
@@ -23,10 +24,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  // Temporarily disable Clerk for development to fix the URL error
-  const isDevelopment = process.env.NODE_ENV === 'development';
+  // Check if Clerk is properly configured
+  const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  const isClerkConfigured = clerkPublishableKey && !clerkPublishableKey.includes('your_clerk_publishable_key_here');
   
-  if (isDevelopment) {
+  // If Clerk is not configured, render without authentication
+  if (!isClerkConfigured) {
+    console.warn('⚠️ Clerk is not properly configured. Authentication will be disabled.');
     return (
       <html lang="en" className="scroll-smooth" suppressHydrationWarning>
         <head>
@@ -165,7 +169,9 @@ export default function RootLayout({
         
         <ThemeProvider>
           <TranslationsProvider>
-            {children}
+            <AuthErrorHandler>
+              {children}
+            </AuthErrorHandler>
             <Toaster
               position="top-right"
               toastOptions={{

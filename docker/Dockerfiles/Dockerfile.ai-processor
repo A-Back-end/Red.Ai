@@ -1,0 +1,95 @@
+# AI Processing Service Dockerfile
+FROM python:3.11-slim
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PIP_DEFAULT_TIMEOUT=100
+ENV PIP_RETRIES=5
+
+# Set work directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements/base.txt ./requirements.txt
+COPY backend/requirements.txt ./backend-requirements.txt
+
+# Install Python dependencies with retry and timeout options
+# Using multiple RUN commands to isolate heavy packages and enable better caching
+RUN pip install --no-cache-dir --upgrade pip
+
+# Install basic dependencies first
+RUN pip install --no-cache-dir --retries 5 --timeout 120 \
+    fastapi==0.104.1 \
+    uvicorn[standard]==0.24.0 \
+    pydantic==2.5.0 \
+    pydantic-settings==2.1.0
+
+# Install database dependencies
+RUN pip install --no-cache-dir --retries 5 --timeout 120 \
+    sqlalchemy==2.0.23 \
+    alembic==1.13.1 \
+    asyncpg==0.29.0 \
+    psycopg2-binary==2.9.9 \
+    "databases[postgresql]==0.9.0"
+
+# Install PyTorch separately with extended timeout (large download)
+RUN pip install --no-cache-dir --retries 5 --timeout 300 \
+    torch==2.7.1 \
+    torchvision==0.22.1
+
+# Install other ML dependencies
+RUN pip install --no-cache-dir --retries 5 --timeout 120 \
+    transformers==4.36.0 \
+    diffusers==0.25.0 \
+    accelerate==0.25.0 \
+    huggingface-hub==0.19.4
+
+# Install image processing dependencies
+RUN pip install --no-cache-dir --retries 5 --timeout 120 \
+    Pillow==10.1.0 \
+    opencv-python-headless \
+    numpy==1.24.4 \
+    scikit-image==0.22.0
+
+# Install remaining dependencies
+RUN pip install --no-cache-dir --retries 5 --timeout 120 \
+    openai==1.3.7 \
+    anthropic==0.7.7 \
+    redis==5.0.1 \
+    httpx==0.25.2 \
+    requests==2.31.0 \
+    aiofiles==23.2.1 \
+    python-multipart==0.0.6 \
+    "passlib[bcrypt]==1.7.4" \
+    "python-jose[cryptography]==3.3.0"
+
+# Install backend-specific requirements if file exists
+RUN if [ -f backend-requirements.txt ]; then \
+        pip install --no-cache-dir --retries 5 --timeout 120 -r backend-requirements.txt; \
+    fi
+
+# Copy source code
+COPY src/ai_models/ ./src/ai_models/
+COPY src/backend/core/ ./src/backend/core/
+COPY backend/ ./backend/
+
+# Create uploads directory
+RUN mkdir -p uploads
+
+# Expose port
+EXPOSE 8001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8001/health || exit 1
+
+# Run the AI processing service
+CMD ["python", "backend/ai_service.py"] 

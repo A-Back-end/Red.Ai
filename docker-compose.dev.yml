@@ -1,7 +1,7 @@
 services:
-  # PostgreSQL Database
+
   postgres:
-    image: postgres:15-alpine
+    image: postgres:15
     container_name: redai_postgres_dev
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-redai_dev}
@@ -33,28 +33,26 @@ services:
       timeout: 10s
       retries: 5
 
-  # Backend API (Development)
+  # Backend API
   backend:
     build:
       context: .
-      dockerfile: docker/Dockerfile.backend
+      dockerfile: Dockerfile.backend
     container_name: redai_backend_dev
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-redai_user}:${POSTGRES_PASSWORD:-redai_password}@postgres:5432/${POSTGRES_DB:-redai_dev}
       - REDIS_URL=redis://redis:6379
-      - SECRET_KEY=${SECRET_KEY:-dev-secret-key}
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
       - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY:-}
       - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT:-}
       - OPENAI_API_VERSION=${OPENAI_API_VERSION:-2024-02-01}
-      - BFL_API_KEY=${BFL_API_KEY:-}
-      - DEBUG=true
+      - DEBUG=${DEBUG:-true}
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app/backend
-      - ./src:/app/src
       - ./uploads:/app/uploads
       - ./logs:/app/logs
     depends_on:
@@ -72,11 +70,13 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: docker/Dockerfile.frontend
+      dockerfile: Dockerfile.frontend.dev
       args:
         - OPENAI_API_KEY=${OPENAI_API_KEY:-placeholder_for_build}
-        - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:-pk_test_YOUR_CLERK_PUBLISHABLE_KEY_HERE}
+        - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:-pk_test_bGVhcm5pbmctamVubmV0LTgzLmNsZXJrLmFjY291bnRzLmRldiQ}
     container_name: redai_frontend_dev
+    env_file:
+      - .env.local
     environment:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
@@ -97,6 +97,8 @@ services:
       - ./services:/app/services
       - ./pages:/app/pages
       - ./database:/app/database
+      - /app/node_modules
+      - /app/.next
     depends_on:
       - backend
     healthcheck:
@@ -104,31 +106,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-
-  # AI Processing Service (Development)
-  ai-processor:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.ai-processor
-    container_name: redai_ai_processor_dev
-    environment:
-      - REDIS_URL=redis://redis:6379
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
-      - HUGGINGFACE_API_KEY=${HUGGINGFACE_API_KEY:-}
-      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY:-}
-      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT:-}
-      - OPENAI_API_VERSION=${OPENAI_API_VERSION:-2024-02-01}
-      - BFL_API_KEY=${BFL_API_KEY:-}
-    volumes:
-      - ./src/ai_models:/app/src/ai_models
-      - ./backend:/app/backend
-      - ./uploads:/app/uploads
-    depends_on:
-      redis:
-        condition: service_healthy
-    deploy:
-      replicas: 1
 
 volumes:
   postgres_data_dev:

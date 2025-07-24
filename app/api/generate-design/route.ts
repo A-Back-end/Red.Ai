@@ -1,9 +1,7 @@
 // File: app/api/generate-design/route.ts
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
 import { generateOptimizedPrompt } from '@/utils/promptGenerator';
 import { generateDesign, getBflApiKey } from '@/utils/bflApiClient';
-import { clerkAnalytics } from '@/lib/clerk-analytics';
 
 // Интерфейс для входных параметров
 interface GenerationRequest {
@@ -26,7 +24,6 @@ const optimizeImageBase64 = async (base64: string): Promise<string> => {
 export async function POST(request: Request) {
   console.log('[Generate API] Received new generation request.');
   try {
-    const { userId } = await auth();
     const body: GenerationRequest = await request.json();
     const { prompt, imageBase64 } = body;
 
@@ -86,62 +83,9 @@ export async function POST(request: Request) {
         
         // Validate polling URL
         if (!responseData.polling_url) {
-          console.error('[Generate API] Error: No polling URL in response');
-          return NextResponse.json({ 
-            message: 'Invalid response from generation service: missing polling URL',
-            error: 'No polling URL received'
-          }, { status: 500 });
-        }
-        
-        if (!responseData.polling_url.startsWith('http')) {
-          console.error('[Generate API] Error: Invalid polling URL format:', responseData.polling_url);
-          return NextResponse.json({ 
-            message: 'Invalid response from generation service: invalid polling URL format',
-            error: 'Invalid polling URL format',
-            receivedUrl: responseData.polling_url
-          }, { status: 500 });
-        }
-        
-        // Validate that it's a BFL.ai URL
-        try {
-          const urlObj = new URL(responseData.polling_url);
-          const validHosts = ['api.bfl.ai', 'api.eu1.bfl.ai', 'api.us1.bfl.ai', 'api.eu4.bfl.ai'];
-          if (!validHosts.includes(urlObj.hostname)) {
-            console.error('[Generate API] Error: Invalid hostname in polling URL:', urlObj.hostname);
-            return NextResponse.json({ 
-              message: 'Invalid response from generation service: invalid hostname',
-              error: 'Invalid hostname in polling URL',
-              receivedUrl: responseData.polling_url
-            }, { status: 500 });
-          }
-        } catch (urlError) {
-          console.error('[Generate API] Error: Invalid URL format:', responseData.polling_url);
-          return NextResponse.json({ 
-            message: 'Invalid response from generation service: invalid URL format',
-            error: 'Invalid URL format',
-            receivedUrl: responseData.polling_url
-          }, { status: 500 });
-        }
-        
-        // Отслеживаем успешную генерацию в аналитике
-        if (userId) {
-          try {
-            await clerkAnalytics.trackEvent({
-              event: 'image_generation_started',
-              userId,
-              properties: {
-                prompt: prompt.substring(0, 100), // Ограничиваем длину
-                style: body.style || 'modern',
-                roomType: body.roomType || 'living-room',
-                temperature: body.temperature || 'SketchUp',
-                budget: body.budget || 5000,
-                hasInputImage: !!imageBase64,
-                timestamp: new Date().toISOString(),
-              },
-            });
-          } catch (analyticsError) {
-            console.warn('[Generate API] Failed to track analytics:', analyticsError);
-          }
+          console.error('[Generate API] Warning: No polling URL in response');
+        } else if (!responseData.polling_url.startsWith('http')) {
+          console.error('[Generate API] Warning: Invalid polling URL format:', responseData.polling_url);
         }
         
         return NextResponse.json(responseData);

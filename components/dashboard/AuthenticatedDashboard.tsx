@@ -37,7 +37,6 @@ import { useUserProfile } from '@/lib/user-profile'
 import { useCredits } from '@/lib/useCredits'
 import { CreditsDisplay } from '../ui/credits-display'
 import { useGTM } from '@/lib/useGTM'
-import UserDisplay from '../auth/UserDisplay'
 // Import credits admin utilities for development
 import '@/lib/credits-admin'
 
@@ -195,28 +194,64 @@ export function AuthenticatedDashboard() {
           </div>
 
           {/* User Profile */}
+          {/* User Profile Section */}
           <div className="p-4">
             {sidebarCollapsed ? (
               /* Compact Profile for Collapsed Sidebar */
               <div className="flex flex-col items-center space-y-2">
-                <UserDisplay 
-                  className="cursor-pointer"
-                  showAvatar={true}
-                  showEmail={false}
-                />
+                <div 
+                  className="relative cursor-pointer"
+                  title={`${getDisplayName()} - ${user.primaryEmailAddress?.emailAddress || 'user@example.com'}`}
+                >
+                  <div className="w-10 h-10 rounded-xl overflow-hidden hover:ring-2 hover:ring-purple-500/50 transition-all duration-200">
+                    {user.imageUrl ? (
+                      <img 
+                        src={user.imageUrl} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                        {getInitials()}
+                      </div>
+                    )}
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-slate-50 dark:border-slate-900"></div>
+                </div>
               </div>
             ) : (
               /* Full Profile for Expanded Sidebar */
               <Card className="bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50">
                 <CardContent className="p-4">
-                  <UserDisplay 
-                    className="w-full"
-                    showAvatar={true}
-                    showEmail={true}
-                  />
-                  <Badge variant="outline" className="mt-3 text-xs border-purple-500/30 text-purple-400">
-                    Pro Plan
-                  </Badge>
+                  <div className="flex items-center space-x-3">
+                    <div className="relative">
+                      <div className="w-12 h-12 rounded-xl overflow-hidden">
+                        {user.imageUrl ? (
+                          <img 
+                            src={user.imageUrl} 
+                            alt="Profile" 
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-white font-bold">
+                            {getInitials()}
+                          </div>
+                        )}
+                      </div>
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-slate-50 dark:border-slate-900"></div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-slate-900 dark:text-white text-sm truncate">
+                        {getDisplayName()}
+                      </h3>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 truncate">
+                        {user.primaryEmailAddress?.emailAddress || 'user@example.com'}
+                      </p>
+                      <Badge variant="outline" className="mt-1 text-xs border-purple-500/30 text-purple-400">
+                        Pro Plan
+                      </Badge>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             )}

@@ -87,25 +87,6 @@ export const AuthForm = () => {
 
       if (result.status === 'complete') {
         await setActive({ session: result.createdSessionId });
-        
-        // Отслеживаем вход в аналитику
-        if (result.createdSessionId) {
-          try {
-            const { clerkAnalytics } = await import('@/lib/clerk-analytics');
-            // Отслеживаем событие входа
-            await clerkAnalytics.trackEvent({
-              event: 'user_sign_in',
-              userEmail: email,
-              properties: {
-                signInMethod: 'email',
-                timestamp: new Date().toISOString(),
-              },
-            });
-          } catch (analyticsError) {
-            console.warn('Failed to track sign-in analytics:', analyticsError);
-          }
-        }
-        
         router.push('/dashboard');
       } else {
         console.error(result);
@@ -149,25 +130,6 @@ export const AuthForm = () => {
       if (result.status === 'complete') {
         await setActive({ session: result.createdSessionId });
 
-        // Отслеживаем регистрацию в аналитику
-        try {
-          const { clerkAnalytics } = await import('@/lib/clerk-analytics');
-          await clerkAnalytics.trackEvent({
-            event: 'user_sign_up',
-            userEmail: email,
-            userName: `${firstName} ${lastName}`.trim(),
-            properties: {
-              signUpMethod: 'email',
-              firstName,
-              lastName,
-              hasProfilePhoto: !!profilePhoto,
-              timestamp: new Date().toISOString(),
-            },
-          });
-        } catch (analyticsError) {
-          console.warn('Failed to track sign-up analytics:', analyticsError);
-        }
-
         // User is now signed in. The dashboard can handle the photo upload
         // by checking for a photo in a global state or sessionStorage.
         if (profilePhoto) {
@@ -203,20 +165,6 @@ export const AuthForm = () => {
   const handleGoogleSignIn = async () => {
     if (!signIn) return;
     try {
-      // Отслеживаем попытку входа через Google
-      try {
-        const { clerkAnalytics } = await import('@/lib/clerk-analytics');
-        await clerkAnalytics.trackEvent({
-          event: 'google_sign_in_attempt',
-          userEmail: email,
-          properties: {
-            timestamp: new Date().toISOString(),
-          },
-        });
-      } catch (analyticsError) {
-        console.warn('Failed to track Google sign-in attempt:', analyticsError);
-      }
-
       await signIn.authenticateWithRedirect({
         strategy: 'oauth_google',
         redirectUrl: '/sso-callback',

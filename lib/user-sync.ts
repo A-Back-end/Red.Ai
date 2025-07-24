@@ -1,37 +1,38 @@
 import { prisma } from './prisma'
 
+// Clerk webhook data structure (from @clerk/nextjs)
 export interface ClerkUser {
   id: string
-  emailAddresses: Array<{
-    emailAddress: string
+  email_addresses: Array<{
+    email_address: string
     id: string
-    linkedTo: Array<any>
+    linked_to: Array<any>
     object: string
     verification: {
       status: string
       strategy: string
     }
   }>
-  firstName?: string
-  lastName?: string
-  imageUrl?: string
-  createdAt: number
-  updatedAt: number
+  first_name?: string
+  last_name?: string
+  image_url?: string
+  created_at: number
+  updated_at: number
 }
 
 /**
  * Creates a new user in the database from Clerk user data
  */
 export async function createUserFromClerk(clerkUser: ClerkUser) {
-  const primaryEmail = clerkUser.emailAddresses.find(
-    (email: any) => email.id === clerkUser.emailAddresses[0]?.id
-  )?.emailAddress
+  const primaryEmail = clerkUser.email_addresses.find(
+    (email: any) => email.id === clerkUser.email_addresses[0]?.id
+  )?.email_address
 
   if (!primaryEmail) {
     throw new Error('No primary email found for user')
   }
 
-  const name = [clerkUser.firstName, clerkUser.lastName]
+  const name = [clerkUser.first_name, clerkUser.last_name]
     .filter(Boolean)
     .join(' ')
 
@@ -41,7 +42,7 @@ export async function createUserFromClerk(clerkUser: ClerkUser) {
         clerkId: clerkUser.id,
         email: primaryEmail,
         name: name || null,
-        imageUrl: clerkUser.imageUrl || null,
+        imageUrl: clerkUser.image_url || null,
       },
     })
 
@@ -65,15 +66,15 @@ export async function createUserFromClerk(clerkUser: ClerkUser) {
  * Updates an existing user in the database from Clerk user data
  */
 export async function updateUserFromClerk(clerkUser: ClerkUser) {
-  const primaryEmail = clerkUser.emailAddresses.find(
-    (email: any) => email.id === clerkUser.emailAddresses[0]?.id
-  )?.emailAddress
+  const primaryEmail = clerkUser.email_addresses.find(
+    (email: any) => email.id === clerkUser.email_addresses[0]?.id
+  )?.email_address
 
   if (!primaryEmail) {
     throw new Error('No primary email found for user')
   }
 
-  const name = [clerkUser.firstName, clerkUser.lastName]
+  const name = [clerkUser.first_name, clerkUser.last_name]
     .filter(Boolean)
     .join(' ')
 
@@ -83,7 +84,7 @@ export async function updateUserFromClerk(clerkUser: ClerkUser) {
       data: {
         email: primaryEmail,
         name: name || null,
-        imageUrl: clerkUser.imageUrl || null,
+        imageUrl: clerkUser.image_url || null,
       },
     })
 

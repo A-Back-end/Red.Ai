@@ -5,8 +5,7 @@ import { NextResponse } from 'next/server'
 import { 
   createUserFromClerk, 
   updateUserFromClerk, 
-  deleteUserFromClerk,
-  type ClerkUser 
+  deleteUserFromClerk
 } from '@/lib/user-sync'
 
 export async function POST(req: Request) {
@@ -55,11 +54,11 @@ export async function POST(req: Request) {
   try {
     switch (eventType) {
       case 'user.created':
-        await createUserFromClerk(evt.data as ClerkUser);
+        await createUserFromClerk(evt.data as any);
         break;
       
       case 'user.updated':
-        await updateUserFromClerk(evt.data as ClerkUser);
+        await updateUserFromClerk(evt.data as any);
         break;
       
       case 'user.deleted':

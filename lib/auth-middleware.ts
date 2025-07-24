@@ -23,7 +23,7 @@ export async function ensureUserInDatabase() {
     }
 
     // Ensure user exists in our database
-    const dbUser = await ensureUserExists(clerkUser as ClerkUser)
+    const dbUser = await ensureUserExists(clerkUser as any)
     
     return {
       userId,

@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
 // Fallback to standard OpenAI API if Azure fails
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+function getOpenAI() {
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  })
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -58,6 +60,7 @@ export async function POST(request: NextRequest) {
 
     console.log('🧠 Sending image to GPT-4o Vision for analysis...')
     
+    const openai = getOpenAI()
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [

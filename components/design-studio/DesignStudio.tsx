@@ -11,7 +11,7 @@ import BeforeAfterSlider from './BeforeAfterSlider';
 import { useTranslation } from '@/lib/useTranslation';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { useGTM } from '@/lib/useGTM';
+import { useUmami } from '@/lib/useUmami';
 
 export interface DesignSettings {
   prompt: string;
@@ -28,7 +28,7 @@ export default function DesignStudio() {
   const { t } = useTranslation();
   const { user } = useUser();
   const router = useRouter();
-  const { trackAI, trackInteraction, trackDesign } = useGTM();
+  const { trackAI, trackInteraction, trackDesign } = useUmami();
   const [currentStep, setCurrentStep] = useState(1);
   const [mainImage, setMainImage] = useState<File | null>(null);
   const [elementFiles, setElementFiles] = useState<File[]>([]);

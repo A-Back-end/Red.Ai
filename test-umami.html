@@ -3,15 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTM Test - Red.AI</title>
+    <title>Umami Test - Red.AI</title>
     
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-KMRVH2GD');</script>
-    <!-- End Google Tag Manager -->
+    <!-- Umami Analytics -->
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="18af50fe-7e10-4228-aaa5-9f3232c35043"></script>
     
     <style>
         body {
@@ -68,17 +63,12 @@
     </style>
 </head>
 <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMRVH2GD"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
-    
     <div class="container">
-        <h1>🧪 GTM Test Page - Red.AI</h1>
-        <p>Эта страница для тестирования Google Tag Manager интеграции.</p>
+        <h1>🧪 Umami Test Page - Red.AI</h1>
+        <p>Эта страница для тестирования Umami Analytics интеграции.</p>
         
         <div id="status" class="status info">
-            <strong>Статус:</strong> Проверка GTM...
+            <strong>Статус:</strong> Проверка Umami...
         </div>
         
         <h2>Тестовые события</h2>
@@ -113,58 +103,54 @@
         
         <h2>Отладочная информация</h2>
         
-        <button class="test-button" onclick="showDataLayer()">
-            🔍 Показать DataLayer
-        </button>
-        
-        <button class="test-button" onclick="clearDataLayer()">
-            🗑️ Очистить DataLayer
+        <button class="test-button" onclick="showUmamiStatus()">
+            🔍 Показать статус Umami
         </button>
         
         <div id="debug" style="margin-top: 20px;"></div>
     </div>
 
     <script>
-        // Проверка GTM при загрузке
+        // Проверка Umami при загрузке
         window.addEventListener('load', function() {
-            setTimeout(checkGTM, 1000);
+            setTimeout(checkUmami, 2000);
         });
         
-        function checkGTM() {
+        function checkUmami() {
             const statusDiv = document.getElementById('status');
             
-            if (window.dataLayer) {
+            if (window.umami) {
                 statusDiv.className = 'status success';
-                statusDiv.innerHTML = '<strong>✅ GTM загружен успешно!</strong> DataLayer доступен.';
+                statusDiv.innerHTML = '<strong>✅ Umami загружен успешно!</strong> API доступен.';
             } else {
                 statusDiv.className = 'status error';
-                statusDiv.innerHTML = '<strong>❌ GTM не загружен!</strong> DataLayer недоступен.';
+                statusDiv.innerHTML = '<strong>❌ Umami не загружен!</strong> API недоступен.';
             }
         }
         
         // Функции для отправки тестовых событий
-        function sendGTMEvent(eventName, parameters = {}) {
-            if (window.dataLayer) {
-                window.dataLayer.push({
-                    event: eventName,
-                    ...parameters
-                });
-                console.log('📊 GTM Event sent:', eventName, parameters);
-                showDebugInfo(`✅ Отправлено событие: ${eventName}`, parameters);
+        function sendUmamiEvent(eventName, eventData = {}) {
+            if (window.umami) {
+                window.umami.track(eventName, eventData);
+                console.log('📊 Umami Event sent:', eventName, eventData);
+                showDebugInfo(`✅ Отправлено событие: ${eventName}`, eventData);
             } else {
-                showDebugInfo(`❌ DataLayer недоступен для события: ${eventName}`);
+                showDebugInfo(`❌ Umami API недоступен для события: ${eventName}`);
             }
         }
         
         function testPageView() {
-            sendGTMEvent('page_view', {
-                page_path: '/test-gtm',
-                page_title: 'GTM Test Page'
-            });
+            if (window.umami) {
+                window.umami.trackView('/test-umami');
+                console.log('📊 Umami Page View sent');
+                showDebugInfo('✅ Отправлен Page View: /test-umami');
+            } else {
+                showDebugInfo('❌ Umami API недоступен для Page View');
+            }
         }
         
         function testUserInteraction() {
-            sendGTMEvent('user_interaction', {
+            sendUmamiEvent('user_interaction', {
                 action: 'click',
                 category: 'test',
                 label: 'test_button',
@@ -173,7 +159,7 @@
         }
         
         function testAIFeature() {
-            sendGTMEvent('ai_feature_usage', {
+            sendUmamiEvent('ai_feature_usage', {
                 feature: 'test_ai',
                 action: 'test',
                 test_mode: true
@@ -181,7 +167,7 @@
         }
         
         function testDesignGeneration() {
-            sendGTMEvent('design_generation', {
+            sendUmamiEvent('design_generation', {
                 design_type: 'test_design',
                 room_type: 'test_room',
                 status: 'test'
@@ -189,40 +175,40 @@
         }
         
         function testUserRegistration() {
-            sendGTMEvent('user_registration', {
+            sendUmamiEvent('user_registration', {
                 registration_method: 'test'
             });
         }
         
         function testProjectCreation() {
-            sendGTMEvent('project_creation', {
+            sendUmamiEvent('project_creation', {
                 project_type: 'test_project',
                 test_mode: true
             });
         }
         
         function testCreditUsage() {
-            sendGTMEvent('credit_usage', {
+            sendUmamiEvent('credit_usage', {
                 feature: 'test_feature',
                 credits_used: 1
             });
         }
         
-        function showDataLayer() {
+        function showUmamiStatus() {
             const debugDiv = document.getElementById('debug');
-            const dataLayer = window.dataLayer || [];
+            
+            const status = {
+                umami_loaded: !!window.umami,
+                umami_track_available: !!(window.umami && window.umami.track),
+                umami_trackView_available: !!(window.umami && window.umami.trackView),
+                user_agent: navigator.userAgent,
+                timestamp: new Date().toISOString()
+            };
             
             debugDiv.innerHTML = `
-                <h3>📊 DataLayer содержимое:</h3>
-                <pre>${JSON.stringify(dataLayer, null, 2)}</pre>
+                <h3>📊 Umami статус:</h3>
+                <pre>${JSON.stringify(status, null, 2)}</pre>
             `;
-        }
-        
-        function clearDataLayer() {
-            if (window.dataLayer) {
-                window.dataLayer = [];
-                showDebugInfo('🗑️ DataLayer очищен');
-            }
         }
         
         function showDebugInfo(message, data = null) {
@@ -243,7 +229,7 @@
         // Автоматический тест при загрузке
         setTimeout(() => {
             testPageView();
-        }, 2000);
+        }, 3000);
     </script>
 </body>
 </html> 

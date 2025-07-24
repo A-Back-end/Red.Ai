@@ -36,7 +36,7 @@ import { useTranslation } from '@/lib/useTranslation'
 import { useUserProfile } from '@/lib/user-profile'
 import { useCredits } from '@/lib/useCredits'
 import { CreditsDisplay } from '../ui/credits-display'
-import { useGTM } from '@/lib/useGTM'
+import { useUmami } from '@/lib/useUmami'
 // Import credits admin utilities for development
 import '@/lib/credits-admin'
 
@@ -60,7 +60,7 @@ export function AuthenticatedDashboard() {
   const { theme, toggleTheme, toggleLanguage } = useTheme()
   const { profile, getDisplayName, getInitials } = useUserProfile()
   const { credits, canGenerate, spendCredits, setGenerating, resetCredits } = useCredits()
-  const { trackInteraction, trackAI, trackCustom, EVENTS } = useGTM()
+  const { trackInteraction, trackAI, trackCustom, EVENTS } = useUmami()
   
   const [currentView, setCurrentView] = useState<ViewType>('dashboard')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)

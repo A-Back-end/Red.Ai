@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import {
-  sendGTMEvent,
+  sendGAEvent,
   trackPageView,
   trackUserInteraction,
   trackAIFeature,
@@ -9,11 +9,11 @@ import {
   trackUserRegistration,
   trackProjectCreation,
   trackCreditUsage,
-  GTM_EVENTS,
+  GA_EVENTS,
 } from './gtm';
 
 /**
- * React hook for Google Tag Manager integration
+ * React hook for Google Analytics GA4 integration
  * Automatically tracks page views and provides methods for custom events
  */
 export const useGTM = () => {
@@ -70,7 +70,7 @@ export const useGTM = () => {
     eventName: string,
     parameters: Record<string, any> = {}
   ) => {
-    sendGTMEvent(eventName, parameters);
+    sendGAEvent(eventName, parameters);
   }, []);
 
   return {
@@ -84,7 +84,7 @@ export const useGTM = () => {
     trackCustom,
     
     // Event constants
-    EVENTS: GTM_EVENTS,
+    EVENTS: GA_EVENTS,
     
     // Current pathname
     currentPath: pathname,

@@ -1,28 +1,19 @@
-// Google Tag Manager utilities for Red.AI
+// Google Analytics GA4 utilities for Red.AI
 declare global {
   interface Window {
-    dataLayer: any[];
     gtag: (...args: any[]) => void;
   }
 }
 
-// Initialize dataLayer if it doesn't exist
-if (typeof window !== 'undefined') {
-  window.dataLayer = window.dataLayer || [];
-}
-
 /**
- * Send custom events to Google Tag Manager
+ * Send custom events to Google Analytics GA4
  * @param eventName - Name of the event
  * @param parameters - Additional parameters for the event
  */
-export const sendGTMEvent = (eventName: string, parameters: Record<string, any> = {}) => {
-  if (typeof window !== 'undefined' && window.dataLayer) {
-    window.dataLayer.push({
-      event: eventName,
-      ...parameters,
-    });
-    console.log('📊 GTM Event sent:', eventName, parameters);
+export const sendGAEvent = (eventName: string, parameters: Record<string, any> = {}) => {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', eventName, parameters);
+    console.log('📊 GA4 Event sent:', eventName, parameters);
   }
 };
 
@@ -32,10 +23,13 @@ export const sendGTMEvent = (eventName: string, parameters: Record<string, any> 
  * @param pageTitle - Page title
  */
 export const trackPageView = (pagePath: string, pageTitle?: string) => {
-  sendGTMEvent('page_view', {
-    page_path: pagePath,
-    page_title: pageTitle || document.title,
-  });
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('config', 'G-KPN11Z30WN', {
+      page_path: pagePath,
+      page_title: pageTitle || document.title,
+    });
+    console.log('📊 GA4 Page view tracked:', pagePath);
+  }
 };
 
 /**
@@ -51,7 +45,7 @@ export const trackUserInteraction = (
   label?: string,
   value?: number
 ) => {
-  sendGTMEvent('user_interaction', {
+  sendGAEvent('user_interaction', {
     action,
     category,
     label,
@@ -70,7 +64,7 @@ export const trackAIFeature = (
   action: string,
   parameters: Record<string, any> = {}
 ) => {
-  sendGTMEvent('ai_feature_usage', {
+  sendGAEvent('ai_feature_usage', {
     feature,
     action,
     ...parameters,
@@ -86,7 +80,7 @@ export const trackDesignGeneration = (
   designType: string,
   parameters: Record<string, any> = {}
 ) => {
-  sendGTMEvent('design_generation', {
+  sendGAEvent('design_generation', {
     design_type: designType,
     ...parameters,
   });
@@ -97,7 +91,7 @@ export const trackDesignGeneration = (
  * @param method - Registration method (google, email, etc.)
  */
 export const trackUserRegistration = (method: string) => {
-  sendGTMEvent('user_registration', {
+  sendGAEvent('user_registration', {
     registration_method: method,
   });
 };
@@ -111,7 +105,7 @@ export const trackProjectCreation = (
   projectType: string,
   parameters: Record<string, any> = {}
 ) => {
-  sendGTMEvent('project_creation', {
+  sendGAEvent('project_creation', {
     project_type: projectType,
     ...parameters,
   });
@@ -123,14 +117,14 @@ export const trackProjectCreation = (
  * @param creditsUsed - Number of credits used
  */
 export const trackCreditUsage = (feature: string, creditsUsed: number) => {
-  sendGTMEvent('credit_usage', {
+  sendGAEvent('credit_usage', {
     feature,
     credits_used: creditsUsed,
   });
 };
 
 // Predefined event types for Red.AI
-export const GTM_EVENTS = {
+export const GA_EVENTS = {
   // Page interactions
   PAGE_VIEW: 'page_view',
   USER_INTERACTION: 'user_interaction',
@@ -156,4 +150,8 @@ export const GTM_EVENTS = {
   DESIGN_STUDIO_COMPLETE: 'design_studio_complete',
   IMAGE_UPLOAD: 'image_upload',
   IMAGE_GENERATION: 'image_generation',
-} as const; 
+} as const;
+
+// Backward compatibility - keep old function names
+export const sendGTMEvent = sendGAEvent;
+export const GTM_EVENTS = GA_EVENTS; 

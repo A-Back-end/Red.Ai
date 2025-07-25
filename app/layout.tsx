@@ -34,21 +34,20 @@ export default function RootLayout({
     return (
       <html lang="en" className="scroll-smooth" suppressHydrationWarning>
         <head>
-          {/* Google Tag Manager */}
+          {/* Google Analytics GA4 */}
           <Script
-            id="gtm-script"
+            src="https://www.googletagmanager.com/gtag/js?id=G-KPN11Z30WN"
             strategy="afterInteractive"
-            dangerouslySetInnerHTML={{
-              __html: `
-                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-                })(window,document,'script','dataLayer','GTM-KMRVH2GD');
-              `,
-            }}
           />
-          {/* End Google Tag Manager */}
+          <Script id="ga4-script" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-KPN11Z30WN');
+            `}
+          </Script>
+          {/* End Google Analytics GA4 */}
           
           {/* Umami Analytics */}
           <Script
@@ -60,16 +59,7 @@ export default function RootLayout({
           {/* End Umami Analytics */}
         </head>
         <body className="antialiased transition-colors duration-300">
-          {/* Google Tag Manager (noscript) */}
-          <noscript>
-            <iframe 
-              src="https://www.googletagmanager.com/ns.html?id=GTM-KMRVH2GD"
-              height="0" 
-              width="0" 
-              style={{display:'none',visibility:'hidden'}}
-            />
-          </noscript>
-          {/* End Google Tag Manager (noscript) */}
+
           
           <ThemeProvider>
             <TranslationsProvider>
@@ -130,21 +120,20 @@ export default function RootLayout({
     >
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
-        {/* Google Tag Manager */}
+        {/* Google Analytics GA4 */}
         <Script
-          id="gtm-script"
+          src="https://www.googletagmanager.com/gtag/js?id=G-KPN11Z30WN"
           strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-              })(window,document,'script','dataLayer','GTM-KMRVH2GD');
-            `,
-          }}
         />
-        {/* End Google Tag Manager */}
+        <Script id="ga4-script" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-KPN11Z30WN');
+          `}
+        </Script>
+        {/* End Google Analytics GA4 */}
         
         {/* Umami Analytics */}
         <Script
@@ -156,16 +145,7 @@ export default function RootLayout({
         {/* End Umami Analytics */}
       </head>
       <body className="antialiased transition-colors duration-300">
-        {/* Google Tag Manager (noscript) */}
-        <noscript>
-          <iframe 
-            src="https://www.googletagmanager.com/ns.html?id=GTM-KMRVH2GD"
-            height="0" 
-            width="0" 
-            style={{display:'none',visibility:'hidden'}}
-          />
-        </noscript>
-        {/* End Google Tag Manager (noscript) */}
+
         
         <ThemeProvider>
           <TranslationsProvider>

@@ -3,15 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTM Test - Red.AI</title>
+    <title>GA4 Test - Red.AI</title>
     
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-KMRVH2GD');</script>
-    <!-- End Google Tag Manager -->
+          <!-- Google Analytics GA4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KPN11Z30WN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-KPN11Z30WN');
+    </script>
+          <!-- End Google Analytics GA4 -->
     
     <style>
         body {
@@ -68,17 +71,16 @@
     </style>
 </head>
 <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KMRVH2GD"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
+
+
+
     
     <div class="container">
-        <h1>🧪 GTM Test Page - Red.AI</h1>
-        <p>Эта страница для тестирования Google Tag Manager интеграции.</p>
+        <h1>🧪 GA4 Test Page - Red.AI</h1>
+        <p>Эта страница для тестирования Google Analytics GA4 интеграции.</p>
         
         <div id="status" class="status info">
-            <strong>Статус:</strong> Проверка GTM...
+            <strong>Статус:</strong> Проверка GA4...
         </div>
         
         <h2>Тестовые события</h2>
@@ -125,46 +127,43 @@
     </div>
 
     <script>
-        // Проверка GTM при загрузке
+        // Проверка GA4 при загрузке
         window.addEventListener('load', function() {
-            setTimeout(checkGTM, 1000);
+            setTimeout(checkGA4, 1000);
         });
         
-        function checkGTM() {
+        function checkGA4() {
             const statusDiv = document.getElementById('status');
             
-            if (window.dataLayer) {
+            if (window.gtag) {
                 statusDiv.className = 'status success';
-                statusDiv.innerHTML = '<strong>✅ GTM загружен успешно!</strong> DataLayer доступен.';
+                statusDiv.innerHTML = '<strong>✅ GA4 загружен успешно!</strong> gtag доступен.';
             } else {
                 statusDiv.className = 'status error';
-                statusDiv.innerHTML = '<strong>❌ GTM не загружен!</strong> DataLayer недоступен.';
+                statusDiv.innerHTML = '<strong>❌ GA4 не загружен!</strong> gtag недоступен.';
             }
         }
         
-        // Функции для отправки тестовых событий
-        function sendGTMEvent(eventName, parameters = {}) {
-            if (window.dataLayer) {
-                window.dataLayer.push({
-                    event: eventName,
-                    ...parameters
-                });
-                console.log('📊 GTM Event sent:', eventName, parameters);
-                showDebugInfo(`✅ Отправлено событие: ${eventName}`, parameters);
+        // Функции для отправки тестовых событий GA4
+        function sendGAEvent(eventName, parameters = {}) {
+            if (window.gtag) {
+                window.gtag('event', eventName, parameters);
+                console.log('📊 GA4 Event sent:', eventName, parameters);
+                showDebugInfo(`✅ Отправлено событие GA4: ${eventName}`, parameters);
             } else {
-                showDebugInfo(`❌ DataLayer недоступен для события: ${eventName}`);
+                showDebugInfo(`❌ GA4 недоступен для события: ${eventName}`);
             }
         }
         
         function testPageView() {
-            sendGTMEvent('page_view', {
+            sendGAEvent('page_view', {
                 page_path: '/test-gtm',
-                page_title: 'GTM Test Page'
+                page_title: 'GA4 Test Page'
             });
         }
         
         function testUserInteraction() {
-            sendGTMEvent('user_interaction', {
+            sendGAEvent('user_interaction', {
                 action: 'click',
                 category: 'test',
                 label: 'test_button',
@@ -173,7 +172,7 @@
         }
         
         function testAIFeature() {
-            sendGTMEvent('ai_feature_usage', {
+            sendGAEvent('ai_feature_usage', {
                 feature: 'test_ai',
                 action: 'test',
                 test_mode: true
@@ -181,7 +180,7 @@
         }
         
         function testDesignGeneration() {
-            sendGTMEvent('design_generation', {
+            sendGAEvent('design_generation', {
                 design_type: 'test_design',
                 room_type: 'test_room',
                 status: 'test'
@@ -189,20 +188,20 @@
         }
         
         function testUserRegistration() {
-            sendGTMEvent('user_registration', {
+            sendGAEvent('user_registration', {
                 registration_method: 'test'
             });
         }
         
         function testProjectCreation() {
-            sendGTMEvent('project_creation', {
+            sendGAEvent('project_creation', {
                 project_type: 'test_project',
                 test_mode: true
             });
         }
         
         function testCreditUsage() {
-            sendGTMEvent('credit_usage', {
+            sendGAEvent('credit_usage', {
                 feature: 'test_feature',
                 credits_used: 1
             });
@@ -213,7 +212,7 @@
             const dataLayer = window.dataLayer || [];
             
             debugDiv.innerHTML = `
-                <h3>📊 DataLayer содержимое:</h3>
+                <h3>📊 GA4 DataLayer содержимое:</h3>
                 <pre>${JSON.stringify(dataLayer, null, 2)}</pre>
             `;
         }
@@ -221,7 +220,7 @@
         function clearDataLayer() {
             if (window.dataLayer) {
                 window.dataLayer = [];
-                showDebugInfo('🗑️ DataLayer очищен');
+                showDebugInfo('🗑️ GA4 DataLayer очищен');
             }
         }
         

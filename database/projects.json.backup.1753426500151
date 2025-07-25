@@ -670,75 +670,24 @@
     "shoppingList": null
   },
   {
-    "id": "project_1753430910441_1glaxf1pz",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Сделай мне ремонт",
-    "description": "Сделай мне ремонт",
-    "imageUrl": "https://delivery-us1.bfl.ai/results/99/913754405dd803/405dd803e7754a59b5c3a69771fa61ed/sample.png?se=2025-07-25T08%3A18%3A34Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=f7ZiO2wpx4qfmfskUVvqj7b%2BECo8EALnLAvhj/uGNCY%3D",
-    "createdAt": "2025-07-25T08:08:30.441Z",
-    "updatedAt": "2025-07-25T08:08:30.441Z",
-    "status": "completed",
-    "generatedImages": [
-      "https://delivery-us1.bfl.ai/results/99/913754405dd803/405dd803e7754a59b5c3a69771fa61ed/sample.png?se=2025-07-25T08%3A18%3A34Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=f7ZiO2wpx4qfmfskUVvqj7b%2BECo8EALnLAvhj/uGNCY%3D"
-    ],
-    "budget": {
-      "min": 13500,
-      "max": 20250,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "minimalist"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
-  },
-  {
-    "id": "project_1753430956338_7mc685aot",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Debug Test Project",
-    "description": "Test project for debugging",
-    "createdAt": "2025-07-25T08:09:16.338Z",
-    "updatedAt": "2025-07-25T08:09:16.338Z",
-    "status": "draft",
-    "generatedImages": [],
-    "budget": {
-      "min": 50000,
-      "max": 200000,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "modern"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
-  },
-  {
-    "id": "project_1753431093225_37nuwwu0s",
+    "id": "project_1753426479914_8jd5dfgdj",
     "userId": "user_2zYwvV5CzJOaembaK7d8gMPUo64",
-    "name": "Сделай мне ремонт",
-    "description": "Сделай мне ремонт",
-    "imageUrl": "https://delivery-us1.bfl.ai/results/52/0965219cf124d8/9cf124d83e6541fab42311d5c2e978ea/sample.png?se=2025-07-25T08%3A21%3A37Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=xj18oZlyCLM1HfZFo6mKjTXhtyGblFW6j%2B2SPiPoMCU%3D",
-    "createdAt": "2025-07-25T08:11:33.225Z",
-    "updatedAt": "2025-07-25T08:11:33.225Z",
+    "name": "Can you render this apartment with magic interior",
+    "description": "Can you render this apartment with magic interior",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/71/4829471f904b73/1f904b73ac164e0893064d7a894d43a1/sample.png?se=2025-07-25T07%3A04%3A43Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=ZKTtxwF9kp7IyD5rTxC6HgG7Wi25dV7X%2Bv6YZbT9hEY%3D",
+    "createdAt": "2025-07-25T06:54:39.914Z",
+    "updatedAt": "2025-07-25T06:54:39.914Z",
     "status": "completed",
     "generatedImages": [
-      "https://delivery-us1.bfl.ai/results/52/0965219cf124d8/9cf124d83e6541fab42311d5c2e978ea/sample.png?se=2025-07-25T08%3A21%3A37Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=xj18oZlyCLM1HfZFo6mKjTXhtyGblFW6j%2B2SPiPoMCU%3D"
+      "https://delivery-us1.bfl.ai/results/71/4829471f904b73/1f904b73ac164e0893064d7a894d43a1/sample.png?se=2025-07-25T07%3A04%3A43Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=ZKTtxwF9kp7IyD5rTxC6HgG7Wi25dV7X%2Bv6YZbT9hEY%3D"
     ],
     "budget": {
-      "min": 20200,
-      "max": 30300,
+      "min": 24700,
+      "max": 37050,
       "currency": "RUB"
     },
     "preferredStyles": [
-      "modern"
+      "loft"
     ],
     "restrictions": [],
     "roomAnalysis": null,

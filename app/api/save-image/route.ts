@@ -12,11 +12,14 @@ export async function POST(request: NextRequest) {
     const { imageUrl, filename } = body
     
     if (!imageUrl) {
+      console.error('❌ Image URL is required')
       return NextResponse.json(
         { error: 'Image URL is required' },
         { status: 400 }
       )
     }
+
+    console.log('📥 Processing image URL:', imageUrl)
 
     // Пытаемся использовать S3 для загрузки
     const s3Service = getS3Service()
@@ -55,30 +58,113 @@ export async function POST(request: NextRequest) {
 
     // Создаем папку для сохранения изображений, если её нет
     const saveDir = path.join(process.cwd(), 'public', 'generated-images')
-    if (!fs.existsSync(saveDir)) {
-      fs.mkdirSync(saveDir, { recursive: true })
+    console.log('📂 Save directory:', saveDir)
+    
+    try {
+      if (!fs.existsSync(saveDir)) {
+        console.log('📁 Creating save directory...')
+        fs.mkdirSync(saveDir, { recursive: true })
+        console.log('✅ Save directory created')
+      } else {
+        console.log('✅ Save directory already exists')
+      }
+    } catch (dirError) {
+      console.error('❌ Error creating save directory:', dirError)
+      return NextResponse.json(
+        { 
+          error: 'Failed to create save directory',
+          details: dirError instanceof Error ? dirError.message : 'Unknown error'
+        },
+        { status: 500 }
+      )
     }
 
     // Генерируем уникальное имя файла, если не предоставлено
     const timestamp = Date.now()
-    const finalFilename = filename || `generated-image-${timestamp}.png`
+    const randomId = Math.random().toString(36).substring(2, 9)
+    const finalFilename = filename || `generated-image-${timestamp}-${randomId}.png`
     const filePath = path.join(saveDir, finalFilename)
 
     console.log('📥 Downloading image from:', imageUrl)
+    console.log('💾 Will save as:', finalFilename)
     
-    // Скачиваем изображение
-    const response = await fetch(imageUrl)
+    // Скачиваем изображение с улучшенной обработкой ошибок
+    let response: Response
+    try {
+      response = await fetch(imageUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; RedAI-ImageDownloader/1.0)',
+        }
+      })
+    } catch (fetchError) {
+      console.error('❌ Network error during fetch:', fetchError)
+      return NextResponse.json(
+        { 
+          error: 'Failed to download image: Network error',
+          details: fetchError instanceof Error ? fetchError.message : 'Unknown network error'
+        },
+        { status: 500 }
+      )
+    }
     
     if (!response.ok) {
-      throw new Error(`Failed to download image: ${response.statusText}`)
+      console.error('❌ HTTP error during download:', response.status, response.statusText)
+      return NextResponse.json(
+        { 
+          error: `Failed to download image: HTTP ${response.status}`,
+          details: response.statusText
+        },
+        { status: response.status }
+      )
     }
 
     // Получаем данные изображения
-    const imageBuffer = await response.arrayBuffer()
+    let imageBuffer: ArrayBuffer
+    try {
+      imageBuffer = await response.arrayBuffer()
+      console.log('✅ Image downloaded successfully, size:', imageBuffer.byteLength, 'bytes')
+    } catch (bufferError) {
+      console.error('❌ Error reading image buffer:', bufferError)
+      return NextResponse.json(
+        { 
+          error: 'Failed to read image data',
+          details: bufferError instanceof Error ? bufferError.message : 'Unknown buffer error'
+        },
+        { status: 500 }
+      )
+    }
+
     const buffer = Buffer.from(imageBuffer)
 
     // Сохраняем изображение в локальную папку
-    fs.writeFileSync(filePath, buffer)
+    try {
+      fs.writeFileSync(filePath, buffer)
+      console.log('✅ Image saved to local file:', filePath)
+    } catch (writeError) {
+      console.error('❌ Error writing file:', writeError)
+      return NextResponse.json(
+        { 
+          error: 'Failed to save image to local storage',
+          details: writeError instanceof Error ? writeError.message : 'Unknown write error'
+        },
+        { status: 500 }
+      )
+    }
+
+    // Проверяем, что файл действительно создан
+    try {
+      const stats = fs.statSync(filePath)
+      console.log('✅ File verification: size =', stats.size, 'bytes')
+    } catch (statError) {
+      console.error('❌ Error verifying saved file:', statError)
+      return NextResponse.json(
+        { 
+          error: 'File was not saved properly',
+          details: statError instanceof Error ? statError.message : 'Unknown verification error'
+        },
+        { status: 500 }
+      )
+    }
 
     // Возвращаем локальный URL
     const localUrl = `/generated-images/${finalFilename}`
@@ -91,15 +177,17 @@ export async function POST(request: NextRequest) {
       localUrl: localUrl,
       filename: finalFilename,
       storageType: 'local',
-      message: 'Image downloaded and saved locally (S3 fallback)'
+      message: 'Image downloaded and saved locally (S3 fallback)',
+      fileSize: buffer.length
     })
 
   } catch (error) {
-    console.error('❌ Error downloading and saving image:', error)
+    console.error('❌ Unexpected error in save-image endpoint:', error)
     return NextResponse.json(
       { 
         error: 'Failed to download and save image',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
       },
       { status: 500 }
     )

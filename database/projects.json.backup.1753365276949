@@ -428,5 +428,29 @@
     "threeDModel": null,
     "pdfReport": null,
     "shoppingList": null
+  },
+  {
+    "id": "project_1753364966739_lmkpqztw8",
+    "userId": "server_test_user",
+    "name": "Test Server Project",
+    "description": "Testing server save",
+    "createdAt": "2025-07-24T13:49:26.739Z",
+    "updatedAt": "2025-07-24T13:49:26.739Z",
+    "status": "draft",
+    "generatedImages": [],
+    "budget": {
+      "min": 50000,
+      "max": 200000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
   }
 ]

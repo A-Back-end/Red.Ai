@@ -162,6 +162,14 @@ export async function POST(request: NextRequest) {
   try {
     console.log('POST /api/projects - Starting request');
     
+    // Log request headers for debugging
+    const headers = request.headers;
+    console.log('POST /api/projects - Request headers:', {
+      'content-type': headers.get('content-type'),
+      'user-agent': headers.get('user-agent'),
+      'referer': headers.get('referer'),
+    });
+    
     // Read current projects
     let PROJECTS_DB: Project[];
     try {

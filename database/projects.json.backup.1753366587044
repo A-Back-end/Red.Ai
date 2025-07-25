@@ -644,29 +644,5 @@
     "threeDModel": null,
     "pdfReport": null,
     "shoppingList": null
-  },
-  {
-    "id": "project_1753366587044_d83km4e6l",
-    "userId": "test_user",
-    "name": "Test Project",
-    "description": "Test project description",
-    "createdAt": "2025-07-24T14:16:27.044Z",
-    "updatedAt": "2025-07-24T14:16:27.044Z",
-    "status": "draft",
-    "generatedImages": [],
-    "budget": {
-      "min": 50000,
-      "max": 100000,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "modern"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
   }
 ]

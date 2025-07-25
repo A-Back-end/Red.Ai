@@ -49,6 +49,7 @@ import SettingsPanel from './SettingsPanel'
 import ProjectManager from './ProjectManager'
 import SavedDesigns from './SavedDesigns'
 import ProjectErrorHandler from './ProjectErrorHandler'
+import ProjectSaveDebugger from './ProjectSaveDebugger'
 import { Project } from '@/lib/types'; 
 
 type ViewType = 'flux-designer' | 'ai-assistant' | 'my-projects' | 'saved-designs' | 'settings' | 'dashboard'
@@ -156,6 +157,45 @@ export function AuthenticatedDashboard() {
 
   const handleDismissProjectError = () => {
     setProjectError(null);
+  };
+
+  const handleTestSave = async () => {
+    if (!user) {
+      setProjectSaveMessage('❌ No user found for test save');
+      return;
+    }
+
+    const testProject = {
+      userId: user.id,
+      name: 'Test Project from Debugger',
+      description: 'This is a test project created by the debugger',
+      imageUrl: 'https://via.placeholder.com/400x300',
+      status: 'draft',
+      generatedImages: ['https://via.placeholder.com/400x300'],
+      preferredStyles: ['modern'],
+      budget: { min: 50000, max: 100000, currency: 'RUB' },
+    };
+
+    try {
+      const response = await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(testProject),
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setProjectSaveMessage('✅ Test project saved successfully!');
+        setRefreshProjects(p => p + 1);
+      } else {
+        setProjectSaveMessage(`❌ Test save failed: ${result.error}`);
+      }
+    } catch (error) {
+      setProjectSaveMessage(`❌ Test save error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+
+    setTimeout(() => setProjectSaveMessage(null), 5000);
   };
 
   const navigationItems = [
@@ -584,6 +624,8 @@ export function AuthenticatedDashboard() {
 
               // --- SAVE PROJECT ---
               if (user && data.generatedImage) {
+                console.log('Saving project for user:', user.id);
+                
                 const newProject = {
                   userId: user.id,
                   name: data.settings.changes.substring(0, 50) || 'New AI Design',
@@ -597,26 +639,49 @@ export function AuthenticatedDashboard() {
                   // ... you can add more fields from 'data' if needed
                 };
 
+                console.log('Project data to save:', newProject);
+
                 fetch('/api/projects', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify(newProject),
                 })
-                .then(res => res.json())
+                .then(async (res) => {
+                  console.log('Save project response status:', res.status);
+                  
+                  if (!res.ok) {
+                    const errorText = await res.text();
+                    console.error('Save project HTTP error:', res.status, errorText);
+                    throw new Error(`HTTP ${res.status}: ${errorText}`);
+                  }
+                  
+                  return res.json();
+                })
                 .then(savedProject => {
+                  console.log('Save project success response:', savedProject);
+                  
                   if (savedProject.success) {
                     setProjectSaveMessage('✅ Project saved successfully!');
                     setRefreshProjects(p => p + 1); // Refresh project list
                   } else {
-                    setProjectSaveMessage('❌ Failed to save project.');
+                    console.error('Save project failed:', savedProject.error);
+                    setProjectSaveMessage(`❌ Failed to save project: ${savedProject.error}`);
                   }
-                   setTimeout(() => setProjectSaveMessage(null), 3000)
+                  setTimeout(() => setProjectSaveMessage(null), 5000)
                 })
                 .catch(err => {
                   console.error('Failed to save project', err);
-                  setProjectSaveMessage('❌ Error saving project.');
-                   setTimeout(() => setProjectSaveMessage(null), 3000)
+                  setProjectSaveMessage(`❌ Error saving project: ${err.message}`);
+                  setTimeout(() => setProjectSaveMessage(null), 5000)
                 });
+              } else {
+                console.error('Cannot save project:', { 
+                  hasUser: !!user, 
+                  userId: user?.id, 
+                  hasImage: !!data.generatedImage 
+                });
+                setProjectSaveMessage('❌ Cannot save project: missing user or image');
+                setTimeout(() => setProjectSaveMessage(null), 3000)
               }
             }}
             credits={credits}
@@ -633,6 +698,9 @@ export function AuthenticatedDashboard() {
               onRetry={handleRetryProjects}
               onDismiss={handleDismissProjectError}
             />
+            {process.env.NODE_ENV === 'development' && (
+              <ProjectSaveDebugger onTestSave={handleTestSave} />
+            )}
             <ProjectManager 
               userId={user.id}
               projects={projects}

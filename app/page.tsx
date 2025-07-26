@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import ClerkDebugInfo from '@/components/debug/ClerkDebugInfo'
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(true)
@@ -59,6 +60,9 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+      
+      {/* Debug component - показывается только в development */}
+      <ClerkDebugInfo showDebug={true} />
     </div>
   )
 } 

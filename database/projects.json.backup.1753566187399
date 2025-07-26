@@ -848,32 +848,5 @@
     "threeDModel": null,
     "pdfReport": null,
     "shoppingList": null
-  },
-  {
-    "id": "project_1753566187398_tif4dox99",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "s",
-    "description": "s",
-    "imageUrl": "https://delivery-us1.bfl.ai/results/32/190755a44c8dfb/a44c8dfb958a442185dcda6c8e845899/sample.png?se=2025-07-26T21%3A53%3A11Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=9EUqYEWj88nbgLhMAQBrGmHcedEtEG%2Bey2pUJ%2BSV75U%3D",
-    "createdAt": "2025-07-26T21:43:07.398Z",
-    "updatedAt": "2025-07-26T21:43:07.398Z",
-    "status": "completed",
-    "generatedImages": [
-      "https://delivery-us1.bfl.ai/results/32/190755a44c8dfb/a44c8dfb958a442185dcda6c8e845899/sample.png?se=2025-07-26T21%3A53%3A11Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=9EUqYEWj88nbgLhMAQBrGmHcedEtEG%2Bey2pUJ%2BSV75U%3D"
-    ],
-    "budget": {
-      "min": 5000,
-      "max": 7500,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "modern"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
   }
 ]

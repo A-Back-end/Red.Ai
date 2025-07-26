@@ -1,19 +1,23 @@
-// Google Analytics GA4 utilities for Red.AI
+// Google Tag Manager utilities for Red.AI
 declare global {
   interface Window {
-    gtag: (...args: any[]) => void;
+    dataLayer: any[];
+    gtag?: (...args: any[]) => void;
   }
 }
 
 /**
- * Send custom events to Google Analytics GA4
+ * Send custom events to Google Tag Manager
  * @param eventName - Name of the event
  * @param parameters - Additional parameters for the event
  */
 export const sendGAEvent = (eventName: string, parameters: Record<string, any> = {}) => {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', eventName, parameters);
-    console.log('📊 GA4 Event sent:', eventName, parameters);
+  if (typeof window !== 'undefined' && window.dataLayer) {
+    window.dataLayer.push({
+      event: eventName,
+      ...parameters,
+    });
+    console.log('📊 GTM Event sent:', eventName, parameters);
   }
 };
 
@@ -23,12 +27,13 @@ export const sendGAEvent = (eventName: string, parameters: Record<string, any> =
  * @param pageTitle - Page title
  */
 export const trackPageView = (pagePath: string, pageTitle?: string) => {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('config', 'G-KPN11Z30WN', {
+  if (typeof window !== 'undefined' && window.dataLayer) {
+    window.dataLayer.push({
+      event: 'page_view',
       page_path: pagePath,
       page_title: pageTitle || document.title,
     });
-    console.log('📊 GA4 Page view tracked:', pagePath);
+    console.log('📊 GTM Page view tracked:', pagePath);
   }
 };
 

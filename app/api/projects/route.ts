@@ -18,6 +18,92 @@ async function ensureDatabaseDirectory(): Promise<void> {
   }
 }
 
+// Enhanced error logging for debugging server issues
+function logServerDetails(operation: string, error?: any) {
+  console.log(`🔍 [${operation}] Server Environment Details:`, {
+    platform: process.platform,
+    nodeVersion: process.version,
+    cwd: process.cwd(),
+    dbPath,
+    timestamp: new Date().toISOString(),
+    error: error ? {
+      message: error.message,
+      code: error.code,
+      errno: error.errno,
+      path: error.path,
+      stack: error.stack?.split('\n').slice(0, 3).join('\n')
+    } : undefined
+  });
+}
+
+// Helper function to check file system permissions
+async function checkFileSystemPermissions(): Promise<{ canRead: boolean; canWrite: boolean; details: any }> {
+  const details: any = {
+    dbPathExists: false,
+    dbDirExists: false,
+    dbDirPermissions: null,
+    dbFilePermissions: null,
+    diskSpace: null
+  };
+
+  try {
+    // Check if database directory exists
+    const dbDir = path.dirname(dbPath);
+    try {
+      const dbDirStats = await fs.stat(dbDir);
+      details.dbDirExists = true;
+      details.dbDirPermissions = {
+        mode: dbDirStats.mode.toString(8),
+        uid: dbDirStats.uid,
+        gid: dbDirStats.gid
+      };
+    } catch {
+      details.dbDirExists = false;
+    }
+
+    // Check if database file exists
+    try {
+      const dbFileStats = await fs.stat(dbPath);
+      details.dbPathExists = true;
+      details.dbFilePermissions = {
+        mode: dbFileStats.mode.toString(8),
+        uid: dbFileStats.uid,
+        gid: dbFileStats.gid,
+        size: dbFileStats.size
+      };
+    } catch {
+      details.dbPathExists = false;
+    }
+
+    // Test read permissions
+    let canRead = false;
+    try {
+      await fs.access(dbPath, fs.constants.R_OK);
+      canRead = true;
+    } catch {}
+
+    // Test write permissions
+    let canWrite = false;
+    try {
+      await fs.access(dbPath, fs.constants.W_OK);
+      canWrite = true;
+    } catch {}
+
+    // If file doesn't exist, test directory write permissions
+    if (!details.dbPathExists && details.dbDirExists) {
+      try {
+        await fs.access(dbDir, fs.constants.W_OK);
+        canWrite = true;
+      } catch {}
+    }
+
+    return { canRead, canWrite, details };
+  } catch (error) {
+    console.error('Error checking file system permissions:', error);
+    return { canRead: false, canWrite: false, details };
+  }
+}
+
 // Helper function to read projects from the database
 async function readProjects(): Promise<Project[]> {
   try {
@@ -36,54 +122,93 @@ async function readProjects(): Promise<Project[]> {
       updatedAt: new Date(p.updatedAt),
     }));
   } catch (error: any) {
-    // If the file doesn't exist, return an empty array
+    // Enhanced error logging for server debugging
     if (error.code === 'ENOENT') {
       console.log('Database file not found, creating new one');
+      logServerDetails('READ_PROJECTS_ENOENT', error);
       return [];
     }
+    
+    logServerDetails('READ_PROJECTS_ERROR', error);
     console.error('Error reading projects:', error);
     throw error;
   }
 }
 
-// Helper function to write projects to the database
+// Helper function to write projects to the database with enhanced error handling
 async function writeProjects(projects: Project[]): Promise<void> {
   try {
     await ensureDatabaseDirectory();
     console.log(`Writing ${projects.length} projects to database`);
+    
+    // Check permissions before attempting write
+    const permissions = await checkFileSystemPermissions();
+    console.log('File system permissions check:', permissions);
+    
+    if (!permissions.canWrite) {
+      const error = new Error(`Cannot write to database: insufficient permissions. Details: ${JSON.stringify(permissions.details)}`);
+      logServerDetails('WRITE_PROJECTS_PERMISSIONS', error);
+      throw error;
+    }
     
     // Create a backup before writing
     const backupPath = `${dbPath}.backup.${Date.now()}`;
     try {
       await fs.copyFile(dbPath, backupPath);
       console.log('Backup created:', backupPath);
-    } catch (backupError) {
+    } catch (backupError: any) {
       console.warn('Could not create backup:', backupError);
+      logServerDetails('WRITE_PROJECTS_BACKUP_FAILED', backupError);
     }
     
     // Write with atomic operation
     const tempPath = `${dbPath}.tmp`;
-    await fs.writeFile(tempPath, JSON.stringify(projects, null, 2), 'utf-8');
-    await fs.rename(tempPath, dbPath);
+    console.log('Writing to temporary file:', tempPath);
     
-    console.log(`Successfully wrote ${projects.length} projects to database`);
-  } catch (error) {
+    try {
+      await fs.writeFile(tempPath, JSON.stringify(projects, null, 2), 'utf-8');
+      console.log('Temporary file written, performing atomic rename...');
+      
+      await fs.rename(tempPath, dbPath);
+      console.log(`Successfully wrote ${projects.length} projects to database`);
+    } catch (writeError: any) {
+      logServerDetails('WRITE_PROJECTS_ATOMIC_FAILED', writeError);
+      
+      // Clean up temp file if it exists
+      try {
+        await fs.unlink(tempPath);
+      } catch {}
+      
+      throw writeError;
+    }
+    
+  } catch (error: any) {
+    logServerDetails('WRITE_PROJECTS_ERROR', error);
     console.error('Error writing projects to database:', error);
     
     // Try to restore from backup if available
-    const backupFiles = await fs.readdir(path.dirname(dbPath));
-    const latestBackup = backupFiles
-      .filter(f => f.startsWith('projects.json.backup.'))
-      .sort()
-      .pop();
-    
-    if (latestBackup) {
-      try {
-        await fs.copyFile(path.join(path.dirname(dbPath), latestBackup), dbPath);
-        console.log('Restored from backup:', latestBackup);
-      } catch (restoreError) {
-        console.error('Failed to restore from backup:', restoreError);
+    try {
+      const dbDir = path.dirname(dbPath);
+      const files = await fs.readdir(dbDir);
+      const backupFiles = files
+        .filter(f => f.startsWith('projects.json.backup.'))
+        .sort()
+        .reverse(); // Get most recent backup first
+      
+      if (backupFiles.length > 0) {
+        const latestBackup = backupFiles[0];
+        const backupFullPath = path.join(dbDir, latestBackup);
+        
+        try {
+          await fs.copyFile(backupFullPath, dbPath);
+          console.log('Restored from backup:', latestBackup);
+        } catch (restoreError) {
+          console.error('Failed to restore from backup:', restoreError);
+          logServerDetails('WRITE_PROJECTS_RESTORE_FAILED', restoreError);
+        }
       }
+    } catch (backupListError) {
+      console.error('Failed to list backup files:', backupListError);
     }
     
     throw error;
@@ -151,6 +276,7 @@ export async function GET(request: NextRequest) {
     
   } catch (error: any) {
     console.error('GET /api/projects - Error:', error);
+    logServerDetails('GET_PROJECTS_ERROR', error);
     return NextResponse.json({ 
       error: 'Failed to get projects',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined
@@ -161,6 +287,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     console.log('POST /api/projects - Starting request');
+    logServerDetails('POST_PROJECTS_START');
     
     // Log request headers for debugging
     const headers = request.headers;
@@ -170,12 +297,30 @@ export async function POST(request: NextRequest) {
       'referer': headers.get('referer'),
     });
     
+    // Check file system permissions before proceeding
+    const permissions = await checkFileSystemPermissions();
+    console.log('POST /api/projects - File system check:', permissions);
+    
+    if (!permissions.canWrite) {
+      console.error('POST /api/projects - Cannot write to database due to permissions');
+      return NextResponse.json({ 
+        error: 'Server configuration error: cannot write to database',
+        details: process.env.NODE_ENV === 'development' ? permissions.details : undefined,
+        serverInfo: process.env.NODE_ENV === 'development' ? {
+          platform: process.platform,
+          cwd: process.cwd(),
+          dbPath
+        } : undefined
+      }, { status: 500 });
+    }
+    
     // Read current projects
     let PROJECTS_DB: Project[];
     try {
       PROJECTS_DB = await readProjects();
     } catch (readError) {
       console.error('POST /api/projects - Failed to read projects:', readError);
+      logServerDetails('POST_PROJECTS_READ_ERROR', readError);
       return NextResponse.json({ 
         error: 'Failed to read existing projects',
         details: process.env.NODE_ENV === 'development' ? (readError as Error).message : undefined
@@ -186,9 +331,10 @@ export async function POST(request: NextRequest) {
     let projectData;
     try {
       projectData = await request.json();
-      console.log('POST /api/projects - Received data:', JSON.stringify(projectData, null, 2));
+      console.log('POST /api/projects - Received data keys:', Object.keys(projectData));
     } catch (parseError) {
       console.error('POST /api/projects - Failed to parse JSON:', parseError);
+      logServerDetails('POST_PROJECTS_PARSE_ERROR', parseError);
       return NextResponse.json({ error: 'Invalid JSON in request body' }, { status: 400 });
     }
     
@@ -243,31 +389,54 @@ export async function POST(request: NextRequest) {
     // Add to database
     PROJECTS_DB.push(newProject)
     
-    // Write to file with retry logic
+    // Write to file with enhanced retry logic and detailed error reporting
     let writeSuccess = false;
     let writeError: Error | null = null;
     
-    for (let attempt = 1; attempt <= 3; attempt++) {
+    for (let attempt = 1; attempt <= 5; attempt++) { // Increased to 5 attempts
       try {
+        console.log(`POST /api/projects - Write attempt ${attempt}/5`);
         await writeProjects(PROJECTS_DB);
         writeSuccess = true;
+        console.log(`POST /api/projects - Write attempt ${attempt} succeeded`);
         break;
       } catch (error) {
         writeError = error as Error;
-        console.error(`POST /api/projects - Write attempt ${attempt} failed:`, error);
+        console.error(`POST /api/projects - Write attempt ${attempt}/5 failed:`, error);
+        logServerDetails(`POST_PROJECTS_WRITE_ATTEMPT_${attempt}`, error);
         
-        if (attempt < 3) {
-          // Wait before retry
-          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        if (attempt < 5) {
+          // Exponential backoff: wait longer each time
+          const waitTime = 1000 * Math.pow(2, attempt - 1); // 1s, 2s, 4s, 8s
+          console.log(`POST /api/projects - Waiting ${waitTime}ms before retry...`);
+          await new Promise(resolve => setTimeout(resolve, waitTime));
         }
       }
     }
     
     if (!writeSuccess) {
       console.error('POST /api/projects - All write attempts failed');
+      logServerDetails('POST_PROJECTS_ALL_WRITES_FAILED', writeError);
+      
+      // Additional diagnostics for server issues
+      const finalPermissions = await checkFileSystemPermissions();
+      
       return NextResponse.json({ 
         error: 'Failed to save project after multiple attempts',
-        details: process.env.NODE_ENV === 'development' ? writeError?.message : undefined
+        details: process.env.NODE_ENV === 'development' ? writeError?.message : undefined,
+        serverDiagnostics: process.env.NODE_ENV === 'development' ? {
+          attempts: 5,
+          lastError: writeError?.message,
+          errorCode: (writeError as any)?.code,
+          permissions: finalPermissions,
+          suggestions: [
+            'Check server file permissions',
+            'Ensure database directory is writable',
+            'Verify sufficient disk space',
+            'Check for file locks or concurrent access',
+            'Consider switching to database storage'
+          ]
+        } : undefined
       }, { status: 500 });
     }
     
@@ -281,6 +450,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('POST /api/projects - Error:', error);
     console.error('POST /api/projects - Error stack:', error.stack);
+    logServerDetails('POST_PROJECTS_UNEXPECTED_ERROR', error);
     
     return NextResponse.json({ 
       error: 'Failed to create project',

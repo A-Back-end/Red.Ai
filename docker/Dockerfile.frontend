@@ -14,6 +14,9 @@ COPY tailwind.config.js ./
 COPY postcss.config.js ./
 COPY components.json ./
 
+# Skip Puppeteer download to save space and avoid ENOSPC errors
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+
 # Install dependencies with cache mount for faster builds
 RUN --mount=type=cache,target=/root/.npm \
     npm ci --only=production

@@ -8,6 +8,8 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package*.json ./
+# Skip Puppeteer download to save space and avoid ENOSPC errors
+ENV PUPPETEER_SKIP_DOWNLOAD=true
 RUN npm ci --only=production
 
 # Rebuild the source code only when needed

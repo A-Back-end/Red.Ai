@@ -14,44 +14,35 @@ export const AuthErrorHandler: React.FC<AuthErrorHandlerProps> = ({ children }) 
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    // Listen for authentication errors
-    const handleAuthError = (event: MessageEvent) => {
-      if (event.data && event.data.type === 'clerk-error') {
-        console.error('Clerk authentication error:', event.data.error);
+    // Only show errors in production mode
+    if (process.env.NODE_ENV === 'production') {
+      // Listen for authentication errors
+      const handleAuthError = (event: MessageEvent) => {
+        if (event.data && event.data.type === 'clerk-error') {
+          console.error('Clerk authentication error:', event.data.error);
+          setHasError(true);
+          setErrorMessage(event.data.error.message || 'Authentication error occurred');
+        }
+      };
+
+      // Listen for network errors
+      const handleNetworkError = () => {
+        console.error('Network error detected');
         setHasError(true);
-        setErrorMessage(event.data.error.message || 'Authentication error occurred');
-      }
-    };
+        setErrorMessage('Network connection error. Please check your internet connection.');
+      };
 
-    // Listen for network errors
-    const handleNetworkError = () => {
-      console.error('Network error detected');
-      setHasError(true);
-      setErrorMessage('Network connection error. Please check your internet connection.');
-    };
+      // Add event listeners
+      window.addEventListener('message', handleAuthError);
+      window.addEventListener('online', () => setHasError(false));
+      window.addEventListener('offline', handleNetworkError);
 
-    // Add event listeners
-    window.addEventListener('message', handleAuthError);
-    window.addEventListener('online', () => setHasError(false));
-    window.addEventListener('offline', handleNetworkError);
-
-    // Check for existing errors in console
-    const originalError = console.error;
-    console.error = (...args) => {
-      const errorString = args.join(' ');
-      if (errorString.includes('clerk') || errorString.includes('authentication')) {
-        setHasError(true);
-        setErrorMessage('Authentication service error detected');
-      }
-      originalError.apply(console, args);
-    };
-
-    return () => {
-      window.removeEventListener('message', handleAuthError);
-      window.removeEventListener('online', () => setHasError(false));
-      window.removeEventListener('offline', handleNetworkError);
-      console.error = originalError;
-    };
+      return () => {
+        window.removeEventListener('message', handleAuthError);
+        window.removeEventListener('online', () => setHasError(false));
+        window.removeEventListener('offline', handleNetworkError);
+      };
+    }
   }, []);
 
   const handleRetry = async () => {

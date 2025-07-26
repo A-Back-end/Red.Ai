@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend.optimized
+    container_name: redai_backend_simple
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+      - DEBUG=false
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY:-placeholder}
+      - AZURE_OPENAI_BACKUP_KEY=${AZURE_OPENAI_BACKUP_KEY:-placeholder}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT:-https://neuroflow-hub.openai.azure.com}
+      - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION:-2024-05-01-preview}
+      - AZURE_OPENAI_DEPLOYMENT_NAME=${AZURE_OPENAI_DEPLOYMENT_NAME:-gpt-4.1}
+      - USE_AZURE_AD=${USE_AZURE_AD:-false}
+    restart: unless-stopped
+    networks:
+      - redai-network
+    volumes:
+      - uploads_data:/app/uploads
+      - logs_data:/app/logs
+      - generated_images:/app/generated-images
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+
+  ai-processor:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.ai-processor.optimized
+    container_name: redai_ai_processor_simple
+    ports:
+      - "8001:8001"
+    environment:
+      - NODE_ENV=production
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY:-placeholder}
+      - AZURE_OPENAI_BACKUP_KEY=${AZURE_OPENAI_BACKUP_KEY:-placeholder}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT:-https://neuroflow-hub.openai.azure.com}
+      - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION:-2024-05-01-preview}
+      - AZURE_OPENAI_DEPLOYMENT_NAME=${AZURE_OPENAI_DEPLOYMENT_NAME:-gpt-4.1}
+    restart: unless-stopped
+    networks:
+      - redai-network
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      - backend
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+        reservations:
+          memory: 2G
+          cpus: '1.0'
+
+networks:
+  redai-network:
+    driver: bridge
+
+volumes:
+  uploads_data:
+    driver: local
+  logs_data:
+    driver: local
+  generated_images:
+    driver: local 

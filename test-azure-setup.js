@@ -5,7 +5,7 @@
 require('dotenv').config();
 
 const testAzureApi = async () => {
-    const apiKey = process.env.AZURE_OPENAI_API_KEY || process.env.AZURE_OPENAI_KEY;
+    const apiKey = process.env.AZURE_OPENAPI_KEY|| process.env.AZURE_OPENAPI_KEY;
     const endpoint = process.env.AZURE_ENDPOINT_KEY;
 
     if (!apiKey || !endpoint) {

@@ -9,9 +9,6 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Skip Puppeteer download to save space and avoid ENOSPC errors
-ENV PUPPETEER_SKIP_DOWNLOAD=true
-
 # Install all dependencies (including dev dependencies)
 RUN npm ci
 

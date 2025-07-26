@@ -20,7 +20,7 @@ function checkEnvironmentVariables() {
     console.log(`📁 .env.local файл: ${envExists ? '✅ Найден' : '❌ Не найден'}`);
     
     const requiredVars = [
-        'AZURE_OPENAI_API_KEY',
+        'AZURE_OPENAPI_KEY',
         'AZURE_OPENAI_ENDPOINT',
         'AZURE_OPENAI_DEPLOYMENT_NAME'
     ];
@@ -134,7 +134,7 @@ function generateSetupInstructions() {
     console.log('1️⃣ Создайте файл .env.local в корне проекта');
     console.log('2️⃣ Добавьте следующие переменные:');
     console.log('');
-    console.log('AZURE_OPENAI_API_KEY=your_actual_azure_api_key');
+    console.log('AZURE_OPENAPI_KEY=your_actual_azure_api_key');
     console.log('AZURE_OPENAI_ENDPOINT=https://your-resource-name.openai.azure.com/');
     console.log('AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4');
     console.log('AZURE_OPENAI_API_VERSION=2024-05-01-preview');

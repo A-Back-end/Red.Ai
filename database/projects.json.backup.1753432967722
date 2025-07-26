@@ -748,24 +748,24 @@
     "shoppingList": null
   },
   {
-    "id": "project_1753458740374_1nou6msw9",
+    "id": "project_1753432956872_45tg19zf1",
     "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Render this aparment with beatiful style with mode",
-    "description": "Render this aparment with beatiful style with modern 2025",
-    "imageUrl": "https://delivery-us1.bfl.ai/results/1c/743575447cac45/447cac45cea34f02b20064de5d956208/sample.png?se=2025-07-25T16%3A02%3A24Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=PJZVK9WSRf5QaV6LHQ0rCEjgqG0R76TrbSBIhF9aShM%3D",
-    "createdAt": "2025-07-25T15:52:20.374Z",
-    "updatedAt": "2025-07-25T15:52:20.374Z",
+    "name": "Render this room with 2025 style",
+    "description": "Render this room with 2025 style",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/e4/94835386343e05/86343e05e83b44c1bdc1604114560811/sample.png?se=2025-07-25T08%3A52%3A29Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=SM05LF3i9qhTX2zT8aAfkDVDSlBiOqNkADfNybflRKs%3D",
+    "createdAt": "2025-07-25T08:42:36.872Z",
+    "updatedAt": "2025-07-25T08:42:36.872Z",
     "status": "completed",
     "generatedImages": [
-      "https://delivery-us1.bfl.ai/results/1c/743575447cac45/447cac45cea34f02b20064de5d956208/sample.png?se=2025-07-25T16%3A02%3A24Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=PJZVK9WSRf5QaV6LHQ0rCEjgqG0R76TrbSBIhF9aShM%3D"
+      "https://delivery-us1.bfl.ai/results/e4/94835386343e05/86343e05e83b44c1bdc1604114560811/sample.png?se=2025-07-25T08%3A52%3A29Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=SM05LF3i9qhTX2zT8aAfkDVDSlBiOqNkADfNybflRKs%3D"
     ],
     "budget": {
-      "min": 20800,
-      "max": 31200,
+      "min": 25800,
+      "max": 38700,
       "currency": "RUB"
     },
     "preferredStyles": [
-      "classic"
+      "minimalist"
     ],
     "restrictions": [],
     "roomAnalysis": null,
@@ -775,21 +775,24 @@
     "shoppingList": null
   },
   {
-    "id": "project_1753510266085_ykjd0wg40",
+    "id": "project_1753432957938_lljyf0k8c",
     "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Debug Test Project",
-    "description": "Test project for debugging",
-    "createdAt": "2025-07-26T06:11:06.085Z",
-    "updatedAt": "2025-07-26T06:11:06.085Z",
-    "status": "draft",
-    "generatedImages": [],
+    "name": "Render this room with 2025 style",
+    "description": "Render this room with 2025 style",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/e4/94835386343e05/86343e05e83b44c1bdc1604114560811/sample.png?se=2025-07-25T08%3A52%3A29Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=SM05LF3i9qhTX2zT8aAfkDVDSlBiOqNkADfNybflRKs%3D",
+    "createdAt": "2025-07-25T08:42:37.938Z",
+    "updatedAt": "2025-07-25T08:42:37.938Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-us1.bfl.ai/results/e4/94835386343e05/86343e05e83b44c1bdc1604114560811/sample.png?se=2025-07-25T08%3A52%3A29Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=SM05LF3i9qhTX2zT8aAfkDVDSlBiOqNkADfNybflRKs%3D"
+    ],
     "budget": {
-      "min": 50000,
-      "max": 200000,
+      "min": 25800,
+      "max": 38700,
       "currency": "RUB"
     },
     "preferredStyles": [
-      "modern"
+      "minimalist"
     ],
     "restrictions": [],
     "roomAnalysis": null,

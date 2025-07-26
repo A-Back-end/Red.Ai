@@ -773,29 +773,5 @@
     "threeDModel": null,
     "pdfReport": null,
     "shoppingList": null
-  },
-  {
-    "id": "project_1753510266085_ykjd0wg40",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Debug Test Project",
-    "description": "Test project for debugging",
-    "createdAt": "2025-07-26T06:11:06.085Z",
-    "updatedAt": "2025-07-26T06:11:06.085Z",
-    "status": "draft",
-    "generatedImages": [],
-    "budget": {
-      "min": 50000,
-      "max": 200000,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "modern"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
   }
 ]

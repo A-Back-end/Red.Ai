@@ -746,56 +746,5 @@
     "threeDModel": null,
     "pdfReport": null,
     "shoppingList": null
-  },
-  {
-    "id": "project_1753458740374_1nou6msw9",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Render this aparment with beatiful style with mode",
-    "description": "Render this aparment with beatiful style with modern 2025",
-    "imageUrl": "https://delivery-us1.bfl.ai/results/1c/743575447cac45/447cac45cea34f02b20064de5d956208/sample.png?se=2025-07-25T16%3A02%3A24Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=PJZVK9WSRf5QaV6LHQ0rCEjgqG0R76TrbSBIhF9aShM%3D",
-    "createdAt": "2025-07-25T15:52:20.374Z",
-    "updatedAt": "2025-07-25T15:52:20.374Z",
-    "status": "completed",
-    "generatedImages": [
-      "https://delivery-us1.bfl.ai/results/1c/743575447cac45/447cac45cea34f02b20064de5d956208/sample.png?se=2025-07-25T16%3A02%3A24Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=PJZVK9WSRf5QaV6LHQ0rCEjgqG0R76TrbSBIhF9aShM%3D"
-    ],
-    "budget": {
-      "min": 20800,
-      "max": 31200,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "classic"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
-  },
-  {
-    "id": "project_1753510266085_ykjd0wg40",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Debug Test Project",
-    "description": "Test project for debugging",
-    "createdAt": "2025-07-26T06:11:06.085Z",
-    "updatedAt": "2025-07-26T06:11:06.085Z",
-    "status": "draft",
-    "generatedImages": [],
-    "budget": {
-      "min": 50000,
-      "max": 200000,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "modern"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
   }
 ]

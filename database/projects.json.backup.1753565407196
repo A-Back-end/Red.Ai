@@ -824,29 +824,5 @@
     "threeDModel": null,
     "pdfReport": null,
     "shoppingList": null
-  },
-  {
-    "id": "project_1753565407193_auoslsz9i",
-    "userId": "deploy_test",
-    "name": "Deployment Test",
-    "description": "Testing deployment",
-    "createdAt": "2025-07-26T21:30:07.193Z",
-    "updatedAt": "2025-07-26T21:30:07.193Z",
-    "status": "draft",
-    "generatedImages": [],
-    "budget": {
-      "min": 50000,
-      "max": 200000,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "modern"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
   }
 ]

@@ -1675,3 +1675,42 @@
 .animate-slide-in-from-right {
   animation: slide-in-from-right 0.3s ease-out;
 } 
+
+/* Clerk CAPTCHA Styles */
+.clerk-captcha-container {
+  margin: 1rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 78px; /* Standard CAPTCHA height */
+}
+
+/* Ensure CAPTCHA widget is visible */
+#clerk-captcha {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+/* Dark mode support for CAPTCHA */
+.dark .clerk-captcha-container {
+  background-color: rgba(30, 41, 59, 0.5);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
+/* Loading state for CAPTCHA */
+.clerk-captcha-loading {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+} 

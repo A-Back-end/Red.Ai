@@ -552,35 +552,109 @@ export async function DELETE(request: NextRequest) {
   try {
     console.log('DELETE /api/projects - Starting request');
     
+    // Add detailed request logging
+    const url = new URL(request.url);
+    console.log('DELETE /api/projects - Request URL:', url.toString());
+    console.log('DELETE /api/projects - Search params:', Object.fromEntries(url.searchParams));
+    
     const PROJECTS_DB = await readProjects();
-    const { searchParams } = new URL(request.url)
-    const projectId = searchParams.get('projectId')
+    console.log('DELETE /api/projects - Loaded projects count:', PROJECTS_DB.length);
+    
+    const { searchParams } = url;
+    const projectId = searchParams.get('projectId');
+    
+    console.log('DELETE /api/projects - Project ID param:', projectId);
     
     if (!projectId) {
       console.error('DELETE /api/projects - Missing projectId');
-      return NextResponse.json({ error: 'Project ID required' }, { status: 400 })
+      return NextResponse.json({ error: 'Project ID required' }, { status: 400 });
     }
     
-    const projectIndex = PROJECTS_DB.findIndex(p => p.id === projectId)
+    // Validate projectId format
+    if (typeof projectId !== 'string' || projectId.trim() === '') {
+      console.error('DELETE /api/projects - Invalid projectId format:', projectId);
+      return NextResponse.json({ error: 'Invalid project ID format' }, { status: 400 });
+    }
+    
+    // Log all project IDs for debugging
+    console.log('DELETE /api/projects - Available project IDs:', PROJECTS_DB.map(p => p.id));
+    
+    const projectIndex = PROJECTS_DB.findIndex(p => p.id === projectId);
+    console.log('DELETE /api/projects - Project index found:', projectIndex);
+    
     if (projectIndex === -1) {
       console.error('DELETE /api/projects - Project not found:', projectId);
-      return NextResponse.json({ error: 'Project not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
     
+         // Get project data before deletion for logging
+     const deletedProject = PROJECTS_DB[projectIndex];
+     console.log('DELETE /api/projects - Project to delete:', {
+       id: deletedProject.id,
+       name: deletedProject.name,
+       userId: deletedProject.userId
+     });
+    
     // Remove project
-    const deletedProject = PROJECTS_DB[projectIndex]
-    PROJECTS_DB.splice(projectIndex, 1)
-    await writeProjects(PROJECTS_DB);
+    PROJECTS_DB.splice(projectIndex, 1);
+    console.log('DELETE /api/projects - Project removed from array, new count:', PROJECTS_DB.length);
+    
+    // Attempt to write projects with detailed error handling
+    try {
+      await writeProjects(PROJECTS_DB);
+      console.log('DELETE /api/projects - Successfully wrote projects to database');
+    } catch (writeError: any) {
+      console.error('DELETE /api/projects - Write error:', writeError);
+      console.error('DELETE /api/projects - Write error stack:', writeError.stack);
+      
+      // Try to restore the project to the array
+      PROJECTS_DB.splice(projectIndex, 0, deletedProject);
+      console.log('DELETE /api/projects - Restored project to array after write failure');
+      
+      return NextResponse.json({ 
+        error: 'Failed to save changes to database',
+        details: process.env.NODE_ENV === 'development' ? writeError.message : undefined
+      }, { status: 500 });
+    }
     
     console.log('DELETE /api/projects - Successfully deleted project:', projectId);
     
-    return NextResponse.json({ success: true, deletedProject })
+         return NextResponse.json({ 
+       success: true, 
+       deletedProject: {
+         id: deletedProject.id,
+         name: deletedProject.name,
+         userId: deletedProject.userId
+       }
+     });
     
   } catch (error: any) {
-    console.error('DELETE /api/projects - Error:', error);
+    console.error('DELETE /api/projects - Unexpected error:', error);
+    console.error('DELETE /api/projects - Error stack:', error.stack);
+    console.error('DELETE /api/projects - Error name:', error.name);
+    console.error('DELETE /api/projects - Error type:', typeof error);
+    
+    // Log additional debugging info
+    try {
+      const url = new URL(request.url);
+      console.error('DELETE /api/projects - Debug info:', {
+        url: url.toString(),
+        searchParams: Object.fromEntries(url.searchParams),
+        method: request.method,
+        headers: Object.fromEntries(request.headers.entries())
+      });
+    } catch (debugError) {
+      console.error('DELETE /api/projects - Failed to log debug info:', debugError);
+    }
+    
     return NextResponse.json({ 
       error: 'Failed to delete project',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
-    }, { status: 500 })
+      message: error.message,
+      details: process.env.NODE_ENV === 'development' ? {
+        name: error.name,
+        stack: error.stack,
+        type: typeof error
+      } : undefined
+    }, { status: 500 });
   }
 } 

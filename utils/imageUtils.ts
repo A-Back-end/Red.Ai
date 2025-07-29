@@ -9,6 +9,7 @@ interface SaveImageResult {
   error?: string
   storageType?: 's3' | 'local'
   s3Key?: string
+  isPlaceholder?: boolean // Добавляем флаг для placeholder
 }
 
 
@@ -213,18 +214,95 @@ export async function updateAllProjectsWithLocalImages(): Promise<{ updated: num
   }
 }
 
-// Функция для проверки, является ли URL временным
+// Функция для проверки доступности URL изображения
+export async function checkImageUrlAccessibility(imageUrl: string): Promise<{ accessible: boolean; status?: number; error?: string }> {
+  try {
+    const response = await fetch(imageUrl, { method: 'HEAD' });
+    return {
+      accessible: response.ok,
+      status: response.status
+    };
+  } catch (error) {
+    return {
+      accessible: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    };
+  }
+}
+
+// Функция для определения, является ли URL временным (от BFL.ai или других временных сервисов)
 export function isTemporaryUrl(url: string): boolean {
   const temporaryDomains = [
-    'delivery-eu1.bfl.ai',
-    'oaidalleapiprodscus.blob.core.windows.net',
-    'cdn.openai.com',
-    'dalle-images.com'
-  ]
+    'delivery-us1.bfl.ai',
+    'delivery-eu1.bfl.ai', 
+    'bfl.ai',
+    'temp-images',
+    'generated-temp'
+  ];
   
-  return temporaryDomains.some(domain => url.includes(domain)) || 
-         url.includes('?se=') || // Azure blob storage with expiration
-         url.includes('?expires=') // Generic expiration parameter
+  return temporaryDomains.some(domain => url.includes(domain));
+}
+
+// Функция для обработки истекших URL изображений
+export async function handleExpiredImageUrl(imageUrl: string, projectId?: string): Promise<SaveImageResult> {
+  console.log('🔄 Handling expired image URL:', imageUrl);
+  
+  // Проверяем доступность URL
+  const accessCheck = await checkImageUrlAccessibility(imageUrl);
+  
+  if (accessCheck.accessible) {
+    console.log('✅ Image URL is still accessible');
+    return {
+      success: true,
+      localUrl: imageUrl,
+      filename: path.basename(imageUrl)
+    };
+  }
+  
+  console.log(`❌ Image URL not accessible (status: ${accessCheck.status})`);
+  
+  // Если это BFL URL с 403 ошибкой, пытаемся найти локальную копию или создать placeholder
+  if (accessCheck.status === 403 && isTemporaryUrl(imageUrl)) {
+    console.log('🔍 Attempting to find local backup or create placeholder...');
+    
+    // Пытаемся найти локальную копию по filename из URL
+    const filename = path.basename(new URL(imageUrl).pathname) || `expired_${Date.now()}.png`;
+    const localPaths = [
+      `/generated-images/${filename}`,
+      `/uploads/${filename}`,
+      `/public/generated-images/${filename}`
+    ];
+    
+    // Проверяем наличие локальных копий
+    for (const localPath of localPaths) {
+      try {
+        const fullPath = path.join(process.cwd(), 'public', localPath);
+        await fs.promises.access(fullPath);
+        console.log('✅ Found local backup:', localPath);
+        return {
+          success: true,
+          localUrl: localPath,
+          filename: filename
+        };
+      } catch {
+        // Файл не найден, продолжаем поиск
+      }
+    }
+    
+    // Если локальная копия не найдена, создаем placeholder
+    console.log('📝 Creating placeholder for expired image...');
+    return {
+      success: true,
+      localUrl: '/img/placeholder-expired.jpg', // Fallback placeholder
+      filename: filename,
+      isPlaceholder: true
+    };
+  }
+  
+  return {
+    success: false,
+    error: `Image not accessible: ${accessCheck.status} ${accessCheck.error}`
+  };
 }
 
 // Функция для автоматического сохранения изображения при создании проекта

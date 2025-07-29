@@ -50,6 +50,33 @@
     "shoppingList": null
   },
   {
+    "id": "project_1753179521808_eir583m8g",
+    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
+    "name": "oih",
+    "description": "oih",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/f4/5245901170b6da/1170b6da210644cf98c3da85cb02b28c/sample.png?se=2025-07-22T10%3A28%3A45Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=eUILZefsMBRGFWIMpOMZSzGbfVPr2vV2J/XJfsaV5q4%3D",
+    "createdAt": "2025-07-22T10:18:41.808Z",
+    "updatedAt": "2025-07-22T10:18:41.808Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-us1.bfl.ai/results/f4/5245901170b6da/1170b6da210644cf98c3da85cb02b28c/sample.png?se=2025-07-22T10%3A28%3A45Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=eUILZefsMBRGFWIMpOMZSzGbfVPr2vV2J/XJfsaV5q4%3D"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
     "test": "write-test",
     "createdAt": "1970-01-01T00:00:00.000Z",
     "updatedAt": "1970-01-01T00:00:00.000Z"
@@ -173,6 +200,60 @@
     "status": "completed",
     "generatedImages": [
       "https://example.com/test-image.jpg"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753295920956_9pmfziikr",
+    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
+    "name": "аса",
+    "description": "аса",
+    "imageUrl": "https://delivery-eu1.bfl.ai/results/fd/920707f532ec6f/f532ec6f5bbb41febc8971c165484452/sample.png?se=2025-07-23T18%3A48%3A41Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=fqfthK91vfdZWCEK0qVqMoyvbUhq9nF8xoAqUIbyroo%3D",
+    "createdAt": "2025-07-23T18:38:40.956Z",
+    "updatedAt": "2025-07-23T18:38:40.956Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-eu1.bfl.ai/results/fd/920707f532ec6f/f532ec6f5bbb41febc8971c165484452/sample.png?se=2025-07-23T18%3A48%3A41Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=fqfthK91vfdZWCEK0qVqMoyvbUhq9nF8xoAqUIbyroo%3D"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753356916969_9b3c1082r",
+    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
+    "name": "lkjn",
+    "description": "lkjn",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/45/9199718a460b36/8a460b36d5d84dffa24eeff26e7df23e/sample.png?se=2025-07-24T11%3A45%3A21Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=WrlkURZgCRqheKGEhn%2BGS3sHI8Av861nYam%2BEy5v04Y%3D",
+    "createdAt": "2025-07-24T11:35:16.969Z",
+    "updatedAt": "2025-07-24T11:35:16.969Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-us1.bfl.ai/results/45/9199718a460b36/8a460b36d5d84dffa24eeff26e7df23e/sample.png?se=2025-07-24T11%3A45%3A21Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=WrlkURZgCRqheKGEhn%2BGS3sHI8Av861nYam%2BEy5v04Y%3D"
     ],
     "budget": {
       "min": 5000,
@@ -481,6 +562,30 @@
     "shoppingList": null
   },
   {
+    "id": "project_1753430956338_7mc685aot",
+    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
+    "name": "Debug Test Project",
+    "description": "Test project for debugging",
+    "createdAt": "2025-07-25T08:09:16.338Z",
+    "updatedAt": "2025-07-25T08:09:16.338Z",
+    "status": "draft",
+    "generatedImages": [],
+    "budget": {
+      "min": 50000,
+      "max": 200000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
     "id": "project_1753431093225_37nuwwu0s",
     "userId": "user_2zYwvV5CzJOaembaK7d8gMPUo64",
     "name": "Сделай мне ремонт",
@@ -535,6 +640,30 @@
     "shoppingList": null
   },
   {
+    "id": "project_1753510266085_ykjd0wg40",
+    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
+    "name": "Debug Test Project",
+    "description": "Test project for debugging",
+    "createdAt": "2025-07-26T06:11:06.085Z",
+    "updatedAt": "2025-07-26T06:11:06.085Z",
+    "status": "draft",
+    "generatedImages": [],
+    "budget": {
+      "min": 50000,
+      "max": 200000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
     "id": "project_1753562891748_kepnywy6p",
     "userId": "user_2zxypLJZaUZffXTgWZsegDt62vv",
     "name": "Сделай мне ремонт ",
@@ -573,6 +702,33 @@
     "budget": {
       "min": 50000,
       "max": 200000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753566187398_tif4dox99",
+    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
+    "name": "s",
+    "description": "s",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/32/190755a44c8dfb/a44c8dfb958a442185dcda6c8e845899/sample.png?se=2025-07-26T21%3A53%3A11Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=9EUqYEWj88nbgLhMAQBrGmHcedEtEG%2Bey2pUJ%2BSV75U%3D",
+    "createdAt": "2025-07-26T21:43:07.398Z",
+    "updatedAt": "2025-07-26T21:43:07.398Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-us1.bfl.ai/results/32/190755a44c8dfb/a44c8dfb958a442185dcda6c8e845899/sample.png?se=2025-07-26T21%3A53%3A11Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=9EUqYEWj88nbgLhMAQBrGmHcedEtEG%2Bey2pUJ%2BSV75U%3D"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
       "currency": "RUB"
     },
     "preferredStyles": [

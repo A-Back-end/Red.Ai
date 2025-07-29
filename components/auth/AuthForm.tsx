@@ -368,6 +368,11 @@ export const AuthForm = () => {
 
               {error && <p className="text-sm text-red-500">{error}</p>}
               
+              {/* Добавляем элемент для Clerk CAPTCHA в форме регистрации */}
+              {activeTab === 'signup' && (
+                <div id="clerk-captcha" className="clerk-captcha-container"></div>
+              )}
+              
               <Button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-purple-600 dark:to-blue-600 hover:opacity-90 transition-opacity text-white font-bold py-3" disabled={isLoading}>
                 {isLoading ? 'Loading...' : (activeTab === 'signin' ? t.signIn : t.signUp)}
               </Button>

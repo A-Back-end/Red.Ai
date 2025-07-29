@@ -65,11 +65,11 @@ console.log(`Captcha disabled: ${chalk.cyan(captchaDisabled || 'false')}`);
 // Summary
 console.log(chalk.blue.bold('\n📋 Summary:'));
 if (clerkKey?.startsWith('pk_test_') && clerkSecret?.startsWith('sk_test_')) {
-  console.log(chalk.green('✅ Configuration looks good for development!'));
-  console.log(chalk.green('✅ Using TEST keys - works with localhost'));
+  console.log(chalk.yellow('⚠️  Using TEST keys - development mode'));
+  console.log(chalk.yellow('💡 Switch to LIVE keys for production'));
 } else if (clerkKey?.startsWith('pk_live_') || clerkSecret?.startsWith('sk_live_')) {
-  console.log(chalk.red('❌ Using LIVE keys - will only work with redai.site domain'));
-  console.log(chalk.yellow('💡 Switch to TEST keys for localhost development'));
+  console.log(chalk.green('✅ Using LIVE keys - production mode'));
+  console.log(chalk.green('✅ Configuration ready for production deployment'));
 } else {
   console.log(chalk.red('❌ Clerk keys not properly configured'));
 }

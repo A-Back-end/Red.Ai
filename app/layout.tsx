@@ -24,13 +24,15 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  // Check if Clerk is properly configured
+  // Check if Clerk is properly configured with production keys
   const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-  const isClerkConfigured = clerkPublishableKey && !clerkPublishableKey.includes('your_clerk_publishable_key_here');
+  const isClerkConfigured = clerkPublishableKey && 
+    !clerkPublishableKey.includes('your_clerk_publishable_key_here') &&
+    !clerkPublishableKey.includes('pk_test_');
   
-  // If Clerk is not configured, render without authentication
+  // If Clerk is not configured or using test keys, render without authentication
   if (!isClerkConfigured) {
-    console.warn('⚠️ Clerk is not properly configured. Authentication will be disabled.');
+    console.warn('⚠️ Clerk is not properly configured or using test keys. Authentication will be disabled.');
     return (
       <html lang="en" className="scroll-smooth" suppressHydrationWarning>
         <head>
@@ -123,6 +125,12 @@ export default function RootLayout({
       signUpFallbackRedirectUrl="/dashboard"
       signInUrl="/login"
       signUpUrl="/login"
+      telemetry={false}
+      allowedRedirectOrigins={[
+        'http://localhost:3000',
+        'https://redai.site',
+        'https://www.redai.site'
+      ]}
     >
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>

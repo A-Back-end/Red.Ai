@@ -21,27 +21,37 @@ const isProtectedRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
+  // Get the host from the request
+  const host = req.headers.get('host') || '';
+  const isLocalhost = host.includes('localhost') || host.includes('127.0.0.1');
+  const isProduction = host.includes('redai.site');
+  
   // Check if Clerk is properly configured
   const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-  const isClerkConfigured = clerkPublishableKey && 
-    !clerkPublishableKey.includes('your_clerk_publishable_key_here') &&
-    !clerkPublishableKey.includes('pk_test_');
+  const isClerkConfigured = clerkPublishableKey && !clerkPublishableKey.includes('your_clerk_publishable_key_here');
   
-  // If Clerk is not configured or using test keys, allow all routes
+  // If Clerk is not configured, allow all routes
   if (!isClerkConfigured) {
-    console.warn('⚠️ Clerk not properly configured or using test keys. Authentication disabled.');
+    console.log('⚠️ Clerk not configured, allowing all routes');
     return NextResponse.next();
   }
   
-  // If it's a protected route and user is not authenticated, redirect to login
-  if (isProtectedRoute(req)) {
+  // For development (localhost), allow all routes without authentication
+  if (isLocalhost) {
+    console.log('🔧 Development mode: allowing all routes on localhost');
+    return NextResponse.next();
+  }
+  
+  // For production, enforce authentication on protected routes
+  if (isProduction && isProtectedRoute(req)) {
     try {
       const { userId } = await auth();
       if (!userId) {
+        console.log('🔒 Production: redirecting to login for protected route');
         return NextResponse.redirect(new URL('/login', req.url));
       }
     } catch (error) {
-      console.error('Clerk authentication error:', error);
+      console.error('❌ Clerk authentication error:', error);
       return NextResponse.redirect(new URL('/login', req.url));
     }
   }
@@ -59,4 +69,4 @@ export const config = {
     '/',
     '/(api|trpc)(.*)',
   ],
-}; 
+};

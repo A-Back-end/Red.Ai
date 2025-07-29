@@ -5,10 +5,9 @@ const nextConfig = {
   experimental: {
     staticWorkerRequestDeduping: false,
   },
-  // Skip problematic pages during static generation for test keys
-  ...((process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.includes('pk_test_') || 
-       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.includes('placeholder') ||
-       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.includes('Y2xlcmsuZGV2ZWxvcG1lbnQ')) && {
+  // Skip problematic pages during static generation
+  ...((process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.includes('Y2xlcmsuZGV2ZWxvcG1lbnQ') || 
+       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.includes('placeholder')) && {
     exportPathMap: async function (defaultPathMap) {
       return {
         '/': { page: '/' }

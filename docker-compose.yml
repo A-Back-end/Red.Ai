@@ -37,7 +37,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: docker/Dockerfile.backend
+      dockerfile: docker/Dockerfile.backend.space-optimized
     container_name: redai_backend
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-redai_user}:${POSTGRES_PASSWORD:-redai_password}@postgres:5432/${POSTGRES_DB:-redai}
@@ -101,7 +101,7 @@ services:
   ai-processor:
     build:
       context: .
-      dockerfile: docker/Dockerfile.ai-processor
+      dockerfile: docker/Dockerfile.ai-processor.space-optimized
     environment:
       - REDIS_URL=redis://redis:6379
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}

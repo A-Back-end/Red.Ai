@@ -1,0 +1,642 @@
+[
+  {
+    "id": "project_1753024990755_uum7j34aq",
+    "userId": "user_2zYwvV5CzJOaembaK7d8gMPUo64",
+    "name": "Please generate me the best room of 2025",
+    "description": "Please generate me the best room of 2025",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/87/989822bc82e19e/bc82e19ec9894c0aa650804c0dd65064/sample.png?se=2025-07-20T15%3A33%3A10Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=6TRdJRGlqbtAk3Xvnv33mFFKUCTDQPQDUeNZZ1x45Kk%3D",
+    "createdAt": "2025-07-20T15:23:10.755Z",
+    "updatedAt": "2025-07-20T15:23:10.755Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-us1.bfl.ai/results/87/989822bc82e19e/bc82e19ec9894c0aa650804c0dd65064/sample.png?se=2025-07-20T15%3A33%3A10Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=6TRdJRGlqbtAk3Xvnv33mFFKUCTDQPQDUeNZZ1x45Kk%3D"
+    ],
+    "budget": {
+      "min": 25000,
+      "max": 37500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "scandinavian"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753169047724_33yr6l12s",
+    "userId": "test-user",
+    "name": "Test Project",
+    "description": "Test description",
+    "createdAt": "2025-07-22T07:24:07.724Z",
+    "updatedAt": "2025-07-22T07:24:07.724Z",
+    "status": "draft",
+    "generatedImages": [],
+    "budget": {
+      "min": 50000,
+      "max": 200000
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "test": "write-test",
+    "createdAt": "1970-01-01T00:00:00.000Z",
+    "updatedAt": "1970-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "project_1753180225818_uzeo5ou3k",
+    "userId": "test-user-123",
+    "name": "Test Project Save",
+    "description": "Testing project save functionality",
+    "imageUrl": "https://example.com/test-image.jpg",
+    "createdAt": "2025-07-22T10:30:25.818Z",
+    "updatedAt": "2025-07-22T10:30:25.818Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://example.com/test-image.jpg"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753180559629_1a0tldwg1",
+    "userId": "test-user-123",
+    "name": "Test Project Save",
+    "description": "Testing project save functionality",
+    "imageUrl": "https://example.com/test-image.jpg",
+    "createdAt": "2025-07-22T10:35:59.629Z",
+    "updatedAt": "2025-07-22T10:35:59.629Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://example.com/test-image.jpg"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753180574974_j593v22nd",
+    "userId": "test-user-123",
+    "name": "Test Project Save",
+    "description": "Testing project save functionality",
+    "imageUrl": "https://example.com/test-image.jpg",
+    "createdAt": "2025-07-22T10:36:14.974Z",
+    "updatedAt": "2025-07-22T10:36:14.974Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://example.com/test-image.jpg"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753180629420_s0u3p6mf3",
+    "userId": "anonymous",
+    "name": "Test Project Save with Auth",
+    "description": "Testing project save functionality with authentication",
+    "imageUrl": "https://example.com/test-image.jpg",
+    "createdAt": "2025-07-22T10:37:09.420Z",
+    "updatedAt": "2025-07-22T10:37:09.420Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://example.com/test-image.jpg"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753180656725_wkegnxqot",
+    "userId": "anonymous",
+    "name": "Test Project Save with Auth",
+    "description": "Testing project save functionality with authentication",
+    "imageUrl": "https://example.com/test-image.jpg",
+    "createdAt": "2025-07-22T10:37:36.725Z",
+    "updatedAt": "2025-07-22T10:37:36.725Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://example.com/test-image.jpg"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753362103013_pm01axfrs",
+    "userId": "test_user",
+    "name": "Updated Test Project",
+    "description": "Test description",
+    "createdAt": "2025-07-24T13:01:43.013Z",
+    "updatedAt": "2025-07-24T13:02:14.518Z",
+    "status": "completed",
+    "generatedImages": [],
+    "budget": {
+      "min": 50000,
+      "max": 200000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753364966739_lmkpqztw8",
+    "userId": "server_test_user",
+    "name": "Test Server Project",
+    "description": "Testing server save",
+    "createdAt": "2025-07-24T13:49:26.739Z",
+    "updatedAt": "2025-07-24T13:49:26.739Z",
+    "status": "draft",
+    "generatedImages": [],
+    "budget": {
+      "min": 50000,
+      "max": 200000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753365276948_o7yozorxg",
+    "userId": "server_test",
+    "name": "Test Server Project",
+    "description": "Testing server save",
+    "createdAt": "2025-07-24T13:54:36.948Z",
+    "updatedAt": "2025-07-24T13:54:36.948Z",
+    "status": "draft",
+    "generatedImages": [],
+    "budget": {
+      "min": 50000,
+      "max": 200000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753365348767_swuoxacn2",
+    "userId": "user_test_123",
+    "name": "Test User Project",
+    "description": "Testing user project save",
+    "createdAt": "2025-07-24T13:55:48.767Z",
+    "updatedAt": "2025-07-24T13:55:48.767Z",
+    "status": "draft",
+    "generatedImages": [],
+    "budget": {
+      "min": 50000,
+      "max": 200000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753365830074_mb8qka8wt",
+    "userId": "diagnostic_user",
+    "name": "Diagnostic Test",
+    "description": "Test project for diagnostics",
+    "createdAt": "2025-07-24T14:03:50.074Z",
+    "updatedAt": "2025-07-24T14:03:50.074Z",
+    "status": "draft",
+    "generatedImages": [],
+    "budget": {
+      "min": 50000,
+      "max": 200000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753365830256_905p5nlzj",
+    "userId": "anonymous",
+    "name": "Anonymous Test",
+    "description": "Test without userId",
+    "createdAt": "2025-07-24T14:03:50.256Z",
+    "updatedAt": "2025-07-24T14:03:50.256Z",
+    "status": "draft",
+    "generatedImages": [],
+    "budget": {
+      "min": 50000,
+      "max": 200000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753366003290_39jntw19t",
+    "userId": "diagnostic_user",
+    "name": "Diagnostic Test",
+    "description": "Test project for diagnostics",
+    "createdAt": "2025-07-24T14:06:43.290Z",
+    "updatedAt": "2025-07-24T14:06:43.290Z",
+    "status": "draft",
+    "generatedImages": [],
+    "budget": {
+      "min": 50000,
+      "max": 200000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753366003445_1s95z1kri",
+    "userId": "anonymous",
+    "name": "Anonymous Test",
+    "description": "Test without userId",
+    "createdAt": "2025-07-24T14:06:43.445Z",
+    "updatedAt": "2025-07-24T14:06:43.445Z",
+    "status": "draft",
+    "generatedImages": [],
+    "budget": {
+      "min": 50000,
+      "max": 200000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753366007115_r44gedcoa",
+    "userId": "diagnostic_user",
+    "name": "Diagnostic Test",
+    "description": "Test project for diagnostics",
+    "createdAt": "2025-07-24T14:06:47.115Z",
+    "updatedAt": "2025-07-24T14:06:47.115Z",
+    "status": "draft",
+    "generatedImages": [],
+    "budget": {
+      "min": 50000,
+      "max": 200000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753366007221_g2gypsfc0",
+    "userId": "anonymous",
+    "name": "Anonymous Test",
+    "description": "Test without userId",
+    "createdAt": "2025-07-24T14:06:47.221Z",
+    "updatedAt": "2025-07-24T14:06:47.221Z",
+    "status": "draft",
+    "generatedImages": [],
+    "budget": {
+      "min": 50000,
+      "max": 200000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753366587044_d83km4e6l",
+    "userId": "test_user",
+    "name": "Test Project",
+    "description": "Test project description",
+    "createdAt": "2025-07-24T14:16:27.044Z",
+    "updatedAt": "2025-07-24T14:16:27.044Z",
+    "status": "draft",
+    "generatedImages": [],
+    "budget": {
+      "min": 50000,
+      "max": 100000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753431093225_37nuwwu0s",
+    "userId": "user_2zYwvV5CzJOaembaK7d8gMPUo64",
+    "name": "Сделай мне ремонт",
+    "description": "Сделай мне ремонт",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/52/0965219cf124d8/9cf124d83e6541fab42311d5c2e978ea/sample.png?se=2025-07-25T08%3A21%3A37Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=xj18oZlyCLM1HfZFo6mKjTXhtyGblFW6j%2B2SPiPoMCU%3D",
+    "createdAt": "2025-07-25T08:11:33.225Z",
+    "updatedAt": "2025-07-25T08:11:33.225Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-us1.bfl.ai/results/52/0965219cf124d8/9cf124d83e6541fab42311d5c2e978ea/sample.png?se=2025-07-25T08%3A21%3A37Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=xj18oZlyCLM1HfZFo6mKjTXhtyGblFW6j%2B2SPiPoMCU%3D"
+    ],
+    "budget": {
+      "min": 20200,
+      "max": 30300,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753562891748_kepnywy6p",
+    "userId": "user_2zxypLJZaUZffXTgWZsegDt62vv",
+    "name": "Сделай мне ремонт ",
+    "description": "Сделай мне ремонт ",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/d8/8950058fe6ecb2/8fe6ecb24ea74c01bc125d744e4e9f09/sample.png?se=2025-07-26T20%3A58%3A16Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=rp04NWawyDcYxrkb0/nj6WbhVyYiPFMS01GsIsysCq8%3D",
+    "createdAt": "2025-07-26T20:48:11.748Z",
+    "updatedAt": "2025-07-26T20:48:11.748Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-us1.bfl.ai/results/d8/8950058fe6ecb2/8fe6ecb24ea74c01bc125d744e4e9f09/sample.png?se=2025-07-26T20%3A58%3A16Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=rp04NWawyDcYxrkb0/nj6WbhVyYiPFMS01GsIsysCq8%3D"
+    ],
+    "budget": {
+      "min": 27000,
+      "max": 40500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "classic"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753565407193_auoslsz9i",
+    "userId": "deploy_test",
+    "name": "Deployment Test",
+    "description": "Testing deployment",
+    "createdAt": "2025-07-26T21:30:07.193Z",
+    "updatedAt": "2025-07-26T21:30:07.193Z",
+    "status": "draft",
+    "generatedImages": [],
+    "budget": {
+      "min": 50000,
+      "max": 200000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753856047161_lp7xako43",
+    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
+    "name": "Can you generate me the best design style of 2025",
+    "description": "Can you generate me the best design style of 2025",
+    "imageUrl": "https://delivery-eu1.bfl.ai/results/c0/0470026b9a6d52/6b9a6d52dde54787b63737fa1255bc9f/sample.png?se=2025-07-30T06%3A24%3A08Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=6GHnoJ2zfvXCx3RxBUgK/UBvK5XWFrNLuVozHLv2bOY%3D",
+    "createdAt": "2025-07-30T06:14:07.161Z",
+    "updatedAt": "2025-07-30T06:14:07.161Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-eu1.bfl.ai/results/c0/0470026b9a6d52/6b9a6d52dde54787b63737fa1255bc9f/sample.png?se=2025-07-30T06%3A24%3A08Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=6GHnoJ2zfvXCx3RxBUgK/UBvK5XWFrNLuVozHLv2bOY%3D"
+    ],
+    "budget": {
+      "min": 24800,
+      "max": 37200,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "loft"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753885973176_p8fnzwiic",
+    "userId": "user_2zYwvV5CzJOaembaK7d8gMPUo64",
+    "name": "cdcdcd",
+    "description": "cdcdcd",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/2c/97706428728b8b/28728b8bd43648abbb81b1c921f41caa/sample.png?se=2025-07-30T14%3A42%3A58Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=k%2BXbsh2vsy5IXZZWH3h20UC0Vhnp3Se0t8SSGsRIaS0%3D",
+    "createdAt": "2025-07-30T14:32:53.176Z",
+    "updatedAt": "2025-07-30T14:32:53.176Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-us1.bfl.ai/results/2c/97706428728b8b/28728b8bd43648abbb81b1c921f41caa/sample.png?se=2025-07-30T14%3A42%3A58Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=k%2BXbsh2vsy5IXZZWH3h20UC0Vhnp3Se0t8SSGsRIaS0%3D"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753886228101_6gj77wyh2",
+    "userId": "user_2zYwvV5CzJOaembaK7d8gMPUo64",
+    "name": "21§2",
+    "description": "21§2",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/20/2318916b54c737/6b54c737c5044b259d280d4a71d3f246/sample.png?se=2025-07-30T14%3A47%3A12Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=LOW0mUM5MF67C5obGf3cvyQ7JhpGHJTqnEyEW%2BMIgq8%3D",
+    "createdAt": "2025-07-30T14:37:08.101Z",
+    "updatedAt": "2025-07-30T14:37:08.101Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-us1.bfl.ai/results/20/2318916b54c737/6b54c737c5044b259d280d4a71d3f246/sample.png?se=2025-07-30T14%3A47%3A12Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=LOW0mUM5MF67C5obGf3cvyQ7JhpGHJTqnEyEW%2BMIgq8%3D"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1754550398546_4zh5xlro6",
+    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
+    "name": "Design a kitchen area only along the gray accent w",
+    "description": "Design a kitchen area only along the gray accent wall without changing the rest of the room’s zoning. Keep the open space and large windows untouched. Use a clean, modern style with a combination of white matte and wood textures for the cabinets. Include a built-in oven, stove, and minimal overhead cupboards. Add soft LED lighting under cabinets and a small island or dining table placed close to the gray wall, not extending far into the room. Keep the design minimalist and harmonious with the urban view.",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/ce/39895938be8b1c/38be8b1cc4b84f5c881c52665e58d963/sample.png?se=2025-08-07T07%3A16%3A39Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=M/OfsU2oZjoTP4z08%2B4G6q4C/e9F4UOWQ9%2BzZ6Ch9%2BQ%3D",
+    "createdAt": "2025-08-07T07:06:38.546Z",
+    "updatedAt": "2025-08-07T07:06:38.546Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-us1.bfl.ai/results/ce/39895938be8b1c/38be8b1cc4b84f5c881c52665e58d963/sample.png?se=2025-08-07T07%3A16%3A39Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=M/OfsU2oZjoTP4z08%2B4G6q4C/e9F4UOWQ9%2BzZ6Ch9%2BQ%3D"
+    ],
+    "budget": {
+      "min": 50000,
+      "max": 75000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  }
+]

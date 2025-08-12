@@ -37,7 +37,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: docker/Dockerfile.backend.minimal
+      dockerfile: docker/Dockerfile.backend
     container_name: redai_backend
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-redai_user}:${POSTGRES_PASSWORD:-redai_password}@postgres:5432/${POSTGRES_DB:-redai}
@@ -70,7 +70,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: docker/Dockerfile.frontend.ultra-optimized
+      dockerfile: docker/Dockerfile.frontend
       args:
         - OPENAI_API_KEY=${OPENAI_API_KEY:-placeholder_for_build}
         - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:-pk_test_YOUR_CLERK_PUBLISHABLE_KEY_HERE}
@@ -101,7 +101,7 @@ services:
   ai-processor:
     build:
       context: .
-      dockerfile: docker/Dockerfile.ai-processor.minimal
+      dockerfile: docker/Dockerfile.ai-processor
     environment:
       - REDIS_URL=redis://redis:6379
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}

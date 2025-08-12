@@ -1,0 +1,159 @@
+# Frontend-specific .dockerignore to exclude large files
+# === Large Image Files ===
+public/img/img-*.jpg
+public/img/img-*.png
+public/img/img-*.jpeg
+public/img/img-*.webp
+
+# === Node.js ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+.env/
+.env.local
+.env.production
+.env.development
+
+# === Next.js ===
+.next/
+out/
+build/
+dist/
+
+# === Logs ===
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# === Runtime data ===
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# === Coverage directory used by tools like istanbul ===
+coverage/
+.nyc_output/
+
+# === Dependency directories ===
+jspm_packages/
+
+# === Optional npm cache directory ===
+.npm
+
+# === Optional REPL history ===
+.node_repl_history
+
+# === Output of 'npm pack' ===
+*.tgz
+
+# === Yarn Integrity file ===
+.yarn-integrity
+
+# === dotenv environment variables file ===
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# === parcel-bundler cache (https://parceljs.org/) ===
+.cache
+.parcel-cache
+
+# === Git ===
+.git/
+.gitignore
+.gitattributes
+
+# === IDE ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === OS ===
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# === Project specific ===
+temp/
+tmp/
+uploads/
+generated-images/
+static/
+public/generated-images/
+
+# === Database ===
+*.db
+*.sqlite
+*.sqlite3
+
+# === Backup files ===
+*.backup
+*.bak
+
+# === Docker ===
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# === Documentation ===
+README*.md
+docs/
+*.md
+
+# === Tests ===
+tests/
+test/
+*.test.*
+*.spec.*
+
+# === Large ML models and data ===
+*.model
+*.pkl
+*.h5
+*.pt
+*.pth
+weights/
+models/
+data/
+
+# === Certificates ===
+*.pem
+*.key
+*.crt
+*.csr
+
+# === Terraform ===
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# === Scripts ===
+scripts/
+deploy/

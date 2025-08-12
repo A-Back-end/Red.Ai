@@ -1,0 +1,49 @@
+# Red.AI AI Processor Dockerfile - Minimal
+FROM python:3.11-alpine
+
+# Install only essential packages
+RUN apk add --no-cache \
+    curl \
+    && rm -rf /var/cache/apk/*
+
+# Create user for security
+RUN addgroup -g 1001 -S redai && \
+    adduser -S redai -u 1001 -G redai
+
+# Set work directory
+WORKDIR /app
+
+# Install only essential Python dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir fastapi uvicorn pydantic pydantic-settings && \
+    pip install --no-cache-dir openai anthropic huggingface-hub && \
+    pip install --no-cache-dir redis hiredis && \
+    pip cache purge
+
+# Copy only essential Python files
+COPY backend/ai_service.py ./backend/
+COPY backend/azure_openai_service.py ./backend/
+COPY backend/azure_settings.py ./backend/
+COPY backend/config.py ./backend/
+
+# Copy source directory
+COPY src/ ./src/
+
+# Create necessary directories
+RUN mkdir -p uploads logs static generated-images && \
+    chown -R redai:redai /app
+
+# Switch to redai user
+USER redai
+
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=5 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8000/health || exit 1
+
+# Start command (this service runs as a worker, not a web server)
+CMD ["python", "-m", "backend.ai_service"]

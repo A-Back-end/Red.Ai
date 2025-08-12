@@ -1,0 +1,59 @@
+# Red.AI Backend Dockerfile - Minimal
+FROM python:3.11-alpine
+
+# Install only essential packages
+RUN apk add --no-cache \
+    curl \
+    && rm -rf /var/cache/apk/*
+
+# Create user for security
+RUN addgroup -g 1001 -S redai && \
+    adduser -S redai -u 1001 -G redai
+
+# Set work directory
+WORKDIR /app
+
+# Copy only requirements files first
+COPY requirements/base.txt ./requirements.txt
+COPY backend/requirements.txt ./backend-requirements.txt
+
+# Install only essential Python dependencies (skip heavy ones like torch)
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir fastapi uvicorn pydantic pydantic-settings && \
+    pip install --no-cache-dir sqlalchemy alembic asyncpg psycopg2-binary && \
+    pip install --no-cache-dir redis hiredis passlib python-jose python-multipart && \
+    pip install --no-cache-dir openai anthropic huggingface-hub && \
+    pip cache purge
+
+# Copy only essential Python files
+COPY backend/main.py ./backend/
+COPY backend/ai_service.py ./backend/
+COPY backend/azure_openai_service.py ./backend/
+COPY backend/azure_settings.py ./backend/
+COPY backend/config.py ./backend/
+COPY backend/ai_server.py ./backend/
+
+# Copy source directory
+COPY src/ ./src/
+
+# Create necessary directories
+RUN mkdir -p uploads logs static generated-images && \
+    chown -R redai:redai /app
+
+# Switch to redai user
+USER redai
+
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Expose port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=5 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8000/health || exit 1
+
+# Start command
+CMD ["python", "backend/main.py"]

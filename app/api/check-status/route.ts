@@ -5,15 +5,36 @@ import { checkStatus, getBflApiKey } from '@/utils/bflApiClient';
 // Validate BFL.ai URL format
 const isValidBflUrl = (url: string): boolean => {
   try {
+    // First, check if it's a valid URL
     const urlObj = new URL(url);
-    // Accept both EU and global endpoints
-    const validHosts = ['api.bfl.ai', 'api.eu1.bfl.ai', 'api.us1.bfl.ai'];
-    const isValidHost = validHosts.includes(urlObj.hostname);
-    const isValidPath = urlObj.pathname.includes('/v1/get_result') || urlObj.pathname.includes('/flux-');
-    const hasId = urlObj.searchParams.has('id') || urlObj.pathname.includes('/');
     
-    return isValidHost && (isValidPath || hasId);
-  } catch {
+    // Accept both EU and global endpoints, plus the IP-based endpoint
+    const validHosts = ['api.bfl.ai', 'api.eu1.bfl.ai', 'api.eu4.bfl.ai', 'api.us1.bfl.ai', '13.107.246.45'];
+    const isValidHost = validHosts.includes(urlObj.hostname);
+    
+    // Check for valid paths - BFL.ai endpoints
+    const isValidBflPath = urlObj.pathname.includes('/v1/get_result') || 
+                           urlObj.pathname.includes('/flux-') ||
+                           urlObj.pathname.includes('/v1/flux-');
+    
+    // Check for ID parameter or path-based ID
+    const hasId = urlObj.searchParams.has('id') || 
+                  urlObj.pathname.includes('/') ||
+                  !!urlObj.pathname.match(/\/[a-zA-Z0-9_-]+$/);
+    
+    console.log('[Check Status API] URL validation:', {
+      url,
+      hostname: urlObj.hostname,
+      pathname: urlObj.pathname,
+      isValidHost,
+      isValidBflPath,
+      hasId,
+      searchParams: Object.fromEntries(urlObj.searchParams)
+    });
+    
+    return isValidHost && (isValidBflPath || hasId);
+  } catch (error) {
+    console.error('[Check Status API] URL validation failed:', error);
     return false;
   }
 };
@@ -22,20 +43,49 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const pollingUrl = searchParams.get('url');
 
+  console.log('[Check Status API] Received request with URL:', pollingUrl);
+  console.log('[Check Status API] URL type:', typeof pollingUrl);
+  console.log('[Check Status API] URL length:', pollingUrl?.length);
+
   if (!pollingUrl) {
+    console.error('[Check Status API] No URL parameter provided');
     return NextResponse.json({ 
       message: 'Polling URL parameter is required',
       error: 'Missing url parameter'
     }, { status: 400 });
   }
 
+  if (typeof pollingUrl !== 'string') {
+    console.error('[Check Status API] URL parameter is not a string:', typeof pollingUrl);
+    return NextResponse.json({ 
+      message: 'Polling URL parameter must be a string',
+      error: 'Invalid url parameter type',
+      receivedType: typeof pollingUrl
+    }, { status: 400 });
+  }
+
   // Validate URL format
   if (!isValidBflUrl(pollingUrl)) {
     console.error('[Check Status API] Invalid URL format:', pollingUrl);
+    console.error('[Check Status API] URL validation failed. Details:', {
+      url: pollingUrl,
+      type: typeof pollingUrl,
+      length: pollingUrl.length,
+      startsWithHttp: pollingUrl.startsWith('http'),
+      includesBfl: pollingUrl.includes('bfl.ai'),
+      includesIp: pollingUrl.includes('13.107.246.45')
+    });
     return NextResponse.json({ 
       message: 'Invalid polling URL format',
       error: 'URL must be a valid BFL.ai polling endpoint',
-      receivedUrl: pollingUrl
+      receivedUrl: pollingUrl,
+      validationDetails: {
+        type: typeof pollingUrl,
+        length: pollingUrl.length,
+        startsWithHttp: pollingUrl.startsWith('http'),
+        includesBfl: pollingUrl.includes('bfl.ai'),
+        includesIp: pollingUrl.includes('13.107.246.45')
+      }
     }, { status: 400 });
   }
 

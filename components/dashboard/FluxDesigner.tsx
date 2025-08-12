@@ -529,12 +529,33 @@ export default function FluxDesigner({ onAnalyze, onGenerate, onDesign, credits 
   // This effect handles the polling lifecycle
   useEffect(() => {
     // Only run when in polling state and we have a URL
+    console.log('[FluxDesigner] Polling effect triggered:', {
+      generationStatus,
+      pollingUrl,
+      pollingUrlType: typeof pollingUrl,
+      pollingUrlLength: pollingUrl?.length
+    });
+    
     if (generationStatus === 'polling' && pollingUrl) {
       const checkStatus = async () => {
         try {
           console.log(`[FluxDesigner] Checking status for URL: ${pollingUrl}`);
-          // Use mock data for status response (for limited tokens/testing)
-            const statusResp = await fetch(`/api/check-status?url=${encodeURIComponent(pollingUrl)}`);
+          
+          // Validate polling URL before making request
+          if (!pollingUrl || typeof pollingUrl !== 'string') {
+            throw new Error('Invalid polling URL: URL is missing or not a string');
+          }
+          
+          if (!pollingUrl.startsWith('http')) {
+            throw new Error(`Invalid polling URL format: ${pollingUrl}`);
+          }
+          
+          // Additional validation for BFL.ai URLs
+          if (!pollingUrl.includes('bfl.ai') && !pollingUrl.includes('13.107.246.45')) {
+            console.warn('[FluxDesigner] Warning: Polling URL does not appear to be a BFL.ai URL:', pollingUrl);
+          }
+          
+          const statusResp = await fetch(`/api/check-status?url=${encodeURIComponent(pollingUrl)}`);
           
           if (!statusResp.ok) {
             // Try to get specific error message from backend
@@ -658,10 +679,22 @@ export default function FluxDesigner({ onAnalyze, onGenerate, onDesign, credits 
       });
 
       const data = await response.json();
+      
+      console.log('[FluxDesigner] API response received:', {
+        ok: response.ok,
+        status: response.status,
+        hasPollingUrl: !!data.polling_url,
+        pollingUrlType: typeof data.polling_url,
+        dataKeys: Object.keys(data)
+      });
 
       if (!response.ok || !data.polling_url) {
         throw new Error(data.message || 'Failed to start generation.');
       }
+
+      console.log('[FluxDesigner] Received polling URL:', data.polling_url);
+      console.log('[FluxDesigner] URL type:', typeof data.polling_url);
+      console.log('[FluxDesigner] URL starts with http:', data.polling_url?.startsWith('http'));
 
       // Set the URL and status to trigger the useEffect for polling
       setPollingUrl(data.polling_url);

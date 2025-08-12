@@ -221,7 +221,7 @@ export default function Step3Settings({ prevStep, settings, setSettings, onGener
           ) : (
             <>
               <Sparkles size={16} className="mr-2" />
-              Finish & Generate
+              Finish & Generatasdasdae
             </>
           )}
         </Button>

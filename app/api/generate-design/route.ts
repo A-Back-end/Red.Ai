@@ -80,12 +80,16 @@ export async function POST(request: Request) {
         
         console.log('[Generate API] Successfully started generation. Response:', responseData);
         console.log('[Generate API] Polling URL received:', responseData.polling_url);
+        console.log('[Generate API] Polling URL type:', typeof responseData.polling_url);
+        console.log('[Generate API] Polling URL starts with http:', responseData.polling_url?.startsWith('http'));
         
         // Validate polling URL
         if (!responseData.polling_url) {
           console.error('[Generate API] Warning: No polling URL in response');
         } else if (!responseData.polling_url.startsWith('http')) {
           console.error('[Generate API] Warning: Invalid polling URL format:', responseData.polling_url);
+        } else {
+          console.log('[Generate API] Polling URL validation passed');
         }
         
         return NextResponse.json(responseData);

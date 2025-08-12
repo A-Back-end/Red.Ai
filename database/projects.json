@@ -454,33 +454,6 @@
     "shoppingList": null
   },
   {
-    "id": "project_1753430910441_1glaxf1pz",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Сделай мне ремонт",
-    "description": "Сделай мне ремонт",
-    "imageUrl": "https://delivery-us1.bfl.ai/results/99/913754405dd803/405dd803e7754a59b5c3a69771fa61ed/sample.png?se=2025-07-25T08%3A18%3A34Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=f7ZiO2wpx4qfmfskUVvqj7b%2BECo8EALnLAvhj/uGNCY%3D",
-    "createdAt": "2025-07-25T08:08:30.441Z",
-    "updatedAt": "2025-07-25T08:08:30.441Z",
-    "status": "completed",
-    "generatedImages": [
-      "https://delivery-us1.bfl.ai/results/99/913754405dd803/405dd803e7754a59b5c3a69771fa61ed/sample.png?se=2025-07-25T08%3A18%3A34Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=f7ZiO2wpx4qfmfskUVvqj7b%2BECo8EALnLAvhj/uGNCY%3D"
-    ],
-    "budget": {
-      "min": 13500,
-      "max": 20250,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "minimalist"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
-  },
-  {
     "id": "project_1753431093225_37nuwwu0s",
     "userId": "user_2zYwvV5CzJOaembaK7d8gMPUo64",
     "name": "Сделай мне ремонт",
@@ -499,33 +472,6 @@
     },
     "preferredStyles": [
       "modern"
-    ],
-    "restrictions": [],
-    "roomAnalysis": null,
-    "designRecommendation": null,
-    "threeDModel": null,
-    "pdfReport": null,
-    "shoppingList": null
-  },
-  {
-    "id": "project_1753458740374_1nou6msw9",
-    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Render this aparment with beatiful style with mode",
-    "description": "Render this aparment with beatiful style with modern 2025",
-    "imageUrl": "https://delivery-us1.bfl.ai/results/1c/743575447cac45/447cac45cea34f02b20064de5d956208/sample.png?se=2025-07-25T16%3A02%3A24Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=PJZVK9WSRf5QaV6LHQ0rCEjgqG0R76TrbSBIhF9aShM%3D",
-    "createdAt": "2025-07-25T15:52:20.374Z",
-    "updatedAt": "2025-07-25T15:52:20.374Z",
-    "status": "completed",
-    "generatedImages": [
-      "https://delivery-us1.bfl.ai/results/1c/743575447cac45/447cac45cea34f02b20064de5d956208/sample.png?se=2025-07-25T16%3A02%3A24Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=PJZVK9WSRf5QaV6LHQ0rCEjgqG0R76TrbSBIhF9aShM%3D"
-    ],
-    "budget": {
-      "min": 20800,
-      "max": 31200,
-      "currency": "RUB"
-    },
-    "preferredStyles": [
-      "classic"
     ],
     "restrictions": [],
     "roomAnalysis": null,
@@ -586,24 +532,186 @@
     "shoppingList": null
   },
   {
-    "id": "project_1753632916362_ebz1lvjto",
+    "id": "project_1753856047161_lp7xako43",
     "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
-    "name": "Сделай мне ремонт и интерьер в стиле 2025",
-    "description": "Сделай мне ремонт и интерьер в стиле 2025",
-    "imageUrl": "https://delivery-us1.bfl.ai/results/f1/919873ad4dcc63/ad4dcc631f194134979f35abb05ce22e/sample.png?se=2025-07-27T16%3A25%3A20Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=87XsiTXFbuY86ng8Fup2oJhk5J4ANpNiVCopZtXmpLA%3D",
-    "createdAt": "2025-07-27T16:15:16.362Z",
-    "updatedAt": "2025-07-27T16:15:16.362Z",
+    "name": "Can you generate me the best design style of 2025",
+    "description": "Can you generate me the best design style of 2025",
+    "imageUrl": "https://delivery-eu1.bfl.ai/results/c0/0470026b9a6d52/6b9a6d52dde54787b63737fa1255bc9f/sample.png?se=2025-07-30T06%3A24%3A08Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=6GHnoJ2zfvXCx3RxBUgK/UBvK5XWFrNLuVozHLv2bOY%3D",
+    "createdAt": "2025-07-30T06:14:07.161Z",
+    "updatedAt": "2025-07-30T06:14:07.161Z",
     "status": "completed",
     "generatedImages": [
-      "https://delivery-us1.bfl.ai/results/f1/919873ad4dcc63/ad4dcc631f194134979f35abb05ce22e/sample.png?se=2025-07-27T16%3A25%3A20Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=87XsiTXFbuY86ng8Fup2oJhk5J4ANpNiVCopZtXmpLA%3D"
+      "https://delivery-eu1.bfl.ai/results/c0/0470026b9a6d52/6b9a6d52dde54787b63737fa1255bc9f/sample.png?se=2025-07-30T06%3A24%3A08Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=6GHnoJ2zfvXCx3RxBUgK/UBvK5XWFrNLuVozHLv2bOY%3D"
     ],
     "budget": {
-      "min": 21700,
-      "max": 32550,
+      "min": 24800,
+      "max": 37200,
       "currency": "RUB"
     },
     "preferredStyles": [
-      "scandinavian"
+      "loft"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753885973176_p8fnzwiic",
+    "userId": "user_2zYwvV5CzJOaembaK7d8gMPUo64",
+    "name": "cdcdcd",
+    "description": "cdcdcd",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/2c/97706428728b8b/28728b8bd43648abbb81b1c921f41caa/sample.png?se=2025-07-30T14%3A42%3A58Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=k%2BXbsh2vsy5IXZZWH3h20UC0Vhnp3Se0t8SSGsRIaS0%3D",
+    "createdAt": "2025-07-30T14:32:53.176Z",
+    "updatedAt": "2025-07-30T14:32:53.176Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-us1.bfl.ai/results/2c/97706428728b8b/28728b8bd43648abbb81b1c921f41caa/sample.png?se=2025-07-30T14%3A42%3A58Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=k%2BXbsh2vsy5IXZZWH3h20UC0Vhnp3Se0t8SSGsRIaS0%3D"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1753886228101_6gj77wyh2",
+    "userId": "user_2zYwvV5CzJOaembaK7d8gMPUo64",
+    "name": "21§2",
+    "description": "21§2",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/20/2318916b54c737/6b54c737c5044b259d280d4a71d3f246/sample.png?se=2025-07-30T14%3A47%3A12Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=LOW0mUM5MF67C5obGf3cvyQ7JhpGHJTqnEyEW%2BMIgq8%3D",
+    "createdAt": "2025-07-30T14:37:08.101Z",
+    "updatedAt": "2025-07-30T14:37:08.101Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-us1.bfl.ai/results/20/2318916b54c737/6b54c737c5044b259d280d4a71d3f246/sample.png?se=2025-07-30T14%3A47%3A12Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=LOW0mUM5MF67C5obGf3cvyQ7JhpGHJTqnEyEW%2BMIgq8%3D"
+    ],
+    "budget": {
+      "min": 5000,
+      "max": 7500,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1754550398546_4zh5xlro6",
+    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
+    "name": "Design a kitchen area only along the gray accent w",
+    "description": "Design a kitchen area only along the gray accent wall without changing the rest of the room’s zoning. Keep the open space and large windows untouched. Use a clean, modern style with a combination of white matte and wood textures for the cabinets. Include a built-in oven, stove, and minimal overhead cupboards. Add soft LED lighting under cabinets and a small island or dining table placed close to the gray wall, not extending far into the room. Keep the design minimalist and harmonious with the urban view.",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/ce/39895938be8b1c/38be8b1cc4b84f5c881c52665e58d963/sample.png?se=2025-08-07T07%3A16%3A39Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=M/OfsU2oZjoTP4z08%2B4G6q4C/e9F4UOWQ9%2BzZ6Ch9%2BQ%3D",
+    "createdAt": "2025-08-07T07:06:38.546Z",
+    "updatedAt": "2025-08-07T07:06:38.546Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-us1.bfl.ai/results/ce/39895938be8b1c/38be8b1cc4b84f5c881c52665e58d963/sample.png?se=2025-08-07T07%3A16%3A39Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=M/OfsU2oZjoTP4z08%2B4G6q4C/e9F4UOWQ9%2BzZ6Ch9%2BQ%3D"
+    ],
+    "budget": {
+      "min": 50000,
+      "max": 75000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1754550421550_z0rblr6cf",
+    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
+    "name": "Design a kitchen area only along the gray accent w",
+    "description": "Design a kitchen area only along the gray accent wall without changing the rest of the room’s zoning. Keep the open space and large windows untouched. Use a clean, modern style with a combination of white matte and wood textures for the cabinets. Include a built-in oven, stove, and minimal overhead cupboards. Add soft LED lighting under cabinets and a small island or dining table placed close to the gray wall, not extending far into the room. Keep the design minimalist and harmonious with the urban view.",
+    "imageUrl": "https://delivery-eu4.bfl.ai/results/e1/4221357ccd6b1b/7ccd6b1baed3485db492e3d65fc0327f/sample.png?se=2025-08-07T07%3A17%3A03Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=BE8DQHG6xEFp9jPjnOK6A%2Byqi9/Sn8KUlDjiR0sK/60%3D",
+    "createdAt": "2025-08-07T07:07:01.550Z",
+    "updatedAt": "2025-08-07T07:07:01.550Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-eu4.bfl.ai/results/e1/4221357ccd6b1b/7ccd6b1baed3485db492e3d65fc0327f/sample.png?se=2025-08-07T07%3A17%3A03Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=BE8DQHG6xEFp9jPjnOK6A%2Byqi9/Sn8KUlDjiR0sK/60%3D"
+    ],
+    "budget": {
+      "min": 50000,
+      "max": 75000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "classic"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1754550509023_nypoqnliv",
+    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
+    "name": "Design a fully equipped kitchen only along the gra",
+    "description": "Design a fully equipped kitchen only along the gray accent wall, without changing the open space or touching the large windows. The kitchen should completely fill the wall — from edge to edge — leaving no empty gaps. Use modern minimalist style with white matte and natural wood cabinetry. Include built-in appliances (oven, fridge, stove), sleek overhead cabinets, and hidden storage solutions. Add soft LED strip lighting under the upper cabinets. Optionally include a slim island or console table close to the wall, but don’t extend into the room. Keep the rest of the space open, respecting the current zoning.",
+    "imageUrl": "https://delivery-eu4.bfl.ai/results/fb/5097790d77fd8f/0d77fd8fce934c348008673f61d85bb0/sample.png?se=2025-08-07T07%3A18%3A30Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=YnHe/MbBZIMcs2EcMm8%2B2EEFe/RWZIXDGXxYLULuExU%3D",
+    "createdAt": "2025-08-07T07:08:29.023Z",
+    "updatedAt": "2025-08-07T07:08:29.023Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-eu4.bfl.ai/results/fb/5097790d77fd8f/0d77fd8fce934c348008673f61d85bb0/sample.png?se=2025-08-07T07%3A18%3A30Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=YnHe/MbBZIMcs2EcMm8%2B2EEFe/RWZIXDGXxYLULuExU%3D"
+    ],
+    "budget": {
+      "min": 50000,
+      "max": 75000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "classic"
+    ],
+    "restrictions": [],
+    "roomAnalysis": null,
+    "designRecommendation": null,
+    "threeDModel": null,
+    "pdfReport": null,
+    "shoppingList": null
+  },
+  {
+    "id": "project_1754550535933_kplltcb50",
+    "userId": "user_2zYW7y6nMFilzEH0AwERjXaQmx6",
+    "name": "Design a fully equipped kitchen only along the gra",
+    "description": "Design a fully equipped kitchen only along the gray accent wall, without changing the open space or touching the large windows. The kitchen should completely fill the wall — from edge to edge — leaving no empty gaps. Use modern minimalist style with white matte and natural wood cabinetry. Include built-in appliances (oven, fridge, stove), sleek overhead cabinets, and hidden storage solutions. Add soft LED strip lighting under the upper cabinets. Optionally include a slim island or console table close to the wall, but don’t extend into the room. Keep the rest of the space open, respecting the current zoning.",
+    "imageUrl": "https://delivery-us1.bfl.ai/results/91/5367938fb324d7/8fb324d7dfee4e4e9888e15756839a60/sample.png?se=2025-08-07T07%3A18%3A57Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=1H%2Bcyltn9uZLvd2Vz8NWOtAZ779%2BGk1TNJ7BDxPRbkY%3D",
+    "createdAt": "2025-08-07T07:08:55.933Z",
+    "updatedAt": "2025-08-07T07:08:55.933Z",
+    "status": "completed",
+    "generatedImages": [
+      "https://delivery-us1.bfl.ai/results/91/5367938fb324d7/8fb324d7dfee4e4e9888e15756839a60/sample.png?se=2025-08-07T07%3A18%3A57Z&sp=r&sv=2024-11-04&sr=b&rsct=image/png&sig=1H%2Bcyltn9uZLvd2Vz8NWOtAZ779%2BGk1TNJ7BDxPRbkY%3D"
+    ],
+    "budget": {
+      "min": 50000,
+      "max": 75000,
+      "currency": "RUB"
+    },
+    "preferredStyles": [
+      "modern"
     ],
     "restrictions": [],
     "roomAnalysis": null,

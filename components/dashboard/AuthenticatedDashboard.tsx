@@ -49,7 +49,6 @@ import SettingsPanel from './SettingsPanel'
 import ProjectManager from './ProjectManager'
 import SavedDesigns from './SavedDesigns'
 import ProjectErrorHandler from './ProjectErrorHandler'
-import ProjectSaveDebugger from './ProjectSaveDebugger'
 import { Project } from '@/lib/types'; 
 
 type ViewType = 'flux-designer' | 'ai-assistant' | 'my-projects' | 'saved-designs' | 'settings' | 'dashboard'
@@ -159,44 +158,7 @@ export function AuthenticatedDashboard() {
     setProjectError(null);
   };
 
-  const handleTestSave = async () => {
-    if (!user) {
-      setProjectSaveMessage('❌ No user found for test save');
-      return;
-    }
 
-    const testProject = {
-      userId: user.id,
-      name: 'Test Project from Debugger',
-      description: 'This is a test project created by the debugger',
-      imageUrl: 'https://via.placeholder.com/400x300',
-      status: 'draft',
-      generatedImages: ['https://via.placeholder.com/400x300'],
-      preferredStyles: ['modern'],
-      budget: { min: 50000, max: 100000, currency: 'RUB' },
-    };
-
-    try {
-      const response = await fetch('/api/projects', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(testProject),
-      });
-
-      const result = await response.json();
-      
-      if (result.success) {
-        setProjectSaveMessage('✅ Test project saved successfully!');
-        setRefreshProjects(p => p + 1);
-      } else {
-        setProjectSaveMessage(`❌ Test save failed: ${result.error}`);
-      }
-    } catch (error) {
-      setProjectSaveMessage(`❌ Test save error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-
-    setTimeout(() => setProjectSaveMessage(null), 5000);
-  };
 
   const navigationItems = [
     { id: 'dashboard', label: t('dashboard'), icon: BarChart3, color: 'text-blue-400', bgColor: 'bg-blue-500/10' },
@@ -698,9 +660,7 @@ export function AuthenticatedDashboard() {
               onRetry={handleRetryProjects}
               onDismiss={handleDismissProjectError}
             />
-            {process.env.NODE_ENV === 'development' && (
-              <ProjectSaveDebugger onTestSave={handleTestSave} />
-            )}
+
             <ProjectManager 
               userId={user.id}
               projects={projects}

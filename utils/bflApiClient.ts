@@ -43,10 +43,22 @@ export const generateDesign = async (payload: any) => {
     throw new Error('BFL_API_KEY environment variable is missing or invalid');
   }
 
+  console.log('[BFL API Client] Generating design with payload:', {
+    promptLength: payload.prompt?.length || 0,
+    hasImage: !!payload.input_image,
+    priority: payload.priority
+  });
+
   const response = await bflApiClient.post(BFL_API_CONFIG.endpoints.generate, payload, {
     headers: {
       'x-key': apiKey
     }
+  });
+
+  console.log('[BFL API Client] Generation response received:', {
+    hasPollingUrl: !!response.data.polling_url,
+    pollingUrlType: typeof response.data.polling_url,
+    pollingUrlStartsWithHttp: response.data.polling_url?.startsWith('http')
   });
 
   return response.data;
@@ -60,6 +72,24 @@ export const checkStatus = async (pollingUrl: string) => {
     throw new Error('BFL_API_KEY environment variable is missing or invalid');
   }
 
+  // Validate polling URL
+  if (!pollingUrl || typeof pollingUrl !== 'string') {
+    throw new Error('Invalid polling URL: URL is missing or not a string');
+  }
+
+  if (!pollingUrl.startsWith('http')) {
+    throw new Error(`Invalid polling URL format: ${pollingUrl}`);
+  }
+
+  // Additional validation for BFL.ai URLs
+  const validHosts = ['api.bfl.ai', 'api.eu1.bfl.ai', 'api.eu4.bfl.ai', 'api.us1.bfl.ai', '13.107.246.45'];
+  const urlObj = new URL(pollingUrl);
+  if (!validHosts.includes(urlObj.hostname)) {
+    console.warn('[BFL API Client] Warning: Polling URL hostname not in valid list:', urlObj.hostname);
+  }
+
+  console.log('[BFL API Client] Checking status at:', pollingUrl);
+
   // Use direct axios call - this works perfectly as shown by debug endpoint
   const response = await axios.get(pollingUrl, {
     headers: {
@@ -69,6 +99,7 @@ export const checkStatus = async (pollingUrl: string) => {
     timeout: BFL_API_CONFIG.timeout
   });
 
+  console.log('[BFL API Client] Status response received');
   return response.data;
 };
 

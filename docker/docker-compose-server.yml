@@ -1,0 +1,123 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.frontend.optimized
+      args:
+        - NODE_ENV=production
+    container_name: redai_frontend_server
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - redai-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend.optimized
+    container_name: redai_backend_server
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+      - DEBUG=false
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
+      - AZURE_OPENAI_BACKUP_KEY=${AZURE_OPENAI_BACKUP_KEY}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
+      - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION}
+      - AZURE_OPENAI_DEPLOYMENT_NAME=${AZURE_OPENAI_DEPLOYMENT_NAME}
+      - USE_AZURE_AD=${USE_AZURE_AD}
+    restart: unless-stopped
+    networks:
+      - redai-network
+    volumes:
+      - uploads_data:/app/uploads
+      - logs_data:/app/logs
+      - generated_images:/app/generated-images
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+
+  ai-processor:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.ai-processor.optimized
+    container_name: redai_ai_processor_server
+    ports:
+      - "8001:8001"
+    environment:
+      - NODE_ENV=production
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
+      - AZURE_OPENAI_BACKUP_KEY=${AZURE_OPENAI_BACKUP_KEY}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
+      - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION}
+      - AZURE_OPENAI_DEPLOYMENT_NAME=${AZURE_OPENAI_DEPLOYMENT_NAME}
+    restart: unless-stopped
+    networks:
+      - redai-network
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      - backend
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+        reservations:
+          memory: 2G
+          cpus: '1.0'
+
+  nginx:
+    image: nginx:alpine
+    container_name: redai_nginx_server
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./configs/nginx-redai.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+    networks:
+      - redai-network
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.25'
+
+networks:
+  redai-network:
+    driver: bridge
+
+volumes:
+  uploads_data:
+    driver: local
+  logs_data:
+    driver: local
+  generated_images:
+    driver: local 

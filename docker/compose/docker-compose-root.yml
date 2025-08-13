@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfiles/Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run dev
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/Dockerfiles/Dockerfile.backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://redai:password@db:5432/redai_db
+      - REDIS_URL=redis://redis:6379
+      - SECRET_KEY=dev-secret-key-change-in-production
+              - AZURE_OPENAI_API_KEY=YOUR_AZURE_OPENAI_API_KEY_HERE
+              - AZURE_OPENAI_BACKUP_KEY=YOUR_AZURE_OPENAI_BACKUP_KEY_HERE
+      - AZURE_OPENAI_ENDPOINT=https://neuroflow-hub.openai.azure.com
+      - AZURE_OPENAI_API_VERSION=2024-05-01-preview
+      - AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4.1
+      - USE_AZURE_AD=false
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./backend:/app
+      - backend_uploads:/app/uploads
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=redai
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=redai_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/configs/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - frontend
+      - backend
+
+volumes:
+  postgres_data:
+  redis_data:
+  backend_uploads: 

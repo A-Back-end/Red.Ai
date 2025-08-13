@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polling Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .result { margin: 10px 0; padding: 10px; background: #f5f5f5; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Polling API Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Test BFL API Connection</h2>
+        <button onclick="testBflConnection()">Test BFL Connection</button>
+        <div id="bfl-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Test Generation</h2>
+        <button onclick="testGeneration()">Test Generation</button>
+        <div id="generation-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Test Check Status</h2>
+        <input type="text" id="polling-url" placeholder="Enter polling URL" style="width: 400px; padding: 5px;">
+        <button onclick="testCheckStatus()">Test Check Status</button>
+        <div id="status-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. Test with Invalid URL</h2>
+        <button onclick="testInvalidUrl()">Test Invalid URL</button>
+        <div id="invalid-result" class="result"></div>
+    </div>
+
+    <script>
+        function showResult(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.className = `result ${isError ? 'error' : 'success'}`;
+            element.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        }
+
+        async function testBflConnection() {
+            try {
+                const response = await fetch('/api/test-bfl');
+                const data = await response.json();
+                showResult('bfl-result', data, !data.success);
+            } catch (error) {
+                showResult('bfl-result', { error: error.message }, true);
+            }
+        }
+
+        async function testGeneration() {
+            try {
+                const response = await fetch('/api/test-generation', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                showResult('generation-result', data, !data.success);
+                
+                // Auto-fill polling URL for next test
+                if (data.generation && data.generation.polling_url) {
+                    document.getElementById('polling-url').value = data.generation.polling_url;
+                }
+            } catch (error) {
+                showResult('generation-result', { error: error.message }, true);
+            }
+        }
+
+        async function testCheckStatus() {
+            try {
+                const pollingUrl = document.getElementById('polling-url').value;
+                if (!pollingUrl) {
+                    showResult('status-result', { error: 'Please enter a polling URL' }, true);
+                    return;
+                }
+                
+                const response = await fetch(`/api/check-status?url=${encodeURIComponent(pollingUrl)}`);
+                const data = await response.json();
+                showResult('status-result', data, !response.ok);
+            } catch (error) {
+                showResult('status-result', { error: error.message }, true);
+            }
+        }
+
+        async function testInvalidUrl() {
+            try {
+                const response = await fetch('/api/check-status?url=invalid-url');
+                const data = await response.json();
+                showResult('invalid-result', data, !response.ok);
+            } catch (error) {
+                showResult('invalid-result', { error: error.message }, true);
+            }
+        }
+    </script>
+</body>
+</html> 

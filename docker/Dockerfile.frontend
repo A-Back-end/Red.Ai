@@ -1,0 +1,87 @@
+# Red.AI Frontend Dockerfile - Optimized
+FROM node:22-alpine AS deps
+
+# Install necessary packages
+RUN apk add --no-cache libc6-compat curl
+
+WORKDIR /app
+
+# Copy package files first for better caching
+COPY package*.json ./
+COPY tsconfig.json ./
+COPY next.config.js ./
+COPY tailwind.config.js ./
+COPY postcss.config.js ./
+COPY components.json ./
+
+# Install dependencies with cache mount for faster builds
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --only=production
+
+# Build stage
+FROM node:22-alpine AS builder
+
+WORKDIR /app
+
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/package*.json ./
+COPY --from=deps /app/tsconfig.json ./
+COPY --from=deps /app/next.config.js ./
+COPY --from=deps /app/tailwind.config.js ./
+COPY --from=deps /app/postcss.config.js ./
+COPY --from=deps /app/components.json ./
+
+# Copy source code
+COPY app/ ./app/
+COPY components/ ./components/
+COPY lib/ ./lib/
+COPY public/ ./public/
+COPY utils/ ./utils/
+COPY services/ ./services/
+COPY pages/ ./pages/
+
+# Accept build arguments for API keys (needed during build time)
+ARG OPENAI_API_KEY=placeholder_for_build
+ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsucmVkYWkuc2l0ZSQ
+ENV OPENAI_API_KEY=$OPENAI_API_KEY
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+
+# Build the application
+RUN npm run build
+
+# Production stage
+FROM node:22-alpine AS runner
+
+WORKDIR /app
+
+# Install necessary packages
+RUN apk add --no-cache curl
+
+# Create user for security
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
+
+# Copy built application
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Change ownership
+RUN chown -R nextjs:nodejs /app
+
+USER nextjs
+
+# Expose port
+EXPOSE 3000
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=5 \
+    CMD curl -f http://localhost:3000/ || exit 1
+
+# Start the application
+CMD ["node", "server.js"] 

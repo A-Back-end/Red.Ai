@@ -1,0 +1,73 @@
+# Red.AI Backend Dockerfile - Production Ready
+FROM python:3.11-slim
+
+# Создание пользователя для безопасности
+RUN groupadd -r redai && useradd -r -g redai redai
+
+# Установка системных зависимостей
+RUN apt-get update && apt-get install -y \
+    curl \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Установка рабочей директории
+WORKDIR /app
+
+# Копирование requirements файлов
+COPY requirements/base.txt ./requirements.txt
+COPY backend/requirements.txt ./backend-requirements.txt
+
+# Конфигурация pip для лучшей стабильности
+ENV PIP_TIMEOUT=300
+ENV PIP_RETRIES=5
+ENV PIP_DEFAULT_TIMEOUT=300
+
+# Установка Python зависимостей с улучшенной обработкой ошибок
+# Стадия 1: Обновление pip
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Стадия 2: Установка PyTorch CPU-only версии для стабильности
+RUN pip install --no-cache-dir \
+    --timeout=300 \
+    --retries=5 \
+    torch==2.7.1+cpu \
+    torchvision==0.22.1 \
+    --index-url https://download.pytorch.org/whl/cpu
+
+# Стадия 3: Установка остальных зависимостей из base.txt (torch уже установлен выше)
+RUN pip install --no-cache-dir \
+    --timeout=300 \
+    --retries=5 \
+    -r requirements.txt
+
+# Стадия 4: Установка backend-specific зависимостей
+RUN pip install --no-cache-dir \
+    --timeout=300 \
+    --retries=5 \
+    -r backend-requirements.txt
+
+# Копирование исходного кода
+COPY backend/ ./backend/
+COPY src/ ./src/
+
+# Создание необходимых директорий
+RUN mkdir -p uploads logs static generated-images && \
+    chown -R redai:redai /app
+
+# Переключение на пользователя redai
+USER redai
+
+# Установка переменных окружения
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+
+# Открытие порта
+EXPOSE 8000
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=5 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Команда запуска
+CMD ["python", "backend/main.py"] 

@@ -1,0 +1,25 @@
+{
+  "storage-driver": "overlay2",
+  "storage-opts": [
+    "overlay2.override_kernel_check=true"
+  ],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  },
+  "default-ulimits": {
+    "nofile": {
+      "Hard": 64000,
+      "Name": "nofile",
+      "Soft": 64000
+    }
+  },
+  "max-concurrent-downloads": 10,
+  "max-concurrent-uploads": 5,
+  "buildkit": true,
+  "experimental": true,
+  "features": {
+    "buildkit": true
+  }
+}

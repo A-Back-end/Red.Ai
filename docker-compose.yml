@@ -70,10 +70,10 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: docker/Dockerfile.frontend.optimized
+      dockerfile: docker/Dockerfile.frontend.production
       args:
         - OPENAI_API_KEY=${OPENAI_API_KEY:-placeholder_for_build}
-        - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:-pk_test_YOUR_CLERK_PUBLISHABLE_KEY_HERE}
+        - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
     container_name: redai_frontend
     environment:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}

@@ -1,174 +1,151 @@
 version: '3.8'
 
 services:
-  frontend:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.frontend
-      args:
-        - NODE_ENV=production
-        - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsucmVkYWkuc2l0ZSQ
-    container_name: redai_frontend_production
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://backend:8000
-      - NEXT_PUBLIC_APP_URL=http://localhost:8080
-      - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsucmVkYWkuc2l0ZSQ
-      - CLERK_SECRET_KEY=sk_live_XOBM4dWdsiCF86b4SxGiGMLajYcA2omHPe4Xcn6i9w
-      - NEXT_PUBLIC_CLERK_FRONTEND_API=clerk.redai.site
-      - CLERK_FRONTEND_API=clerk.redai.site
-    depends_on:
-      - backend
-    restart: unless-stopped
-    networks:
-      - redai-network
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-          cpus: '0.5'
-        reservations:
-          memory: 256M
-          cpus: '0.25'
-
-  backend:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.backend.optimized
-    container_name: redai_backend_production
-    ports:
-      - "8000:8000"
-    environment:
-      - NODE_ENV=production
-      - DEBUG=false
-      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
-      - AZURE_OPENAI_BACKUP_KEY=${AZURE_OPENAI_BACKUP_KEY}
-      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
-      - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION}
-      - AZURE_OPENAI_DEPLOYMENT_NAME=${AZURE_OPENAI_DEPLOYMENT_NAME}
-      - USE_AZURE_AD=${USE_AZURE_AD}
-    restart: unless-stopped
-    networks:
-      - redai-network
-    volumes:
-      - uploads_data:/app/uploads
-      - logs_data:/app/logs
-      - generated_images:/app/generated-images
-    deploy:
-      resources:
-        limits:
-          memory: 2G
-          cpus: '1.0'
-        reservations:
-          memory: 1G
-          cpus: '0.5'
-
-  ai-processor:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.ai-processor.optimized
-    container_name: redai_ai_processor_production
-    ports:
-      - "8001:8001"
-    environment:
-      - NODE_ENV=production
-      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
-      - AZURE_OPENAI_BACKUP_KEY=${AZURE_OPENAI_BACKUP_KEY}
-      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
-      - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION}
-      - AZURE_OPENAI_DEPLOYMENT_NAME=${AZURE_OPENAI_DEPLOYMENT_NAME}
-    restart: unless-stopped
-    networks:
-      - redai-network
-    volumes:
-      - uploads_data:/app/uploads
-    depends_on:
-      - backend
-    deploy:
-      resources:
-        limits:
-          memory: 4G
-          cpus: '2.0'
-        reservations:
-          memory: 2G
-          cpus: '1.0'
-
+  # PostgreSQL Database
   postgres:
-    image: postgres:15
-    container_name: redai_postgres_production
+    image: postgres:15-alpine
+    container_name: redai_postgres
     environment:
-      - POSTGRES_DB=redai
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-    ports:
-      - "5432:5432"
+      - POSTGRES_DB=${POSTGRES_DB:-redai_db}
+      - POSTGRES_USER=${POSTGRES_USER:-redai_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-redai_password}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
-    networks:
-      - redai-network
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-redai_user} -d ${POSTGRES_DB:-redai_db}"]
       interval: 30s
       timeout: 10s
-      retries: 3
+      retries: 5
 
+  # Redis Cache
   redis:
     image: redis:7-alpine
-    container_name: redai_redis_production
+    container_name: redai_redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
     ports:
       - "6379:6379"
-    restart: unless-stopped
-    networks:
-      - redai-network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 30s
       timeout: 10s
-      retries: 3
+      retries: 5
 
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: redai_backend
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-redai_user}:${POSTGRES_PASSWORD:-redai_password}@postgres:5432/${POSTGRES_DB:-redai_db}
+      - REDIS_URL=redis://redis:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
+      - OPENAI_API_VERSION=${OPENAI_API_VERSION:-2024-02-01}
+      - BFL_API_KEY=${BFL_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - HUGGINGFACE_API_KEY=${HUGGINGFACE_API_KEY}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Frontend App
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend.production
+      args:
+        - OPENAI_API_KEY=${OPENAI_API_KEY:-placeholder_for_build}
+        - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+    container_name: redai_frontend
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
+      - OPENAI_API_VERSION=${OPENAI_API_VERSION:-2024-02-01}
+      - BFL_API_KEY=${BFL_API_KEY}
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src/frontend:/app/src/frontend
+      - ./public:/app/public
+      - ./database:/app/database
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # AI Processing Service
+  ai-processor:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.ai-processor.optimized
+    container_name: redai_ai_processor
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - HUGGINGFACE_API_KEY=${HUGGINGFACE_API_KEY}
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
+      - OPENAI_API_VERSION=${OPENAI_API_VERSION:-2024-02-01}
+      - BFL_API_KEY=${BFL_API_KEY}
+    volumes:
+      - ./src/ai_models:/app/src/ai_models
+      - ./uploads:/app/uploads
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # Nginx Reverse Proxy
   nginx:
     image: nginx:alpine
-    container_name: redai_nginx_production
+    container_name: redai_nginx
     ports:
-      - "8080:80"
+      - "80:80"
+      - "443:443"
     volumes:
-      - ./docker/configs/nginx-redai-no-ssl.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx-redai-fixed.conf:/etc/nginx/nginx.conf
+      - ./docker/ssl:/etc/nginx/ssl
+      - ./static:/var/www/static
     depends_on:
       - frontend
       - backend
-    restart: unless-stopped
-    networks:
-      - redai-network
-    deploy:
-      resources:
-        limits:
-          memory: 128M
-          cpus: '0.25'
-
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: redai_prometheus_production
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    restart: unless-stopped
-    networks:
-      - redai-network
-
-networks:
-  redai-network:
-    driver: bridge
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 volumes:
-  uploads_data:
-    driver: local
-  logs_data:
-    driver: local
-  generated_images:
-    driver: local
   postgres_data:
-    driver: local 
+  redis_data:
+
+networks:
+  default:
+    name: redai_network
+    driver: bridge 

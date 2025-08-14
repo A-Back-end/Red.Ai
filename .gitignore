@@ -135,3 +135,5 @@ static/
 /.clerk/
 
 /generated/prisma 
+# Production environment variables
+.env.production

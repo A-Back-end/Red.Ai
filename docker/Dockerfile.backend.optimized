@@ -15,7 +15,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 # Upgrade pip and install wheel
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel
 
-# Copy requirements
+# Copy requirements (relative to build context root)
 COPY requirements/base.txt ./requirements.txt
 COPY backend/requirements.txt ./backend-requirements.txt
 
@@ -49,7 +49,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 # Set work directory
 WORKDIR /app
 
-# Copy application code
+# Copy application code (relative to build context root)
 COPY backend/ ./backend/
 COPY src/ ./src/
 

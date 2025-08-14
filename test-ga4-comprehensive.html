@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GA4 Comprehensive Test - Red.AI</title>
+    
+    <!-- Google Analytics GA4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KPN11Z30WN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-KPN11Z30WN', {
+        debug_mode: true,
+        send_page_view: true
+      });
+    </script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .test-button:hover { background: #0056b3; }
+        .test-button.success { background: #28a745; }
+        .test-button.danger { background: #dc3545; }
+        
+        .status {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .log-entry {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .log-success { background: #d4edda; }
+        .log-error { background: #f8d7da; }
+        .log-info { background: #d1ecf1; }
+        
+        .counter {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔬 GA4 Comprehensive Test - Red.AI</h1>
+        <p>Complete testing suite for Google Analytics GA4 integration</p>
+        
+        <div id="status" class="status info">
+            <strong>Status:</strong> Initializing GA4 tests...
+        </div>
+        
+        <div class="grid">
+            <div>
+                <h2>🎯 Basic GA4 Tests</h2>
+                <button class="test-button" onclick="testPageView()">📄 Page View</button>
+                <button class="test-button" onclick="testEvent()">⚡ Custom Event</button>
+                <button class="test-button" onclick="testUserProps()">👤 User Properties</button>
+                <button class="test-button" onclick="testEcommerce()">💰 E-commerce</button>
+                
+                <h2>🤖 Red.AI Specific Tests</h2>
+                <button class="test-button" onclick="testAIFeature()">🧠 AI Feature</button>
+                <button class="test-button" onclick="testDesignGen()">🎨 Design Generation</button>
+                <button class="test-button" onclick="testProjectSave()">💾 Project Save</button>
+                <button class="test-button" onclick="testCreditUsage()">💎 Credit Usage</button>
+            </div>
+            
+            <div>
+                <h2>🔍 Debugging Tools</h2>
+                <button class="test-button" onclick="showGAInfo()">ℹ️ GA4 Info</button>
+                <button class="test-button" onclick="showDataLayer()">📊 DataLayer</button>
+                <button class="test-button" onclick="monitorNetwork()">🌐 Network Monitor</button>
+                <button class="test-button" onclick="checkGTMPreview()">🔗 GTM Preview</button>
+                
+                <h2>📈 Real-time Check</h2>
+                <button class="test-button" onclick="openRealTime()">📊 Open GA4 Real-time</button>
+                <button class="test-button" onclick="testSequence()">🔄 Test Sequence</button>
+                <button class="test-button" onclick="clearLogs()">🗑️ Clear Logs</button>
+            </div>
+        </div>
+        
+        <div class="container">
+            <h2>📝 Event Log <span id="eventCounter" class="counter">0</span></h2>
+            <div id="eventLog"></div>
+        </div>
+        
+        <div class="container">
+            <h2>🔧 Network Monitoring</h2>
+            <div id="networkLog"></div>
+        </div>
+        
+        <div class="container">
+            <h2>📊 Debug Information</h2>
+            <div id="debugInfo"></div>
+        </div>
+    </div>
+
+    <script>
+        let eventCount = 0;
+        let networkRequests = [];
+        
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            setTimeout(initializeTests, 1000);
+            monitorNetworkRequests();
+        });
+        
+        function initializeTests() {
+            checkGA4Status();
+            logEvent('🚀 GA4 Test Suite initialized', 'info');
+        }
+        
+        function checkGA4Status() {
+            const statusDiv = document.getElementById('status');
+            const checks = [];
+            
+            // Check gtag
+            if (window.gtag) {
+                checks.push('✅ gtag function available');
+            } else {
+                checks.push('❌ gtag function missing');
+            }
+            
+            // Check dataLayer
+            if (window.dataLayer && Array.isArray(window.dataLayer)) {
+                checks.push('✅ dataLayer initialized');
+            } else {
+                checks.push('❌ dataLayer missing');
+            }
+            
+            // Check GA script
+            const gaScript = document.querySelector('script[src*="googletagmanager.com/gtag"]');
+            if (gaScript) {
+                checks.push('✅ GA4 script loaded');
+            } else {
+                checks.push('❌ GA4 script not found');
+            }
+            
+            const allGood = checks.every(check => check.includes('✅'));
+            statusDiv.className = allGood ? 'status success' : 'status error';
+            statusDiv.innerHTML = '<strong>GA4 Status:</strong><br>' + checks.join('<br>');
+        }
+        
+        function sendGAEvent(eventName, parameters = {}) {
+            if (window.gtag) {
+                const eventData = {
+                    ...parameters,
+                    timestamp: new Date().toISOString(),
+                    test_mode: true
+                };
+                
+                window.gtag('event', eventName, eventData);
+                logEvent(`📤 Sent: ${eventName}`, 'success', eventData);
+                updateCounter();
+                return true;
+            } else {
+                logEvent(`❌ Failed to send: ${eventName} (gtag not available)`, 'error');
+                return false;
+            }
+        }
+        
+        // Test functions
+        function testPageView() {
+            sendGAEvent('page_view', {
+                page_path: '/test-comprehensive',
+                page_title: 'GA4 Comprehensive Test'
+            });
+        }
+        
+        function testEvent() {
+            sendGAEvent('test_event', {
+                category: 'testing',
+                action: 'manual_test',
+                label: 'comprehensive_test'
+            });
+        }
+        
+        function testUserProps() {
+            if (window.gtag) {
+                window.gtag('config', 'G-KPN11Z30WN', {
+                    user_properties: {
+                        test_user: 'comprehensive_tester',
+                        test_session: Date.now()
+                    }
+                });
+                logEvent('👤 User properties set', 'success');
+            }
+        }
+        
+        function testEcommerce() {
+            sendGAEvent('purchase', {
+                transaction_id: 'test_' + Date.now(),
+                value: 99.99,
+                currency: 'USD',
+                items: [{
+                    item_id: 'test_credit_pack',
+                    item_name: 'Test Credit Pack',
+                    category: 'credits',
+                    quantity: 1,
+                    price: 99.99
+                }]
+            });
+        }
+        
+        function testAIFeature() {
+            sendGAEvent('ai_feature_usage', {
+                feature: 'test_ai_designer',
+                action: 'generate_design',
+                room_type: 'living_room',
+                style: 'modern'
+            });
+        }
+        
+        function testDesignGen() {
+            sendGAEvent('design_generation', {
+                design_type: 'interior_design',
+                room_type: 'bedroom',
+                style: 'scandinavian',
+                generation_time: 45
+            });
+        }
+        
+        function testProjectSave() {
+            sendGAEvent('project_creation', {
+                project_type: 'interior_design',
+                has_images: true,
+                room_count: 3
+            });
+        }
+        
+        function testCreditUsage() {
+            sendGAEvent('credit_usage', {
+                feature: 'ai_design_generation',
+                credits_used: 5,
+                credits_remaining: 95
+            });
+        }
+        
+        function showGAInfo() {
+            const info = {
+                gtag_available: !!window.gtag,
+                dataLayer_length: window.dataLayer ? window.dataLayer.length : 0,
+                dataLayer_content: window.dataLayer || [],
+                measurement_id: 'G-KPN11Z30WN',
+                user_agent: navigator.userAgent,
+                page_url: window.location.href,
+                timestamp: new Date().toISOString()
+            };
+            
+            document.getElementById('debugInfo').innerHTML = `
+                <h3>GA4 Configuration Info</h3>
+                <pre>${JSON.stringify(info, null, 2)}</pre>
+            `;
+        }
+        
+        function showDataLayer() {
+            document.getElementById('debugInfo').innerHTML = `
+                <h3>📊 DataLayer Contents</h3>
+                <pre>${JSON.stringify(window.dataLayer || [], null, 2)}</pre>
+            `;
+        }
+        
+        function monitorNetwork() {
+            document.getElementById('networkLog').innerHTML = `
+                <h3>🌐 Network Requests to Google Analytics</h3>
+                <p>Monitoring GA requests... Open DevTools Network tab for detailed view.</p>
+                <pre>${JSON.stringify(networkRequests, null, 2)}</pre>
+            `;
+        }
+        
+        function monitorNetworkRequests() {
+            // Override fetch to monitor GA requests
+            const originalFetch = window.fetch;
+            window.fetch = function(...args) {
+                const url = args[0];
+                if (typeof url === 'string' && (url.includes('google-analytics.com') || url.includes('googletagmanager.com'))) {
+                    networkRequests.push({
+                        url: url,
+                        timestamp: new Date().toISOString(),
+                        method: 'fetch'
+                    });
+                }
+                return originalFetch.apply(this, args);
+            };
+        }
+        
+        function checkGTMPreview() {
+            const previewUrl = 'https://tagassistant.google.com/';
+            logEvent('🔗 Opening Google Tag Assistant (use for GTM preview mode)', 'info');
+            window.open(previewUrl, '_blank');
+        }
+        
+        function openRealTime() {
+            const realTimeUrl = 'https://analytics.google.com/analytics/web/#/p0/realtime/rt-overview';
+            logEvent('📊 Opening GA4 Real-time reports', 'info');
+            window.open(realTimeUrl, '_blank');
+        }
+        
+        function testSequence() {
+            logEvent('🔄 Starting test sequence...', 'info');
+            
+            setTimeout(() => testPageView(), 500);
+            setTimeout(() => testUserProps(), 1000);
+            setTimeout(() => testAIFeature(), 1500);
+            setTimeout(() => testDesignGen(), 2000);
+            setTimeout(() => testProjectSave(), 2500);
+            setTimeout(() => testCreditUsage(), 3000);
+            setTimeout(() => testEcommerce(), 3500);
+            
+            setTimeout(() => {
+                logEvent('✅ Test sequence completed!', 'success');
+            }, 4000);
+        }
+        
+        function logEvent(message, type = 'info', data = null) {
+            const logDiv = document.getElementById('eventLog');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            let logClass = 'log-info';
+            if (type === 'success') logClass = 'log-success';
+            if (type === 'error') logClass = 'log-error';
+            
+            let logEntry = `<div class="${logClass} log-entry">
+                <strong>[${timestamp}]</strong> ${message}
+            </div>`;
+            
+            if (data) {
+                logEntry += `<pre class="log-entry">${JSON.stringify(data, null, 2)}</pre>`;
+            }
+            
+            logDiv.innerHTML = logEntry + logDiv.innerHTML;
+        }
+        
+        function updateCounter() {
+            eventCount++;
+            document.getElementById('eventCounter').textContent = eventCount;
+        }
+        
+        function clearLogs() {
+            document.getElementById('eventLog').innerHTML = '';
+            document.getElementById('networkLog').innerHTML = '';
+            document.getElementById('debugInfo').innerHTML = '';
+            eventCount = 0;
+            updateCounter();
+            logEvent('🗑️ Logs cleared', 'info');
+        }
+        
+        // Auto-test on load
+        setTimeout(() => {
+            testPageView();
+            logEvent('🎯 Auto page view test completed', 'success');
+        }, 2000);
+    </script>
+</body>
+</html> 

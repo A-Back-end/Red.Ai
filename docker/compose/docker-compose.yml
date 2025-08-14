@@ -1,6 +1,8 @@
 services:
 
   postgres:
+    env_file:
+      - ../../.env
     image: postgres:15
     container_name: redai_postgres
     environment:
@@ -9,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-redai_password}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - ../../init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     ports:
       - "5432:5432"
     healthcheck:
@@ -20,6 +22,8 @@ services:
 
   # Redis Cache
   redis:
+    env_file:
+      - ../../.env
     image: redis:7-alpine
     container_name: redai_redis
     ports:
@@ -35,8 +39,10 @@ services:
 
   # Backend API
   backend:
+    env_file:
+      - ../../.env
     build:
-      context: .
+      context: ../..
       dockerfile: docker/Dockerfiles/Dockerfile.backend
     container_name: redai_backend
     environment:
@@ -68,12 +74,14 @@ services:
 
   # Frontend App
   frontend:
+    env_file:
+      - ../../.env
     build:
-      context: .
+      context: ../..
       dockerfile: docker/Dockerfiles/Dockerfile.frontend
       args:
-        - OPENAI_API_KEY=${OPENAI_API_KEY:-placeholder_for_build}
-        - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:-pk_test_YOUR_CLERK_PUBLISHABLE_KEY_HERE}
+        - OPENAI_API_KEY=${OPENAI_API_KEY}
+        - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
     container_name: redai_frontend
     environment:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
@@ -86,9 +94,9 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./src/frontend:/app/src/frontend
-      - ./public:/app/public
-      - ./database:/app/database
+      - ../../src/frontend:/app/src/frontend
+      - ../../public:/app/public
+      - ../../database:/app/database
     depends_on:
       - backend
     healthcheck:
@@ -99,8 +107,10 @@ services:
 
   # AI Processing Service
   ai-processor:
+    env_file:
+      - ../../.env
     build:
-      context: .
+      context: ../..
       dockerfile: docker/Dockerfiles/Dockerfile.ai-processor
     environment:
       - REDIS_URL=redis://redis:6379
@@ -112,8 +122,8 @@ services:
       - OPENAI_API_VERSION=${OPENAI_API_VERSION:-2024-02-01}
       - BFL_API_KEY=${BFL_API_KEY:-}
     volumes:
-      - ./src/ai_models:/app/src/ai_models
-      - ./uploads:/app/uploads
+      - ../../src/ai_models:/app/src/ai_models
+      - ../../uploads:/app/uploads
     depends_on:
       redis:
         condition: service_healthy
@@ -128,9 +138,9 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./docker/configs/nginx.conf:/etc/nginx/nginx.conf
-      - ./docker/ssl:/etc/nginx/ssl
-      - ./static:/var/www/static
+      - ../../docker/configs/nginx.conf:/etc/nginx/nginx.conf
+      - ../../docker/ssl:/etc/nginx/ssl
+      - ../../static:/var/www/static
     depends_on:
       - frontend
       - backend
@@ -147,7 +157,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./docker/configs/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../../docker/configs/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'

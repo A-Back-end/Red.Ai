@@ -10,7 +10,7 @@ services:
         - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:-pk_test_placeholder}
     container_name: redai_frontend_test
     env_file:
-      - .env.production
+      - .env
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1

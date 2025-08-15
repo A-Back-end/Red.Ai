@@ -40,7 +40,7 @@ services:
       dockerfile: Dockerfile.backend
     container_name: redai_backend
     env_file:
-      - .env.production
+      - .env
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-redai_user}:${POSTGRES_PASSWORD:-redai_password}@postgres:5432/${POSTGRES_DB:-redai}
       - REDIS_URL=redis://redis:6379
@@ -77,7 +77,7 @@ services:
         - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
     container_name: redai_frontend
     env_file:
-      - .env.production
+      - .env
     environment:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
@@ -106,7 +106,7 @@ services:
       context: .
       dockerfile: Dockerfile.ai-processor
     env_file:
-      - .env.production
+      - .env
     environment:
       - REDIS_URL=redis://redis:6379
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}

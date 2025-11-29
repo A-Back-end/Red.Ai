@@ -121,7 +121,7 @@ export default function ChatInterface() {
     return suggestions[Math.floor(Math.random() * suggestions.length)]
   }
 
-  const useSuggestion = (suggestion: string) => {
+  const handleSuggestion = (suggestion: string) => {
     setInput(suggestion)
   }
 
@@ -194,7 +194,7 @@ export default function ChatInterface() {
                         key={index}
                         variant="outline"
                         size="sm"
-                        onClick={() => useSuggestion(suggestion)}
+                        onClick={() => handleSuggestion(suggestion)}
                         className="w-full text-left justify-start text-xs"
                       >
                         {suggestion}

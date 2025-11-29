@@ -401,7 +401,7 @@ export function AuthenticatedDashboard() {
                     Welcome back, {getDisplayName()}! 👋
                   </h1>
                   <p className="text-slate-600 dark:text-slate-400">
-                    Ready to create something amazing today? Let's get started.
+                    Ready to create something amazing today? Let&apos;s get started.
                   </p>
                 </div>
                 <Button className="bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white">
@@ -547,7 +547,7 @@ export function AuthenticatedDashboard() {
                         <FolderOpen className="h-4 w-4 text-emerald-400" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-slate-900 dark:text-white text-sm">Created new project "Living Room Makeover"</p>
+                        <p className="text-slate-900 dark:text-white text-sm">Created new project &quot;Living Room Makeover&quot;</p>
                         <p className="text-slate-600 dark:text-slate-400 text-xs">3 days ago</p>
                       </div>
                     </div>

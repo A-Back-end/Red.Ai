@@ -5,6 +5,18 @@ const nextConfig = {
   experimental: {
     staticWorkerRequestDeduping: false,
   },
+  // Allow build to continue with ESLint warnings (errors will still fail)
+  eslint: {
+    // Warning: This allows production builds to successfully complete even if
+    // your project has ESLint errors.
+    ignoreDuringBuilds: false,
+  },
+  typescript: {
+    // !! WARN !!
+    // Dangerously allow production builds to successfully complete even if
+    // your project has type errors.
+    // ignoreDuringBuilds: true,
+  },
   // Skip problematic pages during static generation
   ...((process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.includes('Y2xlcmsuZGV2ZWxvcG1lbnQ') || 
        process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.includes('placeholder')) && {

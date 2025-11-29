@@ -34,7 +34,7 @@ export default function Contact() {
             Get In Touch
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+            Have questions? We&apos;d love to hear from you. Send us a message and we&apos;ll respond as soon as possible.
           </p>
         </div>
 
@@ -85,7 +85,7 @@ export default function Contact() {
             <CardHeader>
               <CardTitle>Send us a message</CardTitle>
               <CardDescription>
-                We'll get back to you within 24 hours.
+                We&apos;ll get back to you within 24 hours.
               </CardDescription>
             </CardHeader>
             <CardContent>

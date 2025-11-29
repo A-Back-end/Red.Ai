@@ -38,7 +38,7 @@ export const Testimonials = ({ translations }: { translations: any }) => {
                 <p className="text-sm text-gray-600 dark:text-gray-400">{testimonial.title}</p>
               </div>
             </div>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">"{testimonial.text}"</p>
+            <p className="text-gray-700 dark:text-gray-300 mb-4">&quot;{testimonial.text}&quot;</p>
             <div className="flex">
               {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />)}
             </div>

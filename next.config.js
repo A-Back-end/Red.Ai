@@ -19,11 +19,12 @@ const nextConfig = {
   },
   // Skip problematic pages during static generation
   ...((process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.includes('Y2xlcmsuZGV2ZWxvcG1lbnQ') || 
-       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.includes('placeholder')) && {
+       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.includes('placeholder') ||
+       !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) && {
     exportPathMap: async function (defaultPathMap) {
-      return {
-        '/': { page: '/' }
-      }
+      // Exclude pages that require Clerk authentication
+      const { '/login': loginPage, '/dashboard': dashboardPage, ...rest } = defaultPathMap
+      return rest
     }
   }),
   env: {

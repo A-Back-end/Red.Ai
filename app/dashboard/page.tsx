@@ -1,6 +1,9 @@
 import { Suspense } from 'react'
 import { AuthenticatedDashboard } from '@/components/dashboard/AuthenticatedDashboard'
 
+// Force dynamic rendering for Clerk authentication
+export const dynamic = 'force-dynamic'
+
 export default function DashboardPage() {
   return (
     <Suspense fallback={

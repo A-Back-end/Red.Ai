@@ -6,6 +6,9 @@ import { useUser } from '@clerk/nextjs'
 import { NeuralBackground } from '@/components/NeuralBackground'
 import { AuthForm } from '@/components/auth/AuthForm'
 
+// Force dynamic rendering for Clerk authentication
+export const dynamic = 'force-dynamic'
+
 export default function LoginPage() {
   const router = useRouter()
   const { user, isLoaded } = useUser()

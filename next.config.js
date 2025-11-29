@@ -17,16 +17,8 @@ const nextConfig = {
     // your project has type errors.
     // ignoreDuringBuilds: true,
   },
-  // Skip problematic pages during static generation
-  ...((process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.includes('Y2xlcmsuZGV2ZWxvcG1lbnQ') || 
-       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.includes('placeholder') ||
-       !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) && {
-    exportPathMap: async function (defaultPathMap) {
-      // Exclude pages that require Clerk authentication
-      const { '/login': loginPage, '/dashboard': dashboardPage, ...rest } = defaultPathMap
-      return rest
-    }
-  }),
+  // Note: exportPathMap is not compatible with App Router
+  // Pages that require Clerk authentication are handled via dynamic = 'force-dynamic' in page files
   env: {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || (process.env.NODE_ENV === 'production' ? 'https://redai.site' : 'http://localhost:3000'),
   },

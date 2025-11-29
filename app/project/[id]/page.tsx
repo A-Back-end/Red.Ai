@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import Image from 'next/image'
 import { Project } from '@/lib/types'
 import { Loader2, Download, ArrowLeft, Image as ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -22,11 +23,9 @@ const fakeContractors = [
 
 export default function ProjectDetailPage() {
   const params = useParams()
-  if (!params) {
-    // Or display a more specific error message
-    return <div>Loading...</div>; 
-  }
-  const projectId = params.id as string
+  const projectId = params?.id as string | undefined
+  
+  // Все хуки должны быть на верхнем уровне, до любых условных возвратов
   const [project, setProject] = useState<Project | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isDownloading, setIsDownloading] = useState(false);
@@ -38,38 +37,8 @@ export default function ProjectDetailPage() {
 
   const [contractors, setContractors] = useState(fakeContractors);
 
-
-  useEffect(() => {
-    if (projectId) {
-      const fetchProject = async () => {
-        setIsLoading(true)
-        try {
-          const response = await fetch(`/api/projects?projectId=${projectId}`)
-          if (response.ok) {
-            const data = await response.json()
-            setProject(data.project)
-            // Once project is fetched, trigger AI furniture finder
-            if (data.project.imageUrl) {
-              fetchAiSuggestions(data.project.imageUrl);
-            } else {
-              setIsAiLoading(false);
-              setAiError("No image available for AI analysis.");
-            }
-          } else {
-            setProject(null)
-          }
-        } catch (error) {
-          console.error('Failed to fetch project', error)
-          setProject(null)
-        } finally {
-          setIsLoading(false)
-        }
-      }
-      fetchProject()
-    }
-  }, [projectId])
-
-  const fetchAiSuggestions = async (imageUrl: string) => {
+  // Обертываем fetchAiSuggestions в useCallback для стабильности ссылки
+  const fetchAiSuggestions = useCallback(async (imageUrl: string) => {
     setIsAiLoading(true);
     setAiError(null);
     try {
@@ -90,7 +59,52 @@ export default function ProjectDetailPage() {
     } finally {
       setIsAiLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!projectId) {
+      setIsLoading(false);
+      return;
+    }
+
+    const fetchProject = async () => {
+      setIsLoading(true)
+      try {
+        const response = await fetch(`/api/projects?projectId=${projectId}`)
+        if (response.ok) {
+          const data = await response.json()
+          setProject(data.project)
+          // Once project is fetched, trigger AI furniture finder
+          if (data.project?.imageUrl) {
+            fetchAiSuggestions(data.project.imageUrl);
+          } else {
+            setIsAiLoading(false);
+            setAiError("No image available for AI analysis.");
+          }
+        } else {
+          setProject(null)
+        }
+      } catch (error) {
+        console.error('Failed to fetch project', error)
+        setProject(null)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchProject()
+  }, [projectId, fetchAiSuggestions])
+
+  // Условный return после всех хуков
+  if (!params) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 text-slate-500 dark:text-slate-400 animate-spin mx-auto mb-4" />
+          <p className="text-slate-600 dark:text-slate-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleDownloadPdf = async () => {
     if (!project) return;
@@ -155,11 +169,9 @@ export default function ProjectDetailPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white p-4 sm:p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
         <div className="mb-6">
-          <Link href="/" legacyBehavior>
-            <a className="inline-flex items-center text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Projects
-            </a>
+          <Link href="/" className="inline-flex items-center text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Projects
           </Link>
         </div>
 
@@ -177,8 +189,14 @@ export default function ProjectDetailPage() {
                     className="aspect-[16/9]"
                   />
                 ) : project.imageUrl ? (
-                  <div className="aspect-[16/9] bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
-                    <img src={project.imageUrl} alt={project.name} className="w-full h-full object-cover rounded-lg" />
+                  <div className="aspect-[16/9] bg-slate-100 dark:bg-slate-700 flex items-center justify-center relative rounded-lg overflow-hidden">
+                    <Image 
+                      src={project.imageUrl} 
+                      alt={project.name || 'Project image'} 
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 66vw"
+                    />
                   </div>
                 ) : (
                   <div className="aspect-[16/9] bg-slate-100 dark:bg-slate-700 flex items-center justify-center rounded-lg">
@@ -257,7 +275,15 @@ export default function ProjectDetailPage() {
                     {ikeaSuggestions.map(item => (
                       <a key={item.id} href={item.productUrl} target="_blank" rel="noopener noreferrer" className="block">
                         <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                          <img src={item.imageUrl} alt={item.name} className="w-full h-40 object-cover" />
+                          <div className="relative w-full h-40">
+                            <Image 
+                              src={item.imageUrl || '/img/img-1.jpg'} 
+                              alt={item.name || 'Furniture item'} 
+                              fill
+                              className="object-cover"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            />
+                          </div>
                           <CardContent className="p-3">
                             <h4 className="font-semibold text-sm capitalize truncate">{item.name}</h4>
                             <p className="text-xs text-slate-500 dark:text-slate-400">{item.price}</p>

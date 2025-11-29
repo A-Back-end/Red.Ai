@@ -29,8 +29,12 @@ export default function RootLayout({
   const isClerkConfigured = clerkPublishableKey && !clerkPublishableKey.includes('your_clerk_publishable_key_here');
   
   // Always render ClerkProvider to prevent build errors, even if key is not configured
-  // ClerkProvider will handle missing keys gracefully - use undefined instead of placeholder
-  const effectiveClerkKey = isClerkConfigured ? clerkPublishableKey : undefined
+  // Use a valid placeholder key format for build time (Clerk requires a valid format)
+  // This key won't work for authentication but allows the build to complete
+  // Format: pk_test_ followed by 51 characters (typical Clerk key format is ~58 chars total)
+  const effectiveClerkKey = isClerkConfigured 
+    ? clerkPublishableKey 
+    : 'pk_test_build_placeholder_000000000000000000000000000000000000000000000000000'
   
   // If Clerk is not configured, show warning but still render with placeholder key
   if (!isClerkConfigured) {
@@ -140,4 +144,4 @@ export default function RootLayout({
     </html>
     </ClerkProvider>
   )
-} 
+}

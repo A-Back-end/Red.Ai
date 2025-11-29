@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import ClerkDebugInfo from '@/components/debug/ClerkDebugInfo'
 
+// Force dynamic rendering for Clerk authentication (ClerkDebugInfo uses useUser)
+export const dynamic = 'force-dynamic'
+
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(true)
 

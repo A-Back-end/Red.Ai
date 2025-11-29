@@ -1,5 +1,8 @@
 import BeforeAfterShowcase from '@/components/landing/BeforeAfterShowcase'
 
+// Force dynamic rendering to prevent static generation issues
+export const dynamic = 'force-dynamic'
+
 export default function ShowcasePage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

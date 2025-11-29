@@ -18,6 +18,9 @@ import { useAppStore } from '@/lib/store'
 import { useTheme } from '@/lib/theme-context'
 import { initThemeSync, getSavedTheme, getSavedLanguage, setGlobalTheme, setGlobalLanguage } from '@/lib/theme-sync'
 
+// Force dynamic rendering for Clerk authentication
+export const dynamic = 'force-dynamic'
+
 export default function AuthLandingPage() {
   const [theme, setTheme] = useState('dark')
   const [isScrolled, setIsScrolled] = useState(false)

@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
-// Инициализация OpenAI
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+// Инициализация OpenAI (lazy initialization to avoid build-time errors)
+const getOpenAI = () => {
+  const apiKey = process.env.OPENAI_API_KEY
+  if (!apiKey) {
+    throw new Error('OPENAI_API_KEY environment variable is not configured')
+  }
+  return new OpenAI({ apiKey })
+}
 
 // Настройки личности ассистента
 const PERSONALITY_PROMPTS = {
@@ -108,6 +112,7 @@ ${specializationPrompt}
     ]
 
     // Запрос к OpenAI GPT-4
+    const openai = getOpenAI()
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o', // Используем GPT-4o для лучшего качества
       messages: messages as any,
@@ -131,6 +136,13 @@ ${specializationPrompt}
 
   } catch (error: any) {
     console.error('AI Chat Error:', error)
+    
+    // Handle missing API key
+    if (error.message?.includes('OPENAI_API_KEY') || error.message?.includes('apiKey')) {
+      return NextResponse.json({ 
+        error: 'API ключ OpenAI не настроен. Пожалуйста, настройте переменную окружения OPENAI_API_KEY.' 
+      }, { status: 503 })
+    }
     
     if (error.code === 'insufficient_quota') {
       return NextResponse.json({ 
